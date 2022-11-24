@@ -4,4 +4,5 @@ public class PfLoanUpdateInput {
     public byte approved;
     public String remarks;
     public long id;
+    public byte hrApproved;
 }

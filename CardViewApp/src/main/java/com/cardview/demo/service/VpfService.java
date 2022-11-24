@@ -102,7 +102,7 @@ public class VpfService {
                 if(isManager == true)
                     newEntity.setapproved(entity.approved);
                 else
-                    newEntity.setHRApproved(entity.approved);
+                    newEntity.setHRApproved(entity.hrApproved);
                 newEntity = repository.save(newEntity);
             }
         }

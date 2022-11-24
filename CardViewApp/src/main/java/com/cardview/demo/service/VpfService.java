@@ -93,13 +93,16 @@ public class VpfService {
         }
     }
 
-    public boolean updateVpfContribution(PfLoanUpdateInput[] entityArray) {
+    public boolean updateVpfContribution(PfLoanUpdateInput[] entityArray, boolean isManager) {
         for(PfLoanUpdateInput entity : entityArray) {
             Optional<VpfContributionEntity> employee = repository.findById(entity.id);
             if (employee.isPresent()) {
                 VpfContributionEntity newEntity = employee.get();
                 newEntity.setremarks(newEntity.getremarks() + "; " + entity.remarks);
-                newEntity.setapproved(entity.approved);
+                if(isManager == true)
+                    newEntity.setapproved(entity.approved);
+                else
+                    newEntity.setHRApproved(entity.approved);
                 newEntity = repository.save(newEntity);
             }
         }

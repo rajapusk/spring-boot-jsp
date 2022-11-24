@@ -1,0 +1,143 @@
+* {
+    margin: 0px;
+    padding: 0px;
+    font-family: 'Ubuntu', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+#employees,#expenses {
+    /*background-color: #dbe5e6;*/
+    background-image: linear-gradient(to right, #4facfe 0%, #00f2fe 100%);
+    padding: 30px 0px;
+}
+#employees h1, #expenses h1 {
+    font-weight: 900;
+    font-size: 34px;
+    padding-bottom: 5px;
+}
+.title {
+    text-align: center;
+    padding: 25px 0px;
+}
+.title p {
+    font-size: 18px;
+}
+.card-body {
+    box-shadow: 0 0 20px 10px rgba(0,0,0,0.1);
+}
+.card {
+    margin: 20px 0px;
+    overflow-y: auto;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    /*transition: 0.3s;*/
+    height: 400px;
+}
+
+.card:hover {
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+}
+
+.card::-webkit-scrollbar-track
+{
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+	background-color: #F5F5F5;
+}
+
+.card::-webkit-scrollbar
+{
+	width: 6px;
+	background-color: #F5F5F5;
+}
+
+.card::-webkit-scrollbar-thumb
+{
+	background-color: #000000;
+}
+
+.card-body{
+    color: #6e207d;
+    text-decoration: none;
+    font-size: 15px;
+    margin-top: auto;
+    font-weight: 600;
+}
+.card-body a:hover {
+    color: #62a6b0;
+}
+.card-body p {
+    margin: 3px;
+}
+.card-text-label {
+    color: rgb(178, 174, 174);
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 600;
+    
+}
+.card-text-value {
+    color: rgb(122, 115, 115);
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 600;
+}
+.card-row {
+	display: flex;
+	justify-content: space-between;
+}
+.card i {
+    font-size: 1rem; 
+    color: rgb(122, 115, 115);
+}
+
+.modal-header{
+    background-image: linear-gradient(120deg, #f093fb 0%, #f5576c 100%);
+    color: rgb(255, 255, 255);
+}
+
+.imgContainer {
+    position: relative;
+    width: 100px;
+    margin-bottom: 10px;
+    display: inline;
+    float: left;
+}
+.thumbnail {
+    float: left;
+    display: block;
+    height: 100px;
+    width: 100px;
+}
+.overlay {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 100px;
+    width: 100px;
+    opacity: 0;
+    transition: .3s ease;
+}
+.imgContainer:hover .overlay {
+    opacity: 1;
+}
+.removeIcon {
+    color: white;
+    font-size: 50px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    text-align: center;
+}
+.bi-x-circle:hover {
+    color: #eee;
+}
+
+.modal-row {
+	display: flex;
+	justify-content: space-between;
+}
+.col-form-label {
+	width: 300px;
+}

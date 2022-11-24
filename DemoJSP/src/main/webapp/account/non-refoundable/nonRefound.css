@@ -1,0 +1,46 @@
+.scRefundablePFLoan input[type="text"], .scRefundablePFLoan input[type="textarea"]{
+	width: 100% !important;
+	height: 34px !important;
+	border: 1px solid #c9c5c5 !important;
+	border-radius: 5px !important;
+	padding: 5px 10px !important;
+}
+
+div.scRefundablePFLoan > table{
+	background: transparent !important;
+	border: 0px !important;
+}
+
+div.scRefundablePFLoan .jqx-dropdownlist-state-normal-light
+{
+	width: 100% !important;
+}
+
+.scRefundablePFLoan .jqx-max-size{
+	width: 100% !important;
+    height: 30px !important;
+    padding: 1px;
+}
+
+.scRefundablePFLoan  .jqx-input{
+	width: 100% !important;
+	height: 34px !important;
+}
+
+.scCenterXY{
+	display: flex;
+	justify-content: center;
+	width: 100%;
+}
+  	
+.jqx-file-upload-buttons-container{
+	display: none !important;
+}
+
+div.scRefundablePFLoan .jqx-text-area-light, div.scRefundablePFLoan .jqx-text-area-light>div{
+	width: 100% !important;
+}
+
+div.scRefundablePFLoan .jqx-file-upload{
+	margin-top: 30px !important;
+}

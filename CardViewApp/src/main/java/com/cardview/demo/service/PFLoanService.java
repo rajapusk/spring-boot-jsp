@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.*;
 
+import com.cardview.demo.model.PFAccountEntity;
 import com.cardview.demo.model.PFLoanEntity;
 
 
@@ -17,16 +18,22 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.cardview.demo.exception.RecordNotFoundException;
+import com.cardview.demo.repository.PFAccountRepository;
 import com.cardview.demo.repository.PFLoanRepository;
 
 @Service
 public class PFLoanService {
+
+	@Autowired private EmailServiceImpl emailService;
 	
 	@Value("${spring.project.directory}")
 	private String targetPath;
 
 	@Autowired
 	PFLoanRepository repository;
+	
+	@Autowired
+	PFAccountRepository accountRepository;
 	
 	public List<PFLoanEntity> getAllPFLoan()
 	{
@@ -92,9 +99,27 @@ public class PFLoanService {
 			Optional<PFLoanEntity> employee = repository.findById(entity.id);
 			if (employee.isPresent()) {
 				PFLoanEntity newEntity = employee.get();
+				Optional<PFAccountEntity> acc = accountRepository.findById(newEntity.getempcode());
+				PFAccountEntity account = acc.get();
+			
 				newEntity.setapproved(entity.approved);
 				newEntity.setremarks(newEntity.getremarks() + "; " + entity.remarks);
-				newEntity = repository.save(newEntity);				
+				newEntity = repository.save(newEntity);
+				String subject = "", body = "";
+				
+				if(entity.approved == 1)
+				{
+					subject = "Loan Approved";
+					body = "Your loan has been approved by manager.";
+				}
+				else if(entity.approved == 2)
+				{
+					subject = "Loan Rejected";
+					body = "Your loan has been rejected by manager.";
+				}
+				
+				emailService.sendSimpleMail(account.getEmail(), body, subject);
+				
 			}
 		}
 

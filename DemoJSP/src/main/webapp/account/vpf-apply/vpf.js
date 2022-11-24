@@ -138,9 +138,9 @@ var PFLoan = function(){
 					align: 'left',
 					columnWidth: '20%'
 				},{
-					bind: 'presentvfp',
+					bind: 'presentVPF',
 	                type: 'number',
-	                name: 'presentvfp',
+	                name: 'presentVPF',
 	                label: 'Present VPF Contribution',
 	                disabled: true,
 	                labelPosition: 'top',
@@ -149,9 +149,9 @@ var PFLoan = function(){
 					align: 'left',
 					columnWidth: '20%'
 				},{
-					bind: 'revisedvfp',
+					bind: 'revisedVPF',
 	                type: 'number',
-	                name: 'revisedvfp',
+	                name: 'revisedVPF',
 	                label: 'Revised VPF Contribution',
 	                disabled: false,
 	                labelPosition: 'top',
@@ -260,14 +260,14 @@ var PFLoan = function(){
 		
 		$('#searchData').on('change', loadEmpDetails);				
 		$("#searchData").jqxInput({ width: '250px', height: '30px', placeHolder: 'Enter the employee code'});
-		$("#dvRefundablePFLoan").jqxForm('getComponentByName', 'revisedvfp').on('change', function(event){
-			var revisedvfp = 0;
+		$("#dvRefundablePFLoan").jqxForm('getComponentByName', 'revisedVPF').on('change', function(event){
+			var revisedVPF = 0;
 			
 			if(event.args.value != null && event.args.value.length > 0){
-				revisedvfp = parseInt(event.args.value);
+				revisedVPF = parseInt(event.args.value);
 			}
 		
-			calculateAmount(revisedvfp);
+			calculateAmount(revisedVPF);
 		});
 				
 		$("#dvRefundablePFLoan").jqxForm('getComponentByName', 'saveDraft').on('click', function(event){
@@ -315,7 +315,7 @@ var PFLoan = function(){
 	};
 	
 	var submitLoan = function(sType){
-		var sURL = HOST + '/pfloan/create'
+		var sURL = HOST + '/vpf/create'
 		var postData = getLoanData();
 		postData.submitted = 0;
 		postData.type = 1;
@@ -330,40 +330,10 @@ var PFLoan = function(){
 			data: JSON.stringify(postData),
 			contentType: "application/json; charset=utf-8",
 			success: function(result){
-				uploadFile(result);
+				formSuccessHandler();
 			}
 		});
 	};
-	
-	var uploadFile = function(result){
-		if(formData.hasFile){
-			var fileInput = $('input[type=file]');
-			
-			if(fileInput != null && fileInput.length > 0){
-				if(fileInput[0].files != null && fileInput[0].files.length > 0){
-					var files = fileInput[0].files;
-					var fileData = new FormData();
-     				fileData.append("pf_loan_doc", files[0]);
-     				fileData.append("id", result.id);
-      			
-      				$.ajax({
-						type: 'post',
-						url: HOST + '/pfloan/uploadFile', 
-						data: fileData,
-						contentType: false,
-						cache: false,
-	   					processData:false,
-						success: function(result){
-							formSuccessHandler();
-						}
-					});
-				}
-			}
-		}
-		else{
-			formSuccessHandler();
-		}
-	}
 	
 	var resetForm = function(){
 		formData = {};
@@ -378,15 +348,13 @@ var PFLoan = function(){
 		resetForm();
 		Common.showToast({message: "The record has been submitted successfully."});
 	}
-	
+		
 	var getLoanData = function(){
 		var postData = {};
 		var fields = [
 			{field: 'empcode', name: 'empcode'},
-			{field: 'advanceType', name: 'advanceType'}, 
-			{field: 'requiredAmount', name: 'requiredAmount'}, 
-			{field: 'emiAmount', name: 'EMIAMOUNT'}, 
-			{field: 'noOfEMI', name: 'NOOFEMI'}, 
+			{field: 'presentVPF', name: 'presentVPF'}, 
+			{field: 'revisedVPF', name: 'revisedVPF'}, 
 			{field: 'newNetSalary', name: 'NEWNETSALARY'}, 
 			{field: 'newNetSalaryPer', name: 'NEWNETSALARYPER'},
 			{field: 'remarks', name: 'REMARKS'}
@@ -403,11 +371,11 @@ var PFLoan = function(){
 		return postData;
 	}
 	
-	var calculateAmount = function(revisedvfp){
+	var calculateAmount = function(revisedVPF){
 		var form = $('#dvRefundablePFLoan');
 
-		formData.revisedvfp = revisedvfp;			
-		formData.NEWNETSALARY = (formData.revisedvfp > 0 ? formData.prevNetSalary + (formData.presentvfp - formData.revisedvfp) : 0);		
+		formData.revisedVPF = revisedVPF;			
+		formData.NEWNETSALARY = (formData.revisedVPF > 0 ? formData.prevNetSalary + (formData.presentVPF - formData.revisedVPF) : 0);		
 		formData.NEWNETSALARYPER = (formData.NEWNETSALARY > 0 ? ((formData.NEWNETSALARY / formData.monthly_SALARY) * 100) : 0);		
 		
 		if(isNaN(formData.NEWNETSALARYPER) || formData.NEWNETSALARYPER < 50){

@@ -36,10 +36,10 @@
 	    <script type="text/javascript" src="../jqwidgets/jqxnotification.js"></script>
 	    <link rel="stylesheet" href="../style/font-awesome.min.css">
 	    <script type="text/javascript" src="../common.js"></script>
-	    <script type="text/javascript" src="vpfAccount.js"></script>
+	    <script type="text/javascript" src="vpfHR.js"></script>
 	    <script>
 		    $(document).ready(function () {	
-		    	var page = new VPFAccount();
+		    	var page = new VPFHR();
 		    	
 		    	page.init();
 		   	});

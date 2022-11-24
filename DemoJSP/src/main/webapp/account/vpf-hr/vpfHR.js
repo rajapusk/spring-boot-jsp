@@ -1,4 +1,4 @@
-var VPFAccount = function(){
+var VPFHR = function(){
 	var HOST = 'http://localhost:' + 9092;
 	//var HOST = window.location.host;
 	var selectedRows = [];
@@ -32,7 +32,7 @@ var VPFAccount = function(){
             {name: 'revisedVPF', type: 'number'},
             {name: 'newNetSalary', type: 'number'},
             {name: 'newNetSalaryPercentage', type: 'number'},            
-            {name: 'approved', type: 'booelan'},
+            {name: 'hrApproved', type: 'booelan'},
             {name: 'REMARKS', type: 'string'}
             
        	],
@@ -57,7 +57,7 @@ var VPFAccount = function(){
       { text: 'Revised VPF', datafield: 'revisedVPF', editable: false, width: 100, cellsalign: 'right' },
       { text: 'New Net Salary', datafield: 'newNetSalary', editable: false, width: 100, cellsalign: 'left'},
       { text: 'New Net Salary Percetage', datafield: 'newNetSalaryPercentage', editable: false, width: 100, cellsalign: 'left'},
-      { text: 'Approved', datafield: 'approved', width: 70, threestatecheckbox: true, columntype: 'checkbox', editable: true},
+      { text: 'Approved', datafield: 'hrApproved', width: 70, threestatecheckbox: true, columntype: 'checkbox', editable: true},
       { text: 'Remarks', datafield: 'REMARKS', width: 150, editable: false, cellsalign: 'left'},
       
       { text: 'Action', datafield: 'Edit',  editable: false, width: 60, cellsrenderer: function () {
@@ -111,7 +111,7 @@ var VPFAccount = function(){
 	             var xPos = (($("body").width() / 2) - ($("#popupWindow").width() / 2));
 	             var yPos = 100;
 	             var dataRecord = event.args.row.bounddata;	             
-	             dataRecord.approvedText = (dataRecord.approved == 1 ? 'YES' : (dataRecord.approved == 2 ? 'REJECTED' : 'NO'));
+	             dataRecord.approvedText = (dataRecord.hrApproved == 1 ? 'YES' : (dataRecord.hrApproved == 2 ? 'REJECTED' : 'NO'));
 	             
 	             if(dataRecord.docPath != null){
 					$("#userAvatar").attr("src", dataRecord.docPath);   
@@ -139,7 +139,7 @@ var VPFAccount = function(){
                 for(var sKey in selectedRows){
 					var row = selectedRows[sKey];
 					
-					postData.push({id: row.rowData.id, approved: row.rowData.approved})
+					postData.push({id: row.rowData.id, hrApproved: row.rowData.hrApproved})
 				}
                 
                 if(postData.length > 0){
@@ -177,10 +177,10 @@ var VPFAccount = function(){
 				var dataRecord = $("#dvPFAccount").jqxGrid('getrowdata', editRowId);
 				var bApproved = (sApproved == 'YES' ? 1 : (sApproved == 'NO' ? 0 : 2));
 				var rowID = $('#dvPFAccount').jqxGrid('getrowid', editRowId);                           
-                dataRecord.approved = bApproved;
+                dataRecord.hrApproved = bApproved;
                 $('#dvPFAccount').jqxGrid('updaterow', rowID, dataRecord);
                 $("#popupWindow").jqxWindow('hide'); 
-                approveLoan([{ id: dataRecord.id, approved: bApproved}]);
+                approveLoan([{ id: dataRecord.id, hrApproved: bApproved}]);
             }
         });        
 	}
@@ -194,7 +194,7 @@ var VPFAccount = function(){
 	var approveLoan = function(postData){
 		$.ajax({
 			type: 'put',
-			url: HOST + '/vpf/manager/update', 
+			url: HOST + '/vpf/hr/update', 
 			data: JSON.stringify(postData),
 			contentType: "application/json; charset=utf-8",
 			success: function(result){
@@ -206,7 +206,7 @@ var VPFAccount = function(){
 	var loadData = function(){
 		$.ajax({
 			type: 'GET',
-			url: HOST + '/vpf/manager',
+			url: HOST + '/vpf/hr',
 			contentType: "application/json; charset=utf-8",
 			success: function(result){
 				source.localdata = result;

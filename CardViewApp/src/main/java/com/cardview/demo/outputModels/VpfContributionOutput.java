@@ -19,5 +19,7 @@ public class VpfContributionOutput {
     public byte submitted;
     public byte approved;
     public byte hrApproved;
+    public String location;
+    public String worksiteCode;
     public boolean editMode;
 }

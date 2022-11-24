@@ -199,6 +199,39 @@ public class PFAccountEntity
 	}
 	
 	
+	@Column(name="WORKSITECODE")
+	private String _worksiteCode;
+	public String getWorksiteCode()
+	{
+		return this._worksiteCode;
+	}
+	public void setWorksiteCode(String value)
+	{
+		this._worksiteCode = value;
+	}
+
+	@Column(name="LOCATION")
+	private String _Location;
+	public String getLocation()
+	{
+		return this._Location;
+	}
+	public void setLocation(String value)
+	{
+		this._Location = value;
+	}
+
+	@Column(name="PRESENTVPF")
+	private double _PresentVPF;
+	public double getPresentVPF()
+	{
+		return this._PresentVPF;
+	}
+	public void setPresentVPF(double value)
+	{
+		this._PresentVPF = value;
+	}
+
 	@Column(name="RATEOFINTEREST")
 	private int _RATEOFINTEREST;
 	public int getRATEOFINTEREST()
@@ -209,6 +242,7 @@ public class PFAccountEntity
 	{
 		this._RATEOFINTEREST = value;
 	}
+
 
 
 	/*

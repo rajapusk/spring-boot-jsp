@@ -5,11 +5,13 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Properties;
+import java.util.*;
 
 import com.cardview.demo.model.PFLoanEntity;
-import com.cardview.demo.model.PfLoanUpdateInput;
-import com.cardview.demo.outputModels.PfLoanOutput;
 
+
+import com.cardview.demo.model.PfLoanUpdateInput;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -31,8 +33,6 @@ public class PFLoanService {
 		List<PFLoanEntity> result = (List<PFLoanEntity>) repository.findAll();
 		
 		if(result.size() > 0) {
-
-			
 			return result;
 		} else {
 			return new ArrayList<PFLoanEntity>();
@@ -99,6 +99,11 @@ public class PFLoanService {
 		}
 
 		return true;
+	}
+
+	public void sendMail(PFLoanEntity entity)
+	{
+
 	}
 	
 	public PFLoanEntity updateDocs(PFLoanEntity entity) {

@@ -57,7 +57,7 @@ public class VpfContributionController {
                     if (account.getEMPCODE() == loan.getempcode() && loan.getapproved() == 0) {
                         VpfContributionOutput output = new VpfContributionOutput();
                         output.id = loan.getid();
-                        output.presentVPF = loan.getPresentVPF();
+                        output.presentVPF = account.getPresentVPF();
                         output.monthlySalary = account.getMONTHLY_SALARY();
                         output.revisedVPF = loan.getRevisedVPF();
                         output.prevNetSalary = account.getPrevNetSalary();
@@ -73,6 +73,8 @@ public class VpfContributionController {
                         output.submitted = loan.getsubmitted();
                         output.approved = loan.getapproved();
                         output.hrApproved = loan.getHRApproved();
+                        output.location = account.getLocation();
+                        output.worksiteCode = account.getWorksiteCode();
                         result.add(output);
                     }
                 }
@@ -112,6 +114,8 @@ public class VpfContributionController {
                         output.submitted = loan.getsubmitted();
                         output.approved = loan.getapproved();
                         output.hrApproved = loan.getHRApproved();
+                        output.location = account.getLocation();
+                        output.worksiteCode = account.getWorksiteCode();
                         result.add(output);
                     }
                 }

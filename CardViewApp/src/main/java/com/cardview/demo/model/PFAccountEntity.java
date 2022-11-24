@@ -33,6 +33,18 @@ public class PFAccountEntity
 		this._NAME = value;
 	}
 
+	@Column(name="EMAIL")
+	private String _email;
+
+	public String getEmail()
+	{
+		return this._email;
+	}
+	public void setEmail(String value)
+	{
+		this._email = value;
+	}
+
 	@Column(name="DOJ")
 	private java.sql.Date _DOJ;
 	public java.sql.Date getDOJ()

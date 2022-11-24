@@ -20,12 +20,12 @@ public class PFLoanEntity
 	}
 
 	@Column(name="EMPCODE")
-	private int _empcode;
-	public int getempcode()
+	private long _empcode;
+	public long getempcode()
 	{
 		return this._empcode;
 	}
-	public void setempcode(int value)
+	public void setempcode(long value)
 	{
 		this._empcode = value;
 	}

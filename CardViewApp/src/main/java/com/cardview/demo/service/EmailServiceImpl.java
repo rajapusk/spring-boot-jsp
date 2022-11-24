@@ -28,7 +28,7 @@ public class EmailServiceImpl {
 
     // Method 1
     // To send a simple email
-    public String sendSimpleMail()
+    public String sendSimpleMail(String toAddress, String body, String subject)
     {
 
         // Try block to check for exceptions
@@ -40,9 +40,9 @@ public class EmailServiceImpl {
 
             // Setting up necessary details
             mailMessage.setFrom(sender);
-            mailMessage.setTo("parthi.ravi@gmail.com");
-            mailMessage.setText("text");
-            mailMessage.setSubject("Subject");
+            mailMessage.setTo(toAddress);
+            mailMessage.setText(body);
+            mailMessage.setSubject(subject);
 
             // Sending the mail
             javaMailSender.send(mailMessage);

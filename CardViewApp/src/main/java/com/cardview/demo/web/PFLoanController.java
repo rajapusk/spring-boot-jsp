@@ -4,12 +4,30 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Optional;
+
+import javax.websocket.server.PathParam;
+
+import com.cardview.demo.exception.RecordNotFoundException;
+import com.cardview.demo.model.EmployeeEntity;
+import com.cardview.demo.model.PFAccountEntity;
+import com.cardview.demo.model.PFLoanEntity;
+import com.cardview.demo.model.PfLoanUpdateInput;
+import com.cardview.demo.outputModels.PfLoanOutput;
+import com.cardview.demo.service.EmailServiceImpl;
+import com.cardview.demo.service.EmployeeService;
+import com.cardview.demo.service.PFAccountService;
+import com.cardview.demo.service.PFLoanService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -17,22 +35,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.cardview.demo.model.PFAccountEntity;
-import com.cardview.demo.model.PFLoanEntity;
-import com.cardview.demo.model.PfLoanUpdateInput;
-import com.cardview.demo.outputModels.PfLoanOutput;
-import com.cardview.demo.service.EmailServiceImpl;
-import com.cardview.demo.service.PFAccountService;
-import com.cardview.demo.service.PFLoanService;
-
 @RestController
 @RequestMapping("/pfloan")
 
 public class PFLoanController {
+
+	public static String _managerEmail = "parthi.ravi@gmail.com";
+
 	@Value("${spring.project.directory}")
 	private String targetPath;
 	private String rootDocPath = "C:/Program Files/Apache Software Foundation/Tomcat 8.5/webapps/static/images/";
-	private String docURL = "http://localhost:8001/static/images/";
+	private String docURL = "http://localhost:8080/static/images/";
 	
 	@Autowired
 	PFAccountService paService;
@@ -55,7 +68,7 @@ public class PFLoanController {
 	public PFLoanEntity getEmployeeById(@PathVariable("id") Long id) {
 		try {
 			System.out.print("Entering...");
-			emailService.sendSimpleMail();
+
 			// Long idvalue = Long.parseLong(id);
 			return pfService.getPFAccountById(id);
 		} catch (Exception ex) {
@@ -63,10 +76,20 @@ public class PFLoanController {
 		}
 
 	}
+	
 
 	@RequestMapping(path = "/create", method = RequestMethod.POST)
 	public PFLoanEntity createOrUpdatePFLoan(@RequestBody PFLoanEntity loan) {
-		return pfService.createOrUpdatePFLoan(loan);
+		PFLoanEntity entity = pfService.createOrUpdatePFLoan(loan);
+		try {
+			PFAccountEntity account = paService.getPFAccountById(loan.getempcode());
+			String body = account.getNAME()+" has applied the loan. ";
+			emailService.sendSimpleMail(_managerEmail, body, "Loan Application");
+
+		} catch (Exception e) {
+		}
+
+		return entity;
 
 	}
 
@@ -145,7 +168,6 @@ public class PFLoanController {
 						output.remarks = loan.getremarks();
 						output.submitted = loan.getsubmitted();
 						output.approved = loan.getapproved();
-
 						result.add(output);
 					}
 				}

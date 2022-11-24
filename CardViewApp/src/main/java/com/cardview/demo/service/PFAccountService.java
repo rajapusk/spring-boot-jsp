@@ -43,7 +43,7 @@ public class PFAccountService {
 		}
 	}
 	
-	public PFAccountEntity getPFAccountById(Long id) throws RecordNotFoundException 
+	public PFAccountEntity getPFAccountById(long id) throws RecordNotFoundException
 	{
 		Optional<PFAccountEntity> employee = repository.findById(id);
 		

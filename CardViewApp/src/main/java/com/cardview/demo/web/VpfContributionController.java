@@ -2,6 +2,7 @@ package com.cardview.demo.web;
 
 import com.cardview.demo.exception.RecordNotFoundException;
 import com.cardview.demo.model.PFAccountEntity;
+import com.cardview.demo.model.PFLoanEntity;
 import com.cardview.demo.model.PfLoanUpdateInput;
 import com.cardview.demo.model.VpfContributionEntity;
 import com.cardview.demo.outputModels.VpfContributionOutput;
@@ -17,32 +18,43 @@ import java.util.List;
 @RestController
 @RequestMapping("/vpf")
 public class VpfContributionController {
-
+    public static String _managerEmail = "parthi.ravi@gmail.com";
     @Autowired
     PFAccountService paService;
     @Autowired
     VpfService vpfService;
-    @Autowired private EmailServiceImpl emailService;
-    
+    @Autowired
+    private EmailServiceImpl emailService;
+
     @GetMapping("/get/{id}")
-	public VpfContributionEntity getEmployeeById(@PathVariable("id") Long id) {
-		try {
-			System.out.println("@@@ id " + id);
-			return vpfService.getVpfContributionById(id);
-		} catch (Exception ex) {
-			return null;
-		}
-	}
-    
+    public VpfContributionEntity getEmployeeById(@PathVariable("id") Long id) {
+        try {
+            System.out.println("@@@ id " + id);
+            return vpfService.getVpfContributionById(id);
+        } catch (Exception ex) {
+            return null;
+        }
+    }
+
     @RequestMapping(path = "/create", method = RequestMethod.POST)
     public VpfContributionEntity createOrUpdateVpfContribution(@RequestBody VpfContributionEntity loan) {
-        return vpfService.createOrUpdateVpfContribution(loan);
+        VpfContributionEntity entity = vpfService.createOrUpdateVpfContribution(loan);
+
+        try {
+            PFAccountEntity account = paService.getPFAccountById(loan.getempcode());
+            String body = account.getNAME() + " has applied the VPF. ";
+            emailService.sendSimpleMail(_managerEmail, body, "VPF Application");
+
+        } catch (Exception e) {
+        }
+
+        return  entity;
     }
-    
+
     @DeleteMapping("/delete/id")
     public boolean getPFAccount(@PathVariable("id") long id) throws RecordNotFoundException {
-    	
-    	return vpfService.deleteVpfContributionById(id);
+
+        return vpfService.deleteVpfContributionById(id);
     }
 
     @GetMapping("/manager")
@@ -128,14 +140,44 @@ public class VpfContributionController {
     }
 
     @RequestMapping(path = "/manager/update", method = RequestMethod.PUT)
-    public boolean UpdateVPFLoan(@RequestBody PfLoanUpdateInput[] loan) {
-        return vpfService.updateVpfContribution(loan,true    );
+    public boolean UpdateVPFLoan(@RequestBody PfLoanUpdateInput[] loan) throws RecordNotFoundException {
+        List<VpfContributionEntity> lstVPF = vpfService.updateVpfContribution(loan, true);
 
+        for (VpfContributionEntity entity : lstVPF) {
+            PFAccountEntity account = paService.getPFAccountById(entity.getempcode());
+            String subject = "", body = "";
+
+            if (entity.getapproved() == 1) {
+                subject = "VPF Approved";
+                body = "Your VPF has been approved by manager.";
+            } else if (entity.getapproved() == 2) {
+                subject = "VPF Rejected";
+                body = "Your VPF has been rejected by manager.";
+            }
+
+            emailService.sendSimpleMail(account.getEmail(), body, subject);
+        }
+        return true;
     }
 
     @RequestMapping(path = "/hr/update", method = RequestMethod.PUT)
-    public boolean UpdateHrVPFLoan(@RequestBody PfLoanUpdateInput[] loan) {
-        return vpfService.updateVpfContribution(loan, false);
+    public boolean UpdateHrVPFLoan(@RequestBody PfLoanUpdateInput[] loan) throws RecordNotFoundException {
+        List<VpfContributionEntity> lstVPF = vpfService.updateVpfContribution(loan, false);
 
+        for (VpfContributionEntity entity : lstVPF) {
+            PFAccountEntity account = paService.getPFAccountById(entity.getempcode());
+            String subject = "", body = "";
+
+            if (entity.getapproved() == 1) {
+                subject = "VPF Approved";
+                body = "Your VPF has been approved by HR.";
+            } else if (entity.getapproved() == 2) {
+                subject = "VPF Rejected";
+                body = "Your VPF has been rejected by HR.";
+            }
+
+            emailService.sendSimpleMail(account.getEmail(), body, subject);
+        }
+        return true;
     }
 }

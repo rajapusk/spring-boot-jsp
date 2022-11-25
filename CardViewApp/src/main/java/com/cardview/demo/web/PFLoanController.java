@@ -46,19 +46,20 @@ public class PFLoanController {
 	private String targetPath;
 	private String rootDocPath = "C:/Program Files/Apache Software Foundation/Tomcat 8.5/webapps/static/images/";
 	private String docURL = "http://localhost:8080/static/images/";
-	
+
 	@Autowired
 	PFAccountService paService;
 	@Autowired
 	PFLoanService pfService;
 
-	@Autowired private EmailServiceImpl emailService;
+	@Autowired
+	private EmailServiceImpl emailService;
 
 	/**
 	 * This method is used to fetch all employees from the database and set the
 	 * values into the model attribute which will be used by html template to
 	 * populate data.
-	 * 
+	 *
 	 * @param model This attribute is used to set values which will be used in the
 	 *              html template to populate data
 	 * @return String This returns the name of the html page to be displayed.
@@ -76,14 +77,14 @@ public class PFLoanController {
 		}
 
 	}
-	
+
 
 	@RequestMapping(path = "/create", method = RequestMethod.POST)
 	public PFLoanEntity createOrUpdatePFLoan(@RequestBody PFLoanEntity loan) {
 		PFLoanEntity entity = pfService.createOrUpdatePFLoan(loan);
 		try {
 			PFAccountEntity account = paService.getPFAccountById(loan.getempcode());
-			String body = account.getNAME()+" has applied the loan. ";
+			String body = account.getNAME() + " has applied the loan. ";
 			emailService.sendSimpleMail(_managerEmail, body, "Loan Application");
 
 		} catch (Exception e) {
@@ -96,12 +97,12 @@ public class PFLoanController {
 	@RequestMapping(path = "/uploadFile", method = RequestMethod.POST)
 	public PFLoanEntity uploadFile(@RequestParam("pf_loan_doc") MultipartFile file, String id) {
 		try {
-			if(id != null) {
+			if (id != null) {
 				if (!file.isEmpty()) {
 					byte[] bytes = file.getBytes();
 					String filename = file.getOriginalFilename();
 					File newFile = new File(rootDocPath);
-					
+
 					if (!newFile.exists()) {
 						newFile.mkdirs();
 					}
@@ -114,12 +115,12 @@ public class PFLoanController {
 					System.out.println("File saved successfully. " + filePath);
 					stream.flush();
 					stream.close();
-					
+
 					PFLoanEntity entiry = new PFLoanEntity();
-					
+
 					entiry.setid(Long.parseLong(id));
 					entiry.setfileName(fullName);
-					
+
 					return pfService.updateDocs(entiry);
 				}
 			}
@@ -180,9 +181,23 @@ public class PFLoanController {
 	}
 
 	@RequestMapping(path = "/update", method = RequestMethod.PUT)
-	public boolean UpdatePFLoan(@RequestBody PfLoanUpdateInput[] loan) {
-		return pfService.updatePFLoan(loan);
+	public boolean UpdatePFLoan(@RequestBody PfLoanUpdateInput[] loan) throws RecordNotFoundException {
+		List<PFLoanEntity> lstPFAccount = pfService.updatePFLoan(loan);
+		for (PFLoanEntity entity : lstPFAccount) {
+			PFAccountEntity account = paService.getPFAccountById(entity.getempcode());
+			String subject = "", body = "";
 
+			if (entity.getapproved() == 1) {
+				subject = "Loan Approved";
+				body = "Your loan has been approved by manager.";
+			} else if (entity.getapproved() == 2) {
+				subject = "Loan Rejected";
+				body = "Your loan has been rejected by manager.";
+			}
+
+			emailService.sendSimpleMail(account.getEmail(), body, subject);
+		}
+		return true;
 	}
 
 }

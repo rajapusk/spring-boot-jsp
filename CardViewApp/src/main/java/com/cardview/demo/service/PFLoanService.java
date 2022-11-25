@@ -13,6 +13,7 @@ import com.cardview.demo.model.PFLoanEntity;
 
 
 import com.cardview.demo.model.PfLoanUpdateInput;
+import com.cardview.demo.outputModels.PfLoanOutput;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -94,36 +95,22 @@ public class PFLoanService {
 		}
 	}
 	
-	public boolean updatePFLoan(PfLoanUpdateInput[] entityArray) {
+	public List<PFLoanEntity> updatePFLoan(PfLoanUpdateInput[] entityArray) {
+
+		List<PFLoanEntity> result = new ArrayList<PFLoanEntity>();
 		for(PfLoanUpdateInput entity : entityArray) {
 			Optional<PFLoanEntity> employee = repository.findById(entity.id);
 			if (employee.isPresent()) {
 				PFLoanEntity newEntity = employee.get();
-				Optional<PFAccountEntity> acc = accountRepository.findById(newEntity.getempcode());
-				PFAccountEntity account = acc.get();
-			
 				newEntity.setapproved(entity.approved);
 				newEntity.setremarks(newEntity.getremarks() + "; " + entity.remarks);
-				newEntity = repository.save(newEntity);
-				String subject = "", body = "";
-				
-				if(entity.approved == 1)
-				{
-					subject = "Loan Approved";
-					body = "Your loan has been approved by manager.";
-				}
-				else if(entity.approved == 2)
-				{
-					subject = "Loan Rejected";
-					body = "Your loan has been rejected by manager.";
-				}
-				
-				emailService.sendSimpleMail(account.getEmail(), body, subject);
-				
+				repository.save(newEntity);
+
+				result.add(newEntity);
 			}
 		}
 
-		return true;
+		return result;
 	}
 
 	public void sendMail(PFLoanEntity entity)

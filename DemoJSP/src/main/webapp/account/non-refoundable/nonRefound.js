@@ -61,9 +61,9 @@ var PFLoan = function(){
 					align: 'left',
 					columnWidth: '20%'
 				},{
-					bind: 'worksitecode',
+					bind: 'worksiteCode',
 	                type: 'text',
-	                name: 'worksitecode',
+	                name: 'worksiteCode',
 	                label: 'Worksite Code',
 	                disabled: true,
 	                labelPosition: 'top',

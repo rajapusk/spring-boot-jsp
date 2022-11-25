@@ -52,9 +52,9 @@ var PFLoan = function(){
 					align: 'left',
 					columnWidth: '20%'
 				},{
-					bind: 'worksitecode',
+					bind: 'worksiteCode',
 	                type: 'text',
-	                name: 'worksitecode',
+	                name: 'worksiteCode',
 	                label: 'Worksite Code',
 	                disabled: true,
 	                labelPosition: 'top',
@@ -199,6 +199,11 @@ var PFLoan = function(){
 			]
 		},{
 	        type: 'blank',
+	        rowHeight: '10px',
+	        name: 'acceptChk',
+	        columnWidth: '40%'
+	    },{
+	        type: 'blank',
 	        rowHeight: '10px'
 	    },{
 	        columns: [
@@ -257,6 +262,14 @@ var PFLoan = function(){
 				+ '</div>'
 			+ '</div>'
 		);
+		
+		$("#dvRefundablePFLoan").jqxForm('getComponentByName', 'acceptChk')
+		.append(
+			'<div id="chkAceeptVFP">'
+				+ 'Note : VPF Contribution change will be effective from 1st calender day of the month'
+			+'</div>');
+			
+		$('#chkAceeptVFP').jqxCheckBox({ width: 120, height: 25, theme:theme});
 		
 		$('#searchData').on('change', loadEmpDetails);				
 		$("#searchData").jqxInput({ width: '250px', height: '30px', placeHolder: 'Enter the employee code'});

@@ -29,6 +29,7 @@
     	<script type="text/javascript" src="../jqwidgets/jqxnotification.js"></script>
 	    <script type="text/javascript" src="../jqwidgets/jqxfileupload.js"></script>
 	    <script type="text/javascript" src="../jqwidgets/jqxform.js"></script>
+	    <script type="text/javascript" src="../jqwidgets/jqxcheckbox.js"></script>
 	    <script type="text/javascript" src="../common.js"></script>
 	    <script type="text/javascript" src="vpf.js"></script>
 	    <script>	    	

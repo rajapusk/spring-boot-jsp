@@ -10,6 +10,7 @@ import com.cardview.demo.service.EmailServiceImpl;
 import com.cardview.demo.service.PFAccountService;
 import com.cardview.demo.service.VpfService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -18,7 +19,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/vpf")
 public class VpfContributionController {
-    public static String _managerEmail = "parthi.ravi@gmail.com";
+	@Value("${manager.mail}") private String _managerEmail;
     @Autowired
     PFAccountService paService;
     @Autowired

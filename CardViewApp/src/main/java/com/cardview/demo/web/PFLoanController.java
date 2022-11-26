@@ -40,8 +40,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 public class PFLoanController {
 
-	public static String _managerEmail = "parthi.ravi@gmail.com";
-
+	
+	@Value("${manager.mail}") private String _managerEmail;
 	@Value("${spring.project.directory}")
 	private String targetPath;
 	private String rootDocPath = "C:/Program Files/Apache Software Foundation/Tomcat 8.5/webapps/static/images/";

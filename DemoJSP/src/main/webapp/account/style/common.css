@@ -1,0 +1,215 @@
+html, body{
+	margin: 0;
+    padding: 0;
+}
+
+.scEditIcon{
+	height: 100%;
+	cursor: pointer;
+}
+
+.scPhoto img{
+	object-fit: contain;
+    height: 28px;
+}
+
+.scCenterXY{
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 100%;
+	height: 100%;
+}
+
+.scAvatar{
+	width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: #f7f7f7;
+    border: 3px solid #d5d5d5;
+    object-fit: cover;
+}
+
+.scPopup{
+	overflow: hidden;
+}
+
+.scPopup td {
+    padding-top: .5em;
+    padding-bottom: .5em;
+}
+
+.gridcell > .buttonRipple{
+	border: none !important;
+} 
+
+.scGridAvatarIcon{
+	border: 2px solid #ebebeb;
+    width: 24px;
+    height: 24px;
+    margin: auto;
+    border-radius: 50%;
+    margin-top: 4px;
+}
+
+.scGridAvatarIcon .fa{
+	font-size: 14px !important;
+    color: #e3dfdf;
+}
+
+.jqx-input-disabled{
+	font-weight: bold;
+}
+
+.scRefundablePFLoan .scNumberInput input[type="textarea"]{
+	position: relative;
+	padding-left: 34px !important;
+}
+
+.scNumberInput:before{
+	content: '\f156';
+    position: absolute;
+    width: 34px;
+    background: #e3e3e3;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    font: normal normal normal 14px/1 FontAwesome;
+    font-size: 18px;
+    color: #080808;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-bottom-left-radius: 5px;
+    border-top-left-radius: 5px;
+}
+
+.scTitle{
+	font-size: 14px;
+    margin: auto;
+    padding: 0px 0px;
+    position: absolute;
+    top: -10px;
+}
+
+.scTitlePanel{
+	margin: 8px;
+    margin-bottom: 0px;
+    position: relative;
+}
+ 	
+.scSearchBox{
+	width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding-top: 17px;
+}
+ 	
+.searchInput{
+	position: relative;
+	display: flex;
+	justify-content: flex-start;
+	align-items: center;
+	width: 100%;
+}
+ 	
+.scRefundablePFLoan .searchInputField{
+	padding-left: 5px;
+	padding-right: 18px;
+	width: 250px !important
+}
+ 	
+.searchIcon {
+    position: absolute;
+    background: #c7c7c7;
+    width: 30px;
+    height: 34px;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    right: 0px;
+}
+
+.searchIcon::before {
+	content: '';
+    box-sizing: border-box;
+    position: absolute;
+    display: block;
+    width: 12px;
+    height: 12px;
+    top: 9px;
+    left: 9px;
+    border: 2px solid;
+    border-radius: 100%;
+    border-color: #565353;
+}
+
+.searchIcon::after {
+    content: "";
+  	display: block;
+    box-sizing: border-box;
+    position: absolute;
+    border-radius: 3px;
+    width: 2px;
+    height: 5px;
+    background: #565353;
+    transform: rotate(-45deg);
+    top: 18px;
+    left: 20px;
+} 
+
+div.scRefundablePFLoan td[style="width:20%; background: transparent;"] td[style="width:20%; background: transparent;"]
+,div.scRefundablePFLoan td[style="width:40%; background: transparent;"] td[style="width:40%; background: transparent;"]
+{
+	width: 100% !important;
+	padding: 2px 10px;
+}
+
+.scRefundablePFLoan input[type="text"], .scRefundablePFLoan input[type="textarea"]{
+	width: 100% !important;
+	height: 34px !important;
+	border: 1px solid #c9c5c5 !important;
+	border-radius: 5px !important;
+	padding: 5px 10px !important;
+}
+
+div.scRefundablePFLoan > table{
+	background: transparent !important;
+	border: 0px !important;
+}
+
+div.scRefundablePFLoan .jqx-dropdownlist-state-normal-light
+{
+	width: 100% !important;
+}
+
+.scRefundablePFLoan .jqx-max-size{
+	width: 100% !important;
+    height: 30px !important;
+    padding: 1px;
+}
+
+
+.scRefundablePFLoan  .jqx-input{
+	width: 100% !important;
+	height: 34px !important;
+}
+
+.scCenterXY{
+	display: flex;
+	justify-content: center;
+	width: 100%;
+}
+
+.jqx-file-upload-buttons-container{
+	display: none !important;
+}
+
+div.scRefundablePFLoan .jqx-text-area-light, div.scRefundablePFLoan .jqx-text-area-light>div{
+	width: 100% !important;
+}
+
+div.scRefundablePFLoan .jqx-file-upload{
+	margin-top: 30px !important;
+}

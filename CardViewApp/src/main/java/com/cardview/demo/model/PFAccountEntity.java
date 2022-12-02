@@ -255,7 +255,45 @@ public class PFAccountEntity
 		this._RATEOFINTEREST = value;
 	}
 
+	@Column(name="NAMEASPERAADHAAR")
+	private String nameInAadhaar;
+	public String getNameInAadhaar()
+	{
+		return this.nameInAadhaar;
+	}
+	public void setNameInAadhaar(String value)
+	{
+		this.nameInAadhaar = value;
+	}
 
+	@Column(name = "GENDER")
+	private String gender;
+	public String getGender() { return this.gender; }
+	public void setGender(String value) {
+		this.gender = value;
+	}
+
+	@Column(name="PANNO")
+	private String panNo;
+	public String getPanNo()
+	{
+		return this.panNo;
+	}
+	public void setPanNo(String value)
+	{
+		this.panNo = value;
+	}
+
+	@Column(name="PF_NPS_AC_NO")
+	private String pf_nps_ac_no;
+	public String getPf_nps()
+	{
+		return this.pf_nps_ac_no;
+	}
+	public void setPf_nps(String value)
+	{
+		this.pf_nps_ac_no = value;
+	}
 
 	/*
 	 * public pf_account(int EMPCODE_,String NAME_,java.sql.Date DOJ_,int

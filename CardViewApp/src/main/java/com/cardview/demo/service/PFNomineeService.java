@@ -27,7 +27,7 @@ public class PFNomineeService {
         }
     }
 
-    public PFNomineeEntity getVpfContributionById(Long id) throws RecordNotFoundException
+    public PFNomineeEntity getPFNomineeById(Long id) throws RecordNotFoundException
     {
         Optional<PFNomineeEntity> employee = repository.findById(id);
 
@@ -38,7 +38,7 @@ public class PFNomineeService {
         }
     }
 
-    public boolean deleteVpfContributionById(Long id) throws RecordNotFoundException
+    public boolean deletePFNomineeById(Long id) throws RecordNotFoundException
     {
         Optional<PFNomineeEntity> employee = repository.findById(id);
 
@@ -53,7 +53,7 @@ public class PFNomineeService {
 
     public PFNomineeEntity createOrUpdatePFNomineeEntity(PFNomineeEntity entity)
     {
-        if(entity.getid()  == null)
+        if(entity.getid()  == null || entity.getid()  == 0)
         {
             entity = repository.save(entity);
 

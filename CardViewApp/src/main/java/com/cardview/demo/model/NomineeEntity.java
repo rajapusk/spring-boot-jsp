@@ -86,14 +86,14 @@ public class NomineeEntity {
         this.gender = value;
     }
 
-    @Column(name = "Address")
+    @Column(name = "ADDRESS")
     private String address;
     public String getAddress() { return this.address; }
     public void setAddress(String value) {
         this.address = value;
     }
 
-    @Column(name = "Proportion")
+    @Column(name = "PROPORTION")
     private double proportion;
     public double getProportion() { return this.proportion; }
     public void setProportion(double value) {

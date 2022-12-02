@@ -28,7 +28,7 @@ public class NomineeService {
         }
     }
 
-    public NomineeEntity getVpfContributionById(Long id) throws RecordNotFoundException
+    public NomineeEntity getNomineeById(Long id) throws RecordNotFoundException
     {
         Optional<NomineeEntity> employee = repository.findById(id);
 
@@ -52,7 +52,7 @@ public class NomineeService {
 
     }
 
-    public NomineeEntity createOrUpdatePFNomineeEntity(NomineeEntity entity)
+    public NomineeEntity createOrUpdateNomineeEntity(NomineeEntity entity)
     {
         if(entity.getId()  == null)
         {
@@ -85,9 +85,6 @@ public class NomineeService {
             Optional<NomineeEntity> employee = repository.findById(entity.id);
             if (employee.isPresent()) {
                 NomineeEntity newEntity = employee.get();
-
-
-
                 repository.save(newEntity);
 
                 result.add(newEntity);

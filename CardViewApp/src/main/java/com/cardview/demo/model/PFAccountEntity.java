@@ -55,6 +55,17 @@ public class PFAccountEntity
 	{
 		this._DOJ = value;
 	}
+
+	@Column(name="PF_DOJ")
+	private java.sql.Date _pfDOJ;
+	public java.sql.Date getPfDOJ()
+	{
+		return this._pfDOJ;
+	}
+	public void setPfDOJ(java.sql.Date value)
+	{
+		this._pfDOJ = value;
+	}
 	
 	@Column(name="DOB")
 	private java.sql.Date _DOB;

@@ -28,6 +28,59 @@ public class PFNomineeController {
     @Autowired
     private EmailServiceImpl emailService;
 
+
+
+    @GetMapping("/nominee/{id}")
+    public PfNomineeOutput getNomineeByEmpCode(@PathVariable("id") Long id) {
+        try {
+            PFAccountEntity account =  paService.getPFAccountById(id);
+            List<PFNomineeEntity> lstPfNomineeEntities = pfNomineeService.getAllPFNominee();
+            for (PFNomineeEntity entity : lstPfNomineeEntities) {
+                if(entity.getempcode() == id )
+                {
+                    PfNomineeOutput output = new PfNomineeOutput();
+                    output.id = entity.getid();
+                    output.doj = account.getDOJ();
+                    output.name  = account.getNAME();
+                    output.nameInAadhaar = account.getNameInAadhaar();
+                    output.gender = account.getGender();
+                    output.dor = account.getDOR();
+                    output.pfDoj = account.getPfDOJ();
+                    output.panNo = account.getPanNo();
+                    output.pf_nps_AcNo = account.getPf_nps();
+                    output.submitted = entity.getsubmitted();
+                    output.approved = entity.getapproved();
+                    output.hrApproved = entity.getHRApproved();
+                    output.nominees = new ArrayList<>();
+                    List<NomineeEntity> nomineeEntities = nomineeService.getAllNominee();
+                    for (NomineeEntity nominee : nomineeEntities)
+                    {
+                        if(nominee.getIsDeleted() == false && nominee.getPfNomineeId() == entity.getid()){
+                            NomineeInput input = new NomineeInput();
+                            input.id = nominee.getId();
+                            input.dob = nominee.getDOB();
+                            input.pfNominee_id = nominee.getPfNomineeId();
+                            input.address = nominee.getAddress();
+                            input.gender = nominee.getGender();
+                            input.guardiansName = nominee.getGuardiansName();
+                            input.isMinor = nominee.getIsMinor();
+                            input.isdeleted = false;
+                            input.name = nominee.getName();
+                            input.nomineeAadhaarNo = nominee.getNomineeAadhaarNo();
+                            input.proportion = nominee.getProportion();
+                            input.relation = nominee.getRelation();
+                            output.nominees.add(input);
+                        }
+                    }
+                    return output;
+                }
+            }
+            return null;
+        } catch (Exception ex) {
+            return null;
+        }
+    }
+
     @GetMapping("/get/{id}")
     public PfNomineeOutput getEmployeeById(@PathVariable("id") Long id) {
         try {

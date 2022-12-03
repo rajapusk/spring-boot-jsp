@@ -16,7 +16,7 @@ public class PFNomineeService {
     @Autowired
     PFNomineeRepository repository;
 
-    public List<PFNomineeEntity> getAllVpf()
+    public List<PFNomineeEntity> getAllPFNominee()
     {
         List<PFNomineeEntity> result = (List<PFNomineeEntity>) repository.findAll();
 

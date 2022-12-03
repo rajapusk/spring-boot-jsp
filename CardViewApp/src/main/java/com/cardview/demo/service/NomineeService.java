@@ -17,7 +17,7 @@ public class NomineeService {
     @Autowired
     NomineeRepository repository;
 
-    public List<NomineeEntity> getAllVpf()
+    public List<NomineeEntity> getAllNominee()
     {
         List<NomineeEntity> result = (List<NomineeEntity>) repository.findAll();
 

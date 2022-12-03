@@ -92,6 +92,10 @@ var CommonMethod = function(theme){
 				}
 				else{					
 					input.val(config[row.bind]);
+					
+					if(row.format){
+						_common.formatter(input, row, config[row.bind]);
+					}
 				}
 			}
 		}
@@ -113,6 +117,149 @@ var CommonMethod = function(theme){
 			}
 	   	}
 	};
+	
+	_common.getRow = function(rowData){
+		var rowHTML = '<tr>\n';
+		
+		if(rowData != null){
+			for(var sKey in rowData){
+				var row = rowData[sKey];				
+				
+				if(row != null && row.label != null){
+					rowHTML += '<td align="left">' + row.label + '</td>\n'
+						+ '<td style="display: flex;" align="left">:&nbsp;&nbsp;';
+						
+					if(row.type == 'option'){
+						rowHTML += '<div id="' + row.name + '"></div>';
+					}
+					else{
+						rowHTML += '<input id="' + row.name + '" /></td>\n';
+					}						
+				}
+			}
+		}
+		
+		
+		return (rowHTML + '</tr>\n');
+	}
+	
+	_common.renderPopup = function(template, dvParent){
+		var sHTML = '';
+		
+		if(template != null){
+			var rowId = 0;
+			
+			sHTML = '<div>' + template.title + '</div>\n'
+				+ '<div class="scPopup">\n'
+				+ '<table style="width: 100%; padding: 0px 15px;">\n';
+				
+			if(template.showAvatar){
+				sHTML += '<tr>\n'
+                    + '<td colspan="4" align="center"><img id="' + template.avatatId + '" class="scAvatar"/></td>\n'
+                + '</tr>\n';
+			}
+			
+			var tr = [];
+			template.rows = [];
+			
+			for(var sKey in template.column){
+				let column = template.column[sKey];
+				
+				if(rowId == template.colSpan){
+					rowId = 0;
+					template.rows.push(_common.clone(tr));
+					tr.length = 0;
+				}
+				
+				tr.push(column);
+				rowId++;
+			}
+			
+			if(tr.length > 0){
+				template.rows.push(_common.clone(tr));
+				tr.length = 0;
+			}
+			
+			for(var sKey in template.rows){
+				let row = template.rows[sKey];
+				
+				sHTML += _common.getRow(row);
+			}
+			
+			if(template.buttons != null){
+				sHTML += '<tr style="height: 50px;">\n'
+                    + '<td colspan="4" style="padding-top: 20px; padding-bottom: 20px;" align="center">\n';
+	                    	
+				for(var sKey in template.buttons){
+					let button = template.buttons[sKey];
+					
+					sHTML += '<input style="margin-right: 5px; width: 100px;" type="button" id="' + button.name + '" value="' + button.label + '" />\n';
+				}
+			
+				sHTML +=  '</td>\n</tr>\n';
+			}
+			
+			sHTML += '</table>\n</div>';
+		}
+		
+		$("#" + dvParent).append(sHTML);		
+	};
+	
+	_common.clone = function(json){
+		return JSON.parse(JSON.stringify(json));
+	};
+	
+	_common.renderInputs = function(dataModel, popupConfig){
+		for(var sKey in popupConfig){
+			var row = popupConfig[sKey];
+			
+			if(dataModel == null || dataModel == {}){
+				if(row.type == 'input'){
+					$("#" + row.name).jqxInput({ theme: theme, disabled: row.disabled });
+				}else if(row.type == 'date'){
+					$("#" + row.name).jqxDateTimeInput({theme: theme});
+				}else if(row.type == 'option') {
+					$("#" + row.name).jqxDropDownList({theme: theme, source: row.source});
+				}
+			}
+			else{
+				$("#" + row.name).val(dataModel[row.bind]);
+			}
+		}
+	}
+	
+	_common.getModel = function(popupConfig){
+		var dataModel = {};
+		
+		for(var sKey in popupConfig){
+			var row = popupConfig[sKey];
+			
+			dataModel[row.bind] = $("#" + row.name).val();
+		}
+		
+		return dataModel;
+	}
+	
+	_common.formatter = function(input, row, val){		
+		if(val != null && val != ''){
+			var r = /\d{4}/g;			
+			var results = val.match(r);
+			
+			if(results != null){
+				var final_cc_str = results.join(row.format.formatStr);
+
+				input.val(final_cc_str);
+			}
+		}
+	}
+	
+	_common.dateFormat = function(val, formatText){		
+		if(val != null && val != ''){
+			return $.jqx.dataFormat.formatdate(val, formatText);
+		}
+		
+		return '';
+	}
 	
 	init();
 	

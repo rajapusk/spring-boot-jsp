@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title id='Description'>PF Account</title>
+		<title>VPF Account</title>
 	    <%@include file="../header.jsp" %>
 	    <script type="text/javascript" src="vpf.js"></script>
 	    <script>

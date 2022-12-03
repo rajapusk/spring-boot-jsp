@@ -196,4 +196,38 @@ public class PFNomineeController {
             return null;
         }
     }
+
+    @GetMapping("/hr")
+    public List<PfNomineeOutput> getHrAllPfNominee() {
+        try {
+            List<PfNomineeOutput> result = new ArrayList<PfNomineeOutput>();
+            List<PFAccountEntity> listAllAccount = paService.getAllPFAccount();
+            List<PFNomineeEntity> lstPFNominee = pfNomineeService.getAllPFNominee();
+
+            for (PFAccountEntity account : listAllAccount) {
+                for (PFNomineeEntity entity : lstPFNominee) {
+                    if (account.getEMPCODE() == entity.getempcode() && entity.getapproved() == 1 &&  entity.getHRApproved() == 0) {
+                        PfNomineeOutput output = new PfNomineeOutput();
+                        output.id = entity.getid();
+                        output.doj = account.getDOJ();
+                        output.name  = account.getNAME();
+                        output.nameInAadhaar = account.getNameInAadhaar();
+                        output.gender = account.getGender();
+                        output.dor = account.getDOR();
+                        output.pfDoj = account.getPfDOJ();
+                        output.panNo = account.getPanNo();
+                        output.pf_nps_AcNo = account.getPf_nps();
+                        output.submitted = entity.getsubmitted();
+                        output.approved = entity.getapproved();
+                        output.hrApproved = entity.getHRApproved();
+                        result.add(output);
+                    }
+                }
+            }
+            return result;
+            // return pfService.getAllPFLoan();
+        } catch (Exception ex) {
+            return null;
+        }
+    }
 }

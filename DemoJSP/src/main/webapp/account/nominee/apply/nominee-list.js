@@ -9,13 +9,13 @@ var NomineeList = function(){
 	var totalShare =  0;
 	var Common = new CommonMethod(theme);
 	var popupConfig = [
-		{name: 'winName', type: 'input', bind: 'name', label: 'Name'},		
-		{name: 'winRelation', type: 'option', bind: 'relation', label: 'Relation', source: ['Father', 'Mother', 'Spouse', 'Child1', 'Child2', 'Child3', 'Brother1', 'Brother2', 'Sister1', 'Sister2']},
-		{name: 'winNomineeAadhaarNo', type: 'input', bind: 'nomineeAadhaarNo', label: 'Nominee Aadhaar No'},
-		{name: 'winDOB', type: 'date', bind: 'dob', label: 'DOB'},
-		{name: 'winGender', type: 'option', bind: 'gender', label: 'Gender', source: ['Male', 'Female', 'Others']},
-		{name: 'winAddress', type: 'input', bind: 'address', label: 'Address'},
-		{name: 'winProportion', type: 'input', bind: 'proportion', label: 'Proportion / Share %'},
+		{name: 'winName', type: 'input', bind: 'name', label: 'Name', required: true},		
+		{name: 'winRelation', type: 'option', bind: 'relation', label: 'Relation', source: ['Father', 'Mother', 'Spouse', 'Child1', 'Child2', 'Child3', 'Brother1', 'Brother2', 'Sister1', 'Sister2'], required: true},
+		{name: 'winNomineeAadhaarNo', type: 'input', bind: 'nomineeAadhaarNo', label: 'Nominee Aadhaar No', required: true},
+		{name: 'winDOB', type: 'date', bind: 'dob', label: 'DOB', required: true},
+		{name: 'winGender', type: 'ratio', bind: 'gender', label: 'Gender', source: [{label: 'Male', name: 'optMale'}, {label: 'Female', name: 'optFemale'}]},
+		{name: 'winAddress', type: 'input', bind: 'address', label: 'Address', required: true},
+		{name: 'winProportion', type: 'input', bind: 'proportion', label: 'Proportion / Share %', required: true},
 		{name: 'winTotalShare', type: 'input', bind: 'totalShare', label: 'Total Share %', disabled: true}
 	];
 	
@@ -77,7 +77,9 @@ var NomineeList = function(){
 			if(event.args.datafield == 'Edit'){
 				editRowId = event.args.rowindex;
 				
-				totalShare -= event.args.row.bounddata.totalShare;
+				totalShare = (totalShare - event.args.row.bounddata.proportion);
+				
+				event.args.row.bounddata.totalShare = totalShare;
 	            openPopup(event.args.row.bounddata);
 			}
 		});
@@ -110,7 +112,7 @@ var NomineeList = function(){
         
         $("#btnAddNominee").click(function () {
 			editRowId = null;
-            openPopup({name: 'Test', relation: 'Spouse', nomineeAadhaarNo: '112233445566', gender: 'Female', address: 'Test', proportion: 45, totalShare: totalShare});
+            openPopup({totalShare: totalShare});
         });
 	};
 	
@@ -128,6 +130,8 @@ var NomineeList = function(){
 		Common.renderInputs(null, popupConfig);
         $("#winSave").jqxButton({ theme: theme, width: 100 });
         $("#btnSubmit").jqxButton({ theme: theme, width: 128, disabled: true });
+        $("#optMale").jqxRadioButton({ theme: theme, width: 90, checked : true });
+        $("#optFemale").jqxRadioButton({ theme: theme, width: 90 });           
         $("#winProportion").on('change', function (event) 
 		{
 		    var value = event.args.value;
@@ -142,22 +146,33 @@ var NomineeList = function(){
 		});
 		
         $("#winSave").click(function () {
-            let dataRecord = Common.getModel(popupConfig);
+            let config = Common.getModel(popupConfig);
             
-            if(!isNaN(dataRecord.totalShare)){
-				totalShare = parseInt(dataRecord.totalShare);
+            if(config.valid){
+				let dataRecord = config.dataModel;
+	            
+	            if(!isNaN(dataRecord.totalShare)){
+					totalShare = parseInt(dataRecord.totalShare);
+				}
+	            
+	            var male = $("#optMale").jqxRadioButton('check');
+	            dataRecord.gender = (male ? 'Male' : 'Female');
+	            
+	            if(editRowId != null){
+					selectedRows[editRowId] = dataRecord;
+					$('#dvPFAccount').jqxGrid('updaterow', editRowId, dataRecord);
+				}
+				else{
+					selectedRows.push(dataRecord);
+					$('#dvPFAccount').jqxGrid('addrow', null, dataRecord);
+				}
+	            
+	            $("#btnSubmit").jqxButton({ disabled: (totalShare == 100 ? false : true) });
+	            $("#popupWindow").jqxWindow('hide'); 
 			}
-            
-            if(editRowId != null){
-				selectedRows[editRowId] = dataRecord;
+            else{
+				Common.showToast({message: "Please fill the required fields."});
 			}
-			else{
-				selectedRows.push(dataRecord);
-			}
-            
-            $("#btnSubmit").jqxButton({ disabled: false });
-            $('#dvPFAccount').jqxGrid('addrow', editRowId, dataRecord);
-            $("#popupWindow").jqxWindow('hide'); 
         });   
         
         $("#btnSubmit").click(function () {

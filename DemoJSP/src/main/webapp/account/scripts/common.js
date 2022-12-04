@@ -126,11 +126,17 @@ var CommonMethod = function(theme){
 				var row = rowData[sKey];				
 				
 				if(row != null && row.label != null){
-					rowHTML += '<td align="left">' + row.label + '</td>\n'
+					rowHTML += '<td align="left">' + (row.required ? '<sup style="color: red;">*</sup>' : '') + row.label + '</td>\n'
 						+ '<td style="display: flex;" align="left">:&nbsp;&nbsp;';
 						
 					if(row.type == 'option'){
 						rowHTML += '<div id="' + row.name + '"></div>';
+					}else if(row.type == 'ratio'){						
+						for(var src in row.source){
+							var source = row.source[src];
+							
+							rowHTML += '<div id="' + source.name + '">' + source.label + '</div>';
+						}
 					}
 					else{
 						rowHTML += '<input id="' + row.name + '" /></td>\n';
@@ -138,7 +144,6 @@ var CommonMethod = function(theme){
 				}
 			}
 		}
-		
 		
 		return (rowHTML + '</tr>\n');
 	}
@@ -223,21 +228,34 @@ var CommonMethod = function(theme){
 				}
 			}
 			else{
-				$("#" + row.name).val(dataModel[row.bind]);
+				if(dataModel[row.bind] == null){
+					if(row.type == 'option') {
+						$("#" + row.name).jqxDropDownList('clearSelection'); 
+					} else {
+						$("#" + row.name).val('');
+					}
+				}
+				else{
+					$("#" + row.name).val(dataModel[row.bind]);
+				}
 			}
 		}
 	}
 	
 	_common.getModel = function(popupConfig){
-		var dataModel = {};
+		var config = {dataModel: {}, valid: true};
 		
 		for(var sKey in popupConfig){
 			var row = popupConfig[sKey];
 			
-			dataModel[row.bind] = $("#" + row.name).val();
+			config.dataModel[row.bind] = $("#" + row.name).val();
+			
+			if(row.required && (config.dataModel[row.bind] == null || config.dataModel[row.bind] == '')){
+				config.valid = false;
+			}
 		}
 		
-		return dataModel;
+		return config;
 	}
 	
 	_common.formatter = function(input, row, val){		

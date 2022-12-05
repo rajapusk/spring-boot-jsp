@@ -150,7 +150,7 @@ var PFLoan = function(){
 					bind: 'prevNetSalary',
 	                type: 'number',
 	                name: 'prevNetSalary',
-	                label: 'Prev Net Salary',
+	                label: 'Net Salary',
 	                disabled: true,
 	                labelPosition: 'top',
 	                labelWidth: labelWidth + 'px',
@@ -162,6 +162,7 @@ var PFLoan = function(){
 	                type: 'number',
 	                name: 'netSalPer',
 	                label: 'Net Salary Percetage',
+	                icon: 'percentage',
 	                disabled: true,
 	                labelPosition: 'top',
 	                labelWidth: labelWidth + 'px',
@@ -231,22 +232,14 @@ var PFLoan = function(){
 					columnWidth: '20%'
 				},{
 			        type: 'blank',
+			        name: 'fileUpload',
 			        rowHeight: '75px',
-			        columnWidth: '20%'
-			    },{
-	                type: 'blank',
-			        rowHeight: '75px',
-			        columnWidth: '20%'
-	            }
+			        columnWidth: '40%'
+			    }
 			]
 		},{
 			columns: [
 				{
-			        type: 'blank',
-			        name: 'fileUpload',
-			        rowHeight: '75px',
-			        columnWidth: '40%'
-			    },{
 	                bind: 'REMARKS',
 	                type: 'textArea',
 	                name: 'REMARKS',
@@ -255,7 +248,7 @@ var PFLoan = function(){
 	                labelWidth: labelWidth + 'px',
 	                width: '100%',
 	                align: 'left',
-					columnWidth: '20%'
+					columnWidth: '40%'
 	            }
 			]
 		},{

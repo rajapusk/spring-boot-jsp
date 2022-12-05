@@ -177,7 +177,8 @@ var NomineeApply = function(){
 					formData.dob = new Date(formData.dob);
 					formData.doj = new Date(formData.doj);
 					formData.dor = new Date(formData.dor);
-					formData.nomineeId = 7;
+					formData.pfDOJ = new Date(formData.pfDOJ);
+					
 					
 					formData.age = Common.dateDiff(formData.dob, new Date()).year;
 					formData.present_EXPERIENCE = Common.dateDiff(formData.doj, new Date()).year;

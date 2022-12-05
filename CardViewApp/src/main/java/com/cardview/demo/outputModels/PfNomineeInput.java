@@ -6,7 +6,7 @@ import java.util.List;
 
 public class PfNomineeInput {
     public Long id;
-    public long empCode;
+    public long empcode;
     public byte approved;
     public byte hrApproved;
     public byte submitted;

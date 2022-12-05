@@ -3,6 +3,7 @@ var NomineeList = function(){
 	//var HOST = window.location.host;
 	var selectedRows = [];
 	var parent = null;
+	var nomineeData = {};
 	var formData = {};
 	var theme = 'light';
 	var editRowId = -1;
@@ -12,7 +13,7 @@ var NomineeList = function(){
 		{name: 'winName', type: 'input', bind: 'name', label: 'Name', required: true},		
 		{name: 'winRelation', type: 'option', bind: 'relation', label: 'Relation', source: ['Father', 'Mother', 'Spouse', 'Child1', 'Child2', 'Child3', 'Brother1', 'Brother2', 'Sister1', 'Sister2'], required: true},
 		{name: 'winNomineeAadhaarNo', type: 'input', bind: 'nomineeAadhaarNo', label: 'Nominee Aadhaar No', required: true},
-		{name: 'winDOB', type: 'date', bind: 'dob', label: 'DOB', required: true},
+		{name: 'winDOB', type: 'date', bind: 'dobOBJ', label: 'DOB', required: true},
 		{name: 'winGender', type: 'ratio', bind: 'gender', label: 'Gender', source: [{label: 'Male', name: 'optMale'}, {label: 'Female', name: 'optFemale'}]},
 		{name: 'winAddress', type: 'input', bind: 'address', label: 'Address', required: true},
 		{name: 'winProportion', type: 'input', bind: 'proportion', label: 'Proportion / Share %', required: true},
@@ -47,7 +48,7 @@ var NomineeList = function(){
       { text: 'Name', datafield: 'name', editable: false },
       { text: 'Relation', datafield: 'relation', width: 140, editable: false, cellsalign: 'right' },
       { text: 'Nominee Aadhaar No', datafield: 'nomineeAadhaarNo', editable: false, width: 180, cellsalign: 'left'},
-      { text: 'DOB', datafield: 'dob', editable: false, width: 100, cellsalign: 'left'},
+      { text: 'DOB', datafield: 'dob', editable: false, width: 100, cellsalign: 'left' },
       { text: 'Gender', datafield: 'gender', width: 100, editable: false, cellsalign: 'right' },
       { text: 'Address', datafield: 'address', editable: false, width: 130, cellsalign: 'right' },
       { text: 'Proportion / Share %', datafield: 'proportion', editable: false, width: 150, cellsalign: 'left'},
@@ -76,11 +77,12 @@ var NomineeList = function(){
 		{
 			if(event.args.datafield == 'Edit'){
 				editRowId = event.args.rowindex;
+				var bounddata = event.args.row.bounddata;
 				
-				totalShare = (totalShare - event.args.row.bounddata.proportion);
-				
-				event.args.row.bounddata.totalShare = totalShare;
-	            openPopup(event.args.row.bounddata);
+				totalShare = (totalShare - bounddata.proportion);
+				bounddata.dobOBJ = new Date(bounddata.dob);
+				bounddata.totalShare = totalShare;
+	            openPopup(bounddata);
 			}
 		});
 		
@@ -157,7 +159,9 @@ var NomineeList = function(){
 	            
 	            var male = $("#optMale").jqxRadioButton('check');
 	            dataRecord.gender = (male ? 'Male' : 'Female');
-	            
+	            dataRecord.dobOBJ = $('#winDOB').jqxDateTimeInput('getDate');
+				dataRecord.dob = Common.dateFormat(dataRecord.dobOBJ, 'yyyy-MM-dd');
+				
 	            if(editRowId != null){
 					selectedRows[editRowId] = dataRecord;
 					$('#dvPFAccount').jqxGrid('updaterow', editRowId, dataRecord);
@@ -197,10 +201,11 @@ var NomineeList = function(){
 			for(var sKey in nominees){
 				let nominee = nominees[sKey];
 				
-				nominee.dob = $('#winDOB').jqxDateTimeInput('getDate');
-				nominee.dob = Common.dateFormat(nominee.dob, 'yyyy-MM-dd');
+				nominee.dobOBJ = $('#winDOB').jqxDateTimeInput('getDate');
+				nominee.dob = Common.dateFormat(nominee.dobOBJ, 'yyyy-MM-dd');
 			}
 			
+			postData.id = (nomineeData != null ? nomineeData.id : null);
 			postData.submitted = 1;
 			postData.approved = 0;
 			postData.hrApproved = 0;
@@ -225,14 +230,24 @@ var NomineeList = function(){
 	}
 	
 	var loadData = function(){
-		if(formData != null && formData.nomineeId > 0){
+		if(formData != null && formData.empcode != null){
 			$.ajax({
 				type: 'GET',
-				url: HOST + '/pfnominee/get/' + formData.nomineeId,
+				url: HOST + '/pfnominee/nominee/' + formData.empcode,
 				contentType: "application/json; charset=utf-8",
 				success: function(result){
-					if(result != null && result != ''){
-						source.localdata = result;
+					if(result != null && result != '' && result.nominees != null && result.nominees.length > 0){
+						nomineeData = result;
+						source.localdata = result.nominees;
+						totalShare = 0;
+						
+						for(var sKey in result.nominees){
+							var nominee = result.nominees[sKey];
+							
+							nominee.dobOBJ = new Date(nominee.dob);
+							totalShare += parseInt(nominee.proportion);
+						}
+						
 						$("#dvPFAccount").jqxGrid('updatebounddata', 'cells');
 					}
 				}

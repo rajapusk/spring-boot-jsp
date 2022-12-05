@@ -85,6 +85,10 @@ html, body{
     border-top-left-radius: 5px;
 }
 
+.scPercentageInput:before{
+	content: '\f295' !important;
+}
+
 .scTitle{
 	font-size: 14px;
     margin: auto;

@@ -135,7 +135,7 @@ public class PFNomineeController {
         entity.setapproved(input.approved);
         entity.setHRApproved(input.hrApproved);
         entity.setid(input.id);
-        entity.setempcode(input.empCode);
+        entity.setempcode(input.empcode);
 
         PFNomineeEntity dbEntity = pfNomineeService.createOrUpdatePFNomineeEntity(entity);
 
@@ -158,7 +158,7 @@ public class PFNomineeController {
         }
 
         try {
-            PFAccountEntity account = paService.getPFAccountById(input.empCode);
+            PFAccountEntity account = paService.getPFAccountById(input.empcode);
             String body = account.getNAME() + " has applied the Pf Nominee. ";
             emailService.sendSimpleMail(_managerEmail, body, "Pf Nominee Application");
 

@@ -56,6 +56,10 @@ var CommonMethod = function(theme){
 					}else if(row.type == 'number'){
 						input.jqxNumberInput({disabled: true, theme: theme});
 						input.addClass("scNumberInput");
+						
+						if(row.icon == 'percentage'){
+							input.addClass("scPercentageInput");
+						}
 					}else if(row.type == 'option'){
 						input.jqxDropDownList({disabled: true, theme: theme});
 					}
@@ -63,6 +67,12 @@ var CommonMethod = function(theme){
 				else{
 					if(row.type == 'number'){
 						input.addClass("scNumberInput");
+						
+						console.log(row)
+						
+						if(row.icon == 'percentage'){
+							input.addClass("scPercentageInput");
+						}
 					}
 				}
 			}

@@ -17,7 +17,9 @@ var NomineeList = function(){
 		{name: 'winGender', type: 'ratio', bind: 'gender', label: 'Gender', source: [{label: 'Male', name: 'optMale'}, {label: 'Female', name: 'optFemale'}]},
 		{name: 'winAddress', type: 'input', bind: 'address', label: 'Address', required: true},
 		{name: 'winProportion', type: 'input', bind: 'proportion', label: 'Proportion / Share %', required: true},
-		{name: 'winTotalShare', type: 'input', bind: 'totalShare', label: 'Total Share %', disabled: true}
+		{name: 'winTotalShare', type: 'input', bind: 'totalShare', label: 'Total Share %', disabled: true},
+		{name: 'winGuardianName', type: 'input', bind: 'guardiansName', label: 'Guardian Name', disabled: true},
+		{name: 'winGuardianAadhaarNo', type: 'input', bind: 'guardiansAadhaarNo', label: 'Guardian Aadhaar No', disabled: true}
 	];
 	
 	var source = {
@@ -162,8 +164,13 @@ var NomineeList = function(){
 	            dataRecord.dobOBJ = $('#winDOB').jqxDateTimeInput('getDate');
 				dataRecord.dob = Common.dateFormat(dataRecord.dobOBJ, 'yyyy-MM-dd');
 				
+				if(dataRecord.dobOBJ != null){
+					var age = Common.dateDiff(dataRecord.dobOBJ, new Date()).year;
+		 			dataRecord.isMinor = (age < 18 ? 1 : 0);
+				}
+			
 	            if(editRowId != null){
-					selectedRows[editRowId] = dataRecord;
+					Common.updateModel(dataRecord, selectedRows[editRowId]);
 					$('#dvPFAccount').jqxGrid('updaterow', editRowId, dataRecord);
 				}
 				else{
@@ -181,7 +188,23 @@ var NomineeList = function(){
         
         $("#btnSubmit").click(function () {
             submit(selectedRows);
-        });   
+        }); 
+        
+        $('#winDOB').on('change', function (event) 
+		{  
+		    var jsDate = event.args.date; 
+		 	var age = Common.dateDiff(jsDate, new Date()).year;
+		 	
+		 	if(age < 18){
+				$('#winGuardianName').jqxInput({disabled: false});
+				$('#winGuardianAadhaarNo').jqxInput({disabled: false});
+			} else {
+				$('#winGuardianName').val('');
+				$('#winGuardianAadhaarNo').val('');
+				$('#winGuardianName').jqxInput({disabled: true});
+				$('#winGuardianAadhaarNo').jqxInput({disabled: true});
+			}
+		});   
 	};
 	
 	var buttonAddAction = function(value){
@@ -248,6 +271,7 @@ var NomineeList = function(){
 							totalShare += parseInt(nominee.proportion);
 						}
 						
+						selectedRows = result.nominees;
 						$("#dvPFAccount").jqxGrid('updatebounddata', 'cells');
 					}
 				}
@@ -264,10 +288,13 @@ var NomineeList = function(){
 	
 	var resetForm = function(){
 		formData = {};
-		source.localdata = result;
+		source.localdata = [];
 		$("#dvPFAccount").jqxGrid('updatebounddata', 'cells');
 		buttonAddAction();
-		parent.resetForm();
+		
+		if(parent != null){
+			parent.reset();
+		}
 	}
 	
 	this.init = function(){

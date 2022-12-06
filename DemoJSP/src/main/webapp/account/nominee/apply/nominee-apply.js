@@ -8,7 +8,8 @@ var NomineeApply = function(){
 	var labelWidth = 180;
 	var controlWidth = ((formWidth / 2) - labelWidth);
 	var pgList = new NomineeList();
-		
+	var $this = this;
+	
 	var jqxFormTmp = [
 		{
 	        type: 'blank',
@@ -153,20 +154,10 @@ var NomineeApply = function(){
 				
 		$('#searchData').on('change', loadEmpDetails);				
 		$("#searchData").jqxInput({ width: '250px', height: '30px', placeHolder: 'Enter the employee code'});
-		
-		/*	
-		$("#dvRefundablePFLoan").jqxForm('getComponentByName', 'saveDraft').on('click', function(event){
-			submitLoan('DRAFT');
-		});
-		
-		$("#dvRefundablePFLoan").jqxForm('getComponentByName', 'saveSubmit').on('click', function(event){
-			submitLoan('SUBMIT');
-		});*/
 	};
 	
 	var loadEmpDetails = function(){
 		var empCode = $("#searchData").jqxInput('val');
-		var $this = this;
 		
 		if(empCode != null && empCode != ''){
 			var sURL = HOST + '/pfaccount/get/' + empCode
@@ -206,6 +197,10 @@ var NomineeApply = function(){
 	var calculateAmount = function(){
 		Common.loopInput(jqxFormTmp, 'dvRefundablePFLoan',  Common.updateValue, formData);
 	};
+	
+	this.reset = function(){
+		resetForm();
+	}
 
 	this.init = function(){	
 	    $('#dvRefundablePFLoan').jqxForm({

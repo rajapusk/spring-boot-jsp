@@ -289,6 +289,18 @@ var CommonMethod = function(theme){
 		return '';
 	}
 	
+	_common.updateModel = function(dataModel, nominee){		
+		if(dataModel != null && nominee != null){
+			for(var sKey in dataModel){
+				var value = dataModel[sKey];
+				
+				if(value != null){
+					nominee[sKey] = value;
+				}
+			}
+		}
+	}
+	
 	init();
 	
 	return _common;

@@ -208,6 +208,17 @@ var PFLoan = function(){
 					align: 'left',
 					columnWidth: '20%'
 				},{
+					bind: 'pfTotalBalance',
+	                type: 'number',
+	                name: 'pfTotalBalance',
+	                disabled: true,
+	                labelPosition: 'top',
+	                label: 'PF Total balance',
+	                labelWidth: labelWidth + 'px',
+	                width: controlWidth + 'px',
+					align: 'left',
+					columnWidth: '20%'
+				},{
 					bind: 'eligibleAmount',
 	                type: 'number',
 	                name: 'eligibleAmount',
@@ -240,7 +251,11 @@ var PFLoan = function(){
 	                width: controlWidth + 'px',
 					align: 'left',
 					columnWidth: '20%'
-				},{
+				}
+			]
+		},{
+			columns: [
+				{
 					bind: 'NOOFEMI',
 	                type: 'option',
 	                name: 'NOOFEMI',
@@ -257,11 +272,7 @@ var PFLoan = function(){
 	                ],
 					align: 'left',
 					columnWidth: '20%'
-				}
-			]
-		},{
-			columns: [
-				{
+				},{
 					bind: 'EMIAMOUNT',
 	                type: 'number',
 	                label: 'EMI Amount',
@@ -299,7 +310,7 @@ var PFLoan = function(){
 			        type: 'blank',
 			        name: 'fileUpload',
 			        rowHeight: '75px',
-			        columnWidth: '40%'
+			        columnWidth: '20%'
 			    }
 			]
 		},{
@@ -457,6 +468,7 @@ var PFLoan = function(){
 					formData.age = Common.dateDiff(formData.dob, new Date()).year;
 					formData.present_EXPERIENCE = Common.dateDiff(formData.doj, new Date()).year;
 					formData.service_LEFT = Common.dateDiff(new Date(), formData.dor).year;
+					formData.pfTotalBalance = (formData.pf_BALANCE + formData.interest);
 					
 					formData.NOOFEMI = defaultEMI;
 					formData.advanceType = defaultAdvanceType;					

@@ -40,14 +40,7 @@ var VPFManagerApproval = function(){
     };
                 
 	var columns =  [
-	  {
-          text: '#', sortable: false, filterable: false, editable: false,
-          groupable: false, draggable: false, resizable: false, cellsalign: 'center',
-          datafield: '', columntype: 'number', width: 50,
-          cellsrenderer: function (row, column, value) {
-              return "<div style='margin:4px;'>" + (value + 1) + "</div>";
-          }
-      },       
+	  Common.snoCell(),     
       { text: 'EMP Code', datafield: 'empcode', width: 90, editable: false },
       { text: 'Name', datafield: 'name', editable: false },
       { text: 'Monthly Salary', datafield: 'monthlySalary', width: 100, editable: false, cellsalign: 'right' },
@@ -59,11 +52,7 @@ var VPFManagerApproval = function(){
       { text: 'New Net Salary Percetage', datafield: 'newNetSalaryPercentage', editable: false, width: 100, cellsalign: 'left'},
       { text: 'Approved', datafield: 'approved', width: 70, threestatecheckbox: true, columntype: 'checkbox', editable: true},
       { text: 'Remarks', datafield: 'REMARKS', width: 150, editable: false, cellsalign: 'left'},
-      
-      { text: 'Action', datafield: 'Edit',  editable: false, width: 60, cellsrenderer: function () {
-             return "<div class='scCenterXY scEditIcon'><span class='fa fa-pencil'></span></div>";
-          }
-      }
+      Common.iconCell({icon: 'fa-pencil', text: 'Action', datafield: 'Edit', width: 60}),
     ];    
     
 	var renderGrid = function(){

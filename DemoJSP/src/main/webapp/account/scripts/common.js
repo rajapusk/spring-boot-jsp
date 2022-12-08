@@ -301,6 +301,68 @@ var CommonMethod = function(theme){
 		}
 	}
 	
+	_common.snoCell = function(){
+		var cellRender = function (row, column, value) {
+	        return "<div class='scCenterXY'>" + (value + 1) + "</div>";
+	    }
+	    		
+		return {
+			text: '#', sortable: false, filterable: false, editable: false, groupable: false, draggable: false, resizable: false, cellsalign: 'center',
+			datafield: '', columntype: 'number', width: 50, cellsrenderer: cellRender
+		}
+	}
+		
+	_common.iconCell = function(config){
+		if(config.width == null){
+			config.width = 40;
+		}
+		
+		if(config.text == null){
+			config.text = '';
+		}
+		
+		if(config.datafield == null){
+			config.datafield = '';
+		}
+		
+		var cellRender = function (row, column, value) {
+			if(config.icon != null){
+				return '<div class="scCenterXY scIcon"><i class="fa ' + config.icon + '" aria-hidden="true"></i></div>';
+			}
+	        
+	        return '<div class="scCenterXY scIcon"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i></div>';
+	    }
+			
+		return { text: config.text, datafield: config.datafield, width: config.width, editable: false, cellsrenderer: cellRender};
+	}
+	
+	_common.getDummyData = function(source, gridId){
+		var result = [];
+		
+		var formData = function(row, datafields, appendText){
+			for(let sKey in datafields)
+			{
+				let field = datafields[sKey];
+				
+				if(field.type == 'string'){
+					row[field.name] = 'Testing ' + appendText;
+				}
+				else if(field.type == 'number'){
+					row[field.name] = 10;
+				}
+			}
+		}
+		
+		for(var i=0; i<50; i++){
+			var row = {id: i, widthdraw: [], contribution: []};
+			formData(row, source.datafields, i);
+			result[i] = row;
+		}
+		
+		source.localdata = result;
+		$("#" + gridId).jqxGrid('updatebounddata', 'cells');
+	}
+	
 	init();
 	
 	return _common;

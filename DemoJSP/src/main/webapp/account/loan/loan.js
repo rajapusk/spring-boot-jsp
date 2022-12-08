@@ -45,14 +45,7 @@ var Loan = function(){
     };
                 
 	var columns =  [
-	  {
-          text: '#', sortable: false, filterable: false, editable: false,
-          groupable: false, draggable: false, resizable: false, cellsalign: 'center',
-          datafield: '', columntype: 'number', width: 50,
-          cellsrenderer: function (row, column, value) {
-              return "<div style='margin:4px;'>" + (value + 1) + "</div>";
-          }
-      },
+	  Common.snoCell(),
       { text: 'Photo', datafield: 'photo', width: 50, editable: false, cellsrenderer: function (row) {
 			var dataRecord = $("#dvPFAccount").jqxGrid('getrowdata', row);
 			
@@ -77,10 +70,7 @@ var Loan = function(){
       { text: 'New Net Salary', datafield: 'newNetSalary', editable: false, width: 100, cellsalign: 'left'},
       { text: 'New Net Salary Percetage', datafield: 'newNetSalaryPercentage', editable: false, width: 100, cellsalign: 'left'},
       { text: 'Approved', datafield: 'approved', width: 70, threestatecheckbox: true, columntype: 'checkbox', editable: true},
-      { text: 'Action', datafield: 'Edit',  editable: false, width: 60, cellsrenderer: function () {
-             return "<div class='scCenterXY scEditIcon'><span class='fa fa-pencil'></span></div>";
-          }
-      }
+      Common.iconCell({icon: 'fa-pencil',text: 'Action', datafield: 'Edit', width: 60}),
     ];    
     
 	var renderGrid = function(){

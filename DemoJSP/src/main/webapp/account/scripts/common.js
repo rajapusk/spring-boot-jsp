@@ -55,29 +55,29 @@ var CommonMethod = function(theme){
 						input.jqxDateTimeInput({disabled: true, theme: theme});
 					}else if(row.type == 'number'){
 						input.jqxNumberInput({disabled: true, theme: theme});
-						input.addClass("scNumberInput");
-						
-						if(row.icon == 'percentage'){
-							input.addClass("scPercentageInput");
-						}
+						applyIcon(row, input);
 					}else if(row.type == 'option'){
 						input.jqxDropDownList({disabled: true, theme: theme});
 					}
 				}
 				else{
-					if(row.type == 'number'){
-						input.addClass("scNumberInput");
-						
-						console.log(row)
-						
-						if(row.icon == 'percentage'){
-							input.addClass("scPercentageInput");
-						}
-					}
+					applyIcon(row, input);
 				}
 			}
 		}
 	};
+	
+	var applyIcon = function(row, input){
+		if(row.type == 'number'){
+			input.addClass("scIconInput");
+			
+			if(row.icon != null){
+				input.addClass("fa " + row.icon);
+			} else {
+				input.addClass("fa fa-inr");
+			}
+		}
+	}
 	
 	_common.updateValue = function(formId, row, config){
 		if(row.name != null && row.bind != null){
@@ -335,7 +335,7 @@ var CommonMethod = function(theme){
 			
 		return { text: config.text, datafield: config.datafield, width: config.width, editable: false, cellsrenderer: cellRender};
 	}
-	
+		
 	_common.getDummyData = function(source, gridId){
 		var result = [];
 		

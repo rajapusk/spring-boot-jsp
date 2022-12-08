@@ -63,13 +63,12 @@ html, body{
 	font-weight: bold;
 }
 
-.scRefundablePFLoan .scNumberInput input[type="textarea"]{
+.scRefundablePFLoan .scIconInput input[type="textarea"]{
 	position: relative;
 	padding-left: 34px !important;
 }
 
-.scNumberInput:before{
-	content: '\f156';
+.scIconInput:before{
     position: absolute;
     width: 34px;
     background: #e3e3e3;
@@ -85,10 +84,6 @@ html, body{
     justify-content: center;
     border-bottom-left-radius: 5px;
     border-top-left-radius: 5px;
-}
-
-.scPercentageInput:before{
-	content: '\f295' !important;
 }
 
 .scTitle{

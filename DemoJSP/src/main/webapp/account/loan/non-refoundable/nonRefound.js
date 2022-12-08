@@ -162,7 +162,7 @@ var PFLoan = function(){
 	                type: 'number',
 	                name: 'netSalPer',
 	                label: 'Net Salary Percetage',
-	                icon: 'percentage',
+	                icon: 'fa-percent',
 	                disabled: true,
 	                labelPosition: 'top',
 	                labelWidth: labelWidth + 'px',

@@ -2,7 +2,6 @@ package com.cardview.demo.service;
 
 import com.cardview.demo.exception.RecordNotFoundException;
 import com.cardview.demo.model.NomineeEntity;
-import com.cardview.demo.model.PFNomineeEntity;
 import com.cardview.demo.model.PfLoanUpdateInput;
 import com.cardview.demo.repository.NomineeRepository;
 import org.springframework.beans.factory.annotation.Autowired;

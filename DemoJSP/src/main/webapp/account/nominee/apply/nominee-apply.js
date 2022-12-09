@@ -170,11 +170,10 @@ var NomineeApply = function(){
 					formData.dor = new Date(formData.dor);
 					formData.pfDOJ = new Date(formData.pfDOJ);
 					
-					
 					formData.age = Common.dateDiff(formData.dob, new Date()).year;
 					formData.present_EXPERIENCE = Common.dateDiff(formData.doj, new Date()).year;
 					formData.service_LEFT = Common.dateDiff(new Date(), formData.dor).year;
-					pgList.formData(formData, $this);
+					pgList.setData(formData, $this);
 					Common.loopInput(jqxFormTmp, 'dvRefundablePFLoan', Common.updateValue, formData);
 				}
 				else{	
@@ -192,6 +191,7 @@ var NomineeApply = function(){
 		
 		var config = {REMARKS: ''};		
 		Common.loopInput(jqxFormTmp, 'dvRefundablePFLoan', Common.updateValue, config);
+		pgList.resetForm(formData, $this);
 	}
 	
 	var calculateAmount = function(){
@@ -212,11 +212,7 @@ var NomineeApply = function(){
 	    	       
 	    bindComponent();
 	    Common.loopInput(jqxFormTmp, 'dvRefundablePFLoan',  Common.updateDisable, {});
-	    calculateAmount();
-	    
-	    $('#searchData').val('31925');	
-	    loadEmpDetails();
-	    
+	    calculateAmount();	    
 	    pgList.init();
 	};
 }

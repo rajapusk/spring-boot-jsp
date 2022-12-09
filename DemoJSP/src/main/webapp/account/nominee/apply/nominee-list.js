@@ -249,7 +249,9 @@ var NomineeList = function(){
 	var formSuccessHandler = function(){
 		Common.showToast({message: "The record has been submitted successfully."});
 		
-		resetForm();
+		if(parent != null){
+			parent.reset();
+		}
 	}
 	
 	var loadData = function(){
@@ -273,28 +275,29 @@ var NomineeList = function(){
 						
 						selectedRows = result.nominees;
 						$("#dvPFAccount").jqxGrid('updatebounddata', 'cells');
+					} else {
+						totalShare = 0;
+						source.localdata = [];
+						selectedRows = [];
+						$("#dvPFAccount").jqxGrid('updatebounddata', 'cells');
 					}
 				}
 			});
 		}
 	}
 	
-	this.formData = function(data, parentPanel){
+	this.setData = function(data, parentPanel){
 		formData = data;
 		parent = parentPanel;
 		
 		loadData();		
 	};
 	
-	var resetForm = function(){
+	this.resetForm = function(){
 		formData = {};
 		source.localdata = [];
 		$("#dvPFAccount").jqxGrid('updatebounddata', 'cells');
 		buttonAddAction();
-		
-		if(parent != null){
-			parent.reset();
-		}
 	}
 	
 	this.init = function(){

@@ -32,6 +32,8 @@ var NomineeList = function(){
             {name: 'gender', type: 'string'},
             {name: 'address', type: 'string'},
             {name: 'proportion', type: 'number'},
+            {name: 'guardiansName', type: 'string'},
+            {name: 'guardiansAadhaarNo', type: 'string'},
             {name: 'totalShare', type: 'number'}
             
        	],
@@ -148,6 +150,16 @@ var NomineeList = function(){
 				$("#winTotalShare").val(totalShare);
 			}
 		});
+		
+		$("#winCancel").click(function () {
+			if(editRowId != null && editRowId > -1){
+				var bounddata = $('#dvPFAccount').jqxGrid('getrowdata', editRowId);
+				
+				if(bounddata != null){
+					totalShare = (totalShare + bounddata.proportion);
+				}
+			}
+		});  
 		
         $("#winSave").click(function () {
             let config = Common.getModel(popupConfig);

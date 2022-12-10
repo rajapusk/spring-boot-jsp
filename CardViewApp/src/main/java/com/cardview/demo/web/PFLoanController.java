@@ -11,6 +11,7 @@ import java.util.Optional;
 import javax.websocket.server.PathParam;
 
 import com.cardview.demo.exception.RecordNotFoundException;
+import com.cardview.demo.model.EmpDocEntity;
 import com.cardview.demo.model.EmployeeEntity;
 import com.cardview.demo.model.PFAccountEntity;
 import com.cardview.demo.model.PFLoanEntity;
@@ -95,9 +96,9 @@ public class PFLoanController {
 	}
 
 	@RequestMapping(path = "/uploadFile", method = RequestMethod.POST)
-	public PFLoanEntity uploadFile(@RequestParam("pf_loan_doc") MultipartFile file, String id) {
+	public EmpDocEntity uploadFile(@RequestParam("pf_loan_doc") MultipartFile file, String pfLoanId, String empCode) {
 		try {
-			if (id != null) {
+			if (pfLoanId != null) {
 				if (!file.isEmpty()) {
 					byte[] bytes = file.getBytes();
 					String filename = file.getOriginalFilename();
@@ -107,7 +108,7 @@ public class PFLoanController {
 						newFile.mkdirs();
 					}
 
-					String fullName = id + "_" + filename;
+					String fullName = new Date().getTime() + "_" +  pfLoanId + "_" + filename;
 					String filePath = rootDocPath + fullName;
 
 					BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(new File(filePath)));
@@ -116,11 +117,12 @@ public class PFLoanController {
 					stream.flush();
 					stream.close();
 
-					PFLoanEntity entiry = new PFLoanEntity();
+					EmpDocEntity entiry = new EmpDocEntity();
 
-					entiry.setid(Long.parseLong(id));
+					entiry.setpfLoanId(Long.parseLong(pfLoanId));
 					entiry.setfileName(fullName);
-
+					entiry.setempcode(Long.parseLong(empCode));
+					
 					return pfService.updateDocs(entiry);
 				}
 			}

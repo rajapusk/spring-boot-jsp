@@ -363,20 +363,57 @@ var CommonMethod = function(theme){
 		$("#" + gridId).jqxGrid('updatebounddata', 'cells');
 	}
 	
-	var iconHeader = function(defaultText, icon){
+	var iconHeader = function(defaultText, icon, align){
 		var iconHTML = '<i class="fa ' + icon + ' scIconColor" aria-hidden="true"></i>';
-		var textHTML = '<span style="padding-left: 5px;">' + defaultText + '</span>';
-		var sHTML = '<div style="height: 100%; display: flex; align-items: center; margin: 0px 5px;">' + iconHTML + textHTML + '</div>';
+		var textHTML = '<span style="padding: 0px 5px;">' + defaultText + '</span>';
+		var sHTML = '<div style="height: 100%; display: flex; align-items: center; margin: 0px 5px;">' + (align == 'left' ? (iconHTML + textHTML) : (textHTML + iconHTML)) + '</div>';
 		
 		return sHTML;
 	}
 	
 	_common.numberIconHeader = function(defaultText, alignment, height){		
-		return iconHeader(defaultText, 'fa-inr');
+		return iconHeader(defaultText, 'fa-inr', 'left');
 	};
 	
 	_common.percentageIconHeader = function(defaultText, alignment, height){		
-		return iconHeader(defaultText, 'fa-percent');
+		return iconHeader(defaultText, 'fa-percent', 'right');
+	};
+	
+	_common.uploadFiles = function(config){	
+		if(config != null){
+			if(config.fileInput != null && config.fileInput.length > 0 && config.fileIndex < config.fileInput.length){
+				var file = config.fileInput[config.fileIndex].files;
+				
+				if(file != null && file.length > 0){
+					var fileData = new FormData();
+					fileData.append("pf_loan_doc", file[0]);
+					fileData.append("pfLoanId", config.id);
+					fileData.append("empCode", config.empCode);
+				
+					$.ajax({
+						type: 'post',
+						url: config.url, 
+						data: fileData,
+						contentType: false,
+						cache: false,
+						processData:false,
+						success: function(result){
+							config.fileIndex++;
+							
+							_common.uploadFiles(config);
+						}
+					});
+				} else {
+					config.fileIndex++;
+							
+					_common.uploadFiles(config);
+				}
+			}else{
+				if(config.successHandler != null){
+					config.successHandler();
+				}
+			}
+		}
 	};
 	
 	init();

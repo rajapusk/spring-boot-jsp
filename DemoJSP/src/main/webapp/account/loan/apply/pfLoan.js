@@ -195,6 +195,17 @@ var PFLoan = function(){
 		},{
 			columns: [
 				{
+					bind: 'pfTotalBalance',
+	                type: 'number',
+	                name: 'pfTotalBalance',
+	                disabled: true,
+	                labelPosition: 'top',
+	                label: 'PF Total balance',
+	                labelWidth: labelWidth + 'px',
+	                width: controlWidth + 'px',
+					align: 'left',
+					columnWidth: '20%'
+				},{
 					bind: 'advanceType',
 	                type: 'option',
 	                name: 'advanceType',
@@ -205,17 +216,6 @@ var PFLoan = function(){
 	                width: controlWidth + 'px',
 	                component: 'jqxDropDownList',
 	                options: typeOption,
-					align: 'left',
-					columnWidth: '20%'
-				},{
-					bind: 'pfTotalBalance',
-	                type: 'number',
-	                name: 'pfTotalBalance',
-	                disabled: true,
-	                labelPosition: 'top',
-	                label: 'PF Total balance',
-	                labelWidth: labelWidth + 'px',
-	                width: controlWidth + 'px',
 					align: 'left',
 					columnWidth: '20%'
 				},{
@@ -397,7 +397,7 @@ var PFLoan = function(){
 		.jqxFileUpload({ 
 			width: '100%%', 
 			fileInputName: 'pf_loan_doc',
-			multipleFilesUpload: false, 
+			multipleFilesUpload: true, 
 			autoUpload: false, 
 			theme: theme, 
 			uploadTemplate: 'primary' ,
@@ -523,24 +523,7 @@ var PFLoan = function(){
 			var fileInput = $('input[type=file]');
 			
 			if(fileInput != null && fileInput.length > 0){
-				if(fileInput[0].files != null && fileInput[0].files.length > 0){
-					var files = fileInput[0].files;
-					var fileData = new FormData();
-     				fileData.append("pf_loan_doc", files[0]);
-     				fileData.append("id", result.id);
-      			
-      				$.ajax({
-						type: 'post',
-						url: HOST + '/pfloan/uploadFile', 
-						data: fileData,
-						contentType: false,
-						cache: false,
-	   					processData:false,
-						success: function(result){
-							formSuccessHandler();
-						}
-					});
-				}
+				Common.uploadFiles({id: result.id, empCode: result.empcode, fileInput: fileInput, fileIndex: 0, url: HOST + '/pfloan/uploadFile', successHandler: formSuccessHandler});				
 			}
 		}
 		else{

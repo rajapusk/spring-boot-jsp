@@ -363,6 +363,22 @@ var CommonMethod = function(theme){
 		$("#" + gridId).jqxGrid('updatebounddata', 'cells');
 	}
 	
+	var iconHeader = function(defaultText, icon){
+		var iconHTML = '<i class="fa ' + icon + ' scIconColor" aria-hidden="true"></i>';
+		var textHTML = '<span style="padding-left: 5px;">' + defaultText + '</span>';
+		var sHTML = '<div style="height: 100%; display: flex; align-items: center; margin: 0px 5px;">' + iconHTML + textHTML + '</div>';
+		
+		return sHTML;
+	}
+	
+	_common.numberIconHeader = function(defaultText, alignment, height){		
+		return iconHeader(defaultText, 'fa-inr');
+	};
+	
+	_common.percentageIconHeader = function(defaultText, alignment, height){		
+		return iconHeader(defaultText, 'fa-percent');
+	};
+	
 	init();
 	
 	return _common;

@@ -28,13 +28,12 @@ var Ledger = function(){
 		Common.snoCell(),
 		{ text: 'EMP Code', datafield: 'empCode', width: 90, editable: false },
 		{ text: 'Name', datafield: 'name', editable: false },
-		{ text: 'DOJ', datafield: 'doj', width: 140, editable: false, cellsalign: 'right' },
-		{ text: 'Experience', datafield: 'experience', width: 140, editable: false, cellsalign: 'right' },
-		{ text: 'OB-EE Contribution', datafield: 'ob_ee_contri', editable: false, width: 140, cellsalign: 'right' },
-		{ text: 'OB-VPF', datafield: 'ob_vpf', editable: false, width: 140, cellsalign: 'right' },
-		{ text: 'OB-ER Contribution', datafield: 'ob_er_contri', width: 140, editable: false, cellsalign: 'right' }, 
-		{ text: 'OB-ER Contribution', datafield: 'pr_exp', width: 140, editable: false, cellsalign: 'right' },
-		{ text: 'ROI', datafield: 'roi', width: 140, editable: false, cellsalign: 'right'}
+		{ text: 'DOJ', datafield: 'doj', width: 100, editable: false, cellsalign: 'right' },
+		{ text: 'Experience', datafield: 'pr_exp', width: 100, editable: false, cellsalign: 'right' },
+		{ text: 'OB-EE Contri', datafield: 'ob_ee_contri', editable: false, width: 100, cellsalign: 'right', renderer: Common.numberIconHeader },
+		{ text: 'OB-VPF', datafield: 'ob_vpf', editable: false, width: 100, cellsalign: 'right', renderer: Common.numberIconHeader },
+		{ text: 'OB-ER Contri', datafield: 'ob_er_contri', width: 100, editable: false, cellsalign: 'right', renderer: Common.numberIconHeader }, 
+		{ text: 'ROI', datafield: 'roi', width: 100, editable: false, cellsalign: 'right', renderer: Common.percentageIconHeader}
 	];
 	
 	var srcWithdraw = {
@@ -55,7 +54,7 @@ var Ledger = function(){
 		Common.snoCell(),
 		{ text: 'EMP Code', datafield: 'empCode', width: '25%', editable: false },	
 		{ text: 'Withdrawn Date', datafield: 'withdrawn_date', width: '25%', editable: false },
-		{ text: 'Withdrawn Amount', datafield: 'withdrawnAmount', width: '25%', editable: false },
+		{ text: 'Withdrawn Amount', datafield: 'withdrawnAmount', width: '25%', editable: false, renderer: Common.numberIconHeader },
 		{ text: 'Withdrawal Purpose', datafield: 'withdrawalPurpose', editable: false }
 	];
 	
@@ -82,15 +81,15 @@ var Ledger = function(){
 		Common.snoCell(),		
 		{ text: 'EMP Code', datafield: 'empCode', width: 90, editable: false },
 		{ text: 'Month', datafield: 'wage_month', editable: false },
-		{ text: 'Date of Credit', datafield: 'date_of_credit', width: 120, editable: false, cellsalign: 'right' },
-		{ text: 'Basic Total', datafield: 'basic_total', width: 120, editable: false, cellsalign: 'right' },
-		{ text: 'EE Contribution', datafield: 'ee_contri', editable: false, width: 120, cellsalign: 'right' },
-		{ text: 'ER Contribution', datafield: 'er_contri', editable: false, width: 120, cellsalign: 'right' },
-		{ text: 'VPF', datafield: 'vpf', width: 120, editable: false, cellsalign: 'right' },
-		{ text: 'EE Interest', datafield: 'ee_interest', width: 120, editable: false, cellsalign: 'right' }, 
-		{ text: 'ER Interest', datafield: 'er_interest', width: 120, editable: false, cellsalign: 'right' }, 
-		{ text: 'EE Total', datafield: 'ee_total', width: 120, editable: false, cellsalign: 'right' },       
-		{ text: 'ER Total', datafield: 'er_total', width: 120, editable: false, cellsalign: 'right'}
+		{ text: 'Date of Credit', datafield: 'date_of_credit', width: 100, editable: false, cellsalign: 'right' },
+		{ text: 'Basic Total', datafield: 'basic_total', width: 100, editable: false, cellsalign: 'right', renderer: Common.numberIconHeader },
+		{ text: 'EE Contri', datafield: 'ee_contri', editable: false, width: 100, cellsalign: 'right', renderer: Common.numberIconHeader },
+		{ text: 'ER Contri', datafield: 'er_contri', editable: false, width: 100, cellsalign: 'right', renderer: Common.numberIconHeader },
+		{ text: 'VPF', datafield: 'vpf', width: 100, editable: false, cellsalign: 'right', renderer: Common.numberIconHeader },
+		{ text: 'EE Interest', datafield: 'ee_interest', width: 100, editable: false, cellsalign: 'right', renderer: Common.numberIconHeader }, 
+		{ text: 'ER Interest', datafield: 'er_interest', width: 100, editable: false, cellsalign: 'right', renderer: Common.numberIconHeader }, 
+		{ text: 'EE Total', datafield: 'ee_total', width: 100, editable: false, cellsalign: 'right', renderer: Common.numberIconHeader },       
+		{ text: 'ER Total', datafield: 'er_total', width: 100, editable: false, cellsalign: 'right', renderer: Common.numberIconHeader}
 	];
     
     var renderNestedGrid = function (index, parentElement, gridElement, record) {		

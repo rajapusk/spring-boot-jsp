@@ -214,3 +214,7 @@ div.scRefundablePFLoan .jqx-text-area-light, div.scRefundablePFLoan .jqx-text-ar
 div.scRefundablePFLoan .jqx-file-upload{
 	margin-top: 30px !important;
 }
+
+.scIconColor{
+    color: #ff6455;
+}

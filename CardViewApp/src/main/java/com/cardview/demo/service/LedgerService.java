@@ -196,7 +196,7 @@ public class LedgerService {
 
                 ledger.lstContributions.add(newCont);
 
-                if (cont.date_of_credit.toLocalDate().getMonthValue() == 9)
+                if (cont.date_of_credit.toLocalDate().getMonthValue() == 10)
                 {
                     ContributionOutput newContSum = new ContributionOutput();
                     LocalDate localDate = LocalDate.of(cont.date_of_credit.getYear(), 10, 15);
@@ -228,7 +228,7 @@ public class LedgerService {
                     er_Total = 0;
                 }
 
-                if (cont.date_of_credit.toLocalDate().getMonthValue() == 3)
+                if (cont.date_of_credit.toLocalDate().getMonthValue() == 4)
                 {
                     ContributionOutput newContSum = new ContributionOutput();
                     LocalDate localDate = LocalDate.of(cont.date_of_credit.getYear(), 4, 15);

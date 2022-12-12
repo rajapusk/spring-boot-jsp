@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.*;
 
+import com.cardview.demo.model.EmpDocEntity;
 import com.cardview.demo.model.PFAccountEntity;
 import com.cardview.demo.model.PFLoanEntity;
 
@@ -19,6 +20,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.cardview.demo.exception.RecordNotFoundException;
+import com.cardview.demo.repository.EmpDocRepository;
 import com.cardview.demo.repository.PFAccountRepository;
 import com.cardview.demo.repository.PFLoanRepository;
 
@@ -35,6 +37,9 @@ public class PFLoanService {
 	
 	@Autowired
 	PFAccountRepository accountRepository;
+	
+	@Autowired
+	EmpDocRepository docRepository;
 	
 	public List<PFLoanEntity> getAllPFLoan()
 	{
@@ -118,18 +123,9 @@ public class PFLoanService {
 
 	}
 	
-	public PFLoanEntity updateDocs(PFLoanEntity entity) {
-		Optional<PFLoanEntity> employee = repository.findById(entity.getid());
+	public EmpDocEntity updateDocs(EmpDocEntity entity) {
+		docRepository.save(entity);
 		
-		if (employee.isPresent()) {
-			PFLoanEntity newEntity = employee.get();
-			newEntity.setid(entity.getid());
-			newEntity.setfileName(entity.getfileName());
-			newEntity = repository.save(newEntity);
-			
-			return newEntity;
-		}
-
-		return null;
+		return entity;
 	}
 }

@@ -3,11 +3,14 @@ package com.cardview.demo.service;
 import com.cardview.demo.exception.RecordNotFoundException;
 import com.cardview.demo.model.BriefcaseAllowanceEntity;
 import com.cardview.demo.model.PFLoanEntity;
+import com.cardview.demo.model.VpfContributionEntity;
 import com.cardview.demo.repository.BriefcaseAllowanceRepository;
 import com.cardview.demo.repository.PFAccountRepository;
 import com.cardview.demo.repository.PFLoanRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +29,7 @@ public class BriefcaseAllowanceService {
     PFAccountRepository accountRepository;
 
 
-    public List<BriefcaseAllowanceEntity> getAllPFLoan()
+    public List<BriefcaseAllowanceEntity> getAllBriefcaseAllowance()
     {
         List<BriefcaseAllowanceEntity> result = (List<BriefcaseAllowanceEntity>) repository.findAll();
 
@@ -37,7 +40,20 @@ public class BriefcaseAllowanceService {
         }
     }
 
-    public BriefcaseAllowanceEntity getPFAccountById(Long id) throws RecordNotFoundException
+    public boolean deleteBriefcaseAllowanceById(Long id) throws RecordNotFoundException
+    {
+        Optional<BriefcaseAllowanceEntity> employee = repository.findById(id);
+
+        if(employee.isPresent()) {
+            repository.deleteById(id);
+            return true;
+        } else {
+            throw new RecordNotFoundException("No employee record exist for given id");
+        }
+
+    }
+
+    public BriefcaseAllowanceEntity getBriefcaseAllowanceById(Long id) throws RecordNotFoundException
     {
         Optional<BriefcaseAllowanceEntity> employee = repository.findById(id);
 
@@ -48,7 +64,7 @@ public class BriefcaseAllowanceService {
         }
     }
 
-    public BriefcaseAllowanceEntity createOrUpdatePFLoan(BriefcaseAllowanceEntity entity)
+    public BriefcaseAllowanceEntity createOrUpdateBriefcaseAllowance(BriefcaseAllowanceEntity entity)
     {
         if(entity.getid()  == null)
         {

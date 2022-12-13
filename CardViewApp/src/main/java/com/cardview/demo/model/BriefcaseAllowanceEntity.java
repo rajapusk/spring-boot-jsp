@@ -14,12 +14,12 @@ public class BriefcaseAllowanceEntity {
     }
 
     @Column(name="VENDORNAME")
-    private long vendorName;
-    public long getVendorName()
+    private String vendorName;
+    public String getVendorName()
     {
         return this.vendorName;
     }
-    public void setVendorName(long value)
+    public void setVendorName(String value)
     {
         this.vendorName = value;
     }

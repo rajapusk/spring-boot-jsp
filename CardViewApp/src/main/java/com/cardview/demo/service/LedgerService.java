@@ -105,21 +105,6 @@ public class LedgerService {
                 }
             }
 
-            for (LedgerOutput entity : emplicList) {
-                for (ContributionOutput  contribution: entity.dbcontributions) {
-                    if(entity.empCode == contribution.empCode){
-                        entity.dbcontributions.add(contribution);
-                    }
-                }
-
-                for (WithdrawalOutput  withdrow: lstWithdrawals) {
-                    if(entity.empCode == withdrow.empCode){
-                        entity.withdrawals.add(withdrow);
-                    }
-                }
-            }
-
-
         } catch (SQLException e) {
             e.printStackTrace();
         }

@@ -1,6 +1,8 @@
 var CommonMethod = function(theme){
-	var _common = {};
 	var notifyConfig = {};
+	var _common = {
+		HOST: 'http://localhost:' + 9092
+	};
 	
 	var init = function(){
 		var body = $("body");

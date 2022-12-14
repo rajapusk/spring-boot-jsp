@@ -17,7 +17,7 @@ var Ledger = function(){
             {name: 'pr_exp', type: 'number'},
             {name: 'roi', type: 'number'},
             {name: 'withdrawals', type: 'object'},
-            {name: 'contributions', type: 'object'}
+            {name: 'lstContributions', type: 'object'}
        	],
        	id: 'employeeID',
         localdata: []
@@ -62,16 +62,16 @@ var Ledger = function(){
 		datatype: 'json',
         datafields: [
 			{name: 'id', type: 'string'},
-            {name: 'empCode', type: 'string'},
+			{name: 'empCode', type: 'string'},
             {name: 'wage_month', type: 'string'},             
             {name: 'date_of_credit', type: 'string'}, 
-            {name: 'basic_total', type: 'number'}, 
-            {name: 'ee_contri', type: 'number'},  
-            {name: 'er_contri', type: 'number'}, 
-            {name: 'vpf', type: 'number'},
-            {name: 'ee_interest', type: 'number'},   
+            {name: 'basic_total', type: 'number'},
+			{name: 'ee_contri', type: 'number'},  
+			{name: 'vpf', type: 'number'},
+			{name: 'ee_interest', type: 'number'}, 
+            {name: 'ee_total', type: 'number'},            
+            {name: 'er_contri', type: 'number'},               
             {name: 'er_interest', type: 'number'},
-            {name: 'ee_total', type: 'number'},
             {name: 'er_total', type: 'number'}
        	],
         localdata: []
@@ -80,16 +80,16 @@ var Ledger = function(){
 	var colContribution =  [
 		Common.snoCell(),		
 		{ text: 'EMP Code', datafield: 'empCode', width: 90, editable: false },
-		{ text: 'Month', datafield: 'wage_month', editable: false },
+		{ text: 'Wage Month', datafield: 'wage_month', editable: false },
 		{ text: 'Date of Credit', datafield: 'date_of_credit', width: 100, editable: false, cellsalign: 'right' },
 		{ text: 'Basic Total', datafield: 'basic_total', width: 100, editable: false, cellsalign: 'right', renderer: Common.numberIconHeader },
 		{ text: 'EE Contri', datafield: 'ee_contri', editable: false, width: 100, cellsalign: 'right', renderer: Common.numberIconHeader },
-		{ text: 'ER Contri', datafield: 'er_contri', editable: false, width: 100, cellsalign: 'right', renderer: Common.numberIconHeader },
 		{ text: 'VPF', datafield: 'vpf', width: 100, editable: false, cellsalign: 'right', renderer: Common.numberIconHeader },
 		{ text: 'EE Interest', datafield: 'ee_interest', width: 100, editable: false, cellsalign: 'right', renderer: Common.numberIconHeader }, 
-		{ text: 'ER Interest', datafield: 'er_interest', width: 100, editable: false, cellsalign: 'right', renderer: Common.numberIconHeader }, 
-		{ text: 'EE Total', datafield: 'ee_total', width: 100, editable: false, cellsalign: 'right', renderer: Common.numberIconHeader },       
-		{ text: 'ER Total', datafield: 'er_total', width: 100, editable: false, cellsalign: 'right', renderer: Common.numberIconHeader}
+		{ text: 'EE Total', datafield: 'ee_total', width: 100, editable: false, cellsalign: 'right', renderer: Common.numberIconHeader }, 
+		{ text: 'ER Contri', datafield: 'er_contri', editable: false, width: 100, cellsalign: 'right', renderer: Common.numberIconHeader },
+		{ text: 'ER Interest', datafield: 'er_interest', width: 100, editable: false, cellsalign: 'right', renderer: Common.numberIconHeader }, 		      
+		{ text: 'ER Total', datafield: 'er_total', editable: false, width: 100, cellsalign: 'right', renderer: Common.numberIconHeader}
 	];
     
     var renderNestedGrid = function (index, parentElement, gridElement, record) {		
@@ -137,15 +137,15 @@ var Ledger = function(){
 			console.log('cellvaluechanged', event.args)
 		}).on('cellclick', function (event) 
 		{
-			if(event.args.datafield == 'View' && event.args.row.bounddata != null && event.args.row.bounddata.contributions != null){
-				//srcContribution.localdata = event.args.row.bounddata.contributions;
+			if(event.args.datafield == 'View' && event.args.row.bounddata != null && event.args.row.bounddata.lstContributions != null){
+				//srcContribution.localdata = event.args.row.bounddata.lstContributions;
 				//$("#dvMasterLedger").jqxGrid('updatebounddata', 'cells');
 			}
 		});
 		
 		$("#dvPFAccount").on('rowselect', function (event) {
-           if(event.args.row != null && event.args.row.contributions != null){
-				srcContribution.localdata = event.args.row.contributions;
+           if(event.args.row != null && event.args.row.lstContributions != null){
+				srcContribution.localdata = event.args.row.lstContributions;
 				$("#dvMasterLedger").jqxGrid('updatebounddata', 'cells');
 			}
         });
@@ -174,9 +174,11 @@ var Ledger = function(){
 			url: HOST + '/ledger/getall',
 			contentType: "application/json; charset=utf-8",
 			success: function(result){
-				srcEmployee.localdata = result;
-				$("#dvPFAccount").jqxGrid('updatebounddata', 'cells');
-				$("#dvPFAccount").jqxGrid('selectrow', 0);
+				if(result != null && result != ''){
+					srcEmployee.localdata = result;
+					$("#dvPFAccount").jqxGrid('updatebounddata', 'cells');
+					$("#dvPFAccount").jqxGrid('selectrow', 0);
+				}
 			}
 		});
 	}

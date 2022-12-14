@@ -44,6 +44,18 @@ public class BriefcaseAllowanceEntity {
     {
         this.invoiceDate = value;
     }
+    
+    @Column(name="CLAIMDATE")
+    private java.sql.Date claimDate;
+    public java.sql.Date getClaimDate()
+    {
+        return this.claimDate;
+    }
+    public void setClaimDate(java.sql.Date value)
+    {
+        this.claimDate = value;
+    }
+    
     @Column(name="INVOICENO")
     private String invoiceNo;
     public String getInvoiceNo()

@@ -36,12 +36,22 @@ var CommonMethod = function(theme){
 	}
 	
 	_common.dateDiff = function(fromDate, toDate){
+		var tempDate = fromDate;
+		
+		if(toDate.getTime() < fromDate.getTime()){
+			fromDate = toDate;
+			toDate = tempDate;
+		}
+		
 	    var month_diff = toDate.getTime() - fromDate.getTime();
 	    var age_dt = new Date(month_diff); 
-	    var year = age_dt.getUTCFullYear();  
+	    var year = age_dt.getUTCFullYear();
+	    var month = age_dt.getUTCMonth();    
+	    var days = age_dt.getUTCDay();
 	    var age = Math.abs(year - 1970);  
+	    var totalDays = (month_diff / (1000 * 3600 * 24));
 	    
-	    return {year: age};
+	    return {year: age, month: month, days: days, totalDays: Math.floor(totalDays)};
 	}
 	
 	_common.updateDisable = function(formId, row, config){
@@ -65,9 +75,36 @@ var CommonMethod = function(theme){
 				else{
 					applyIcon(row, input);
 				}
+				
+				if(row.info != null){
+					input.append($('<div id="' + row.name + '_info" class="scInfo"></div>'));
+				}
 			}
 		}
 	};
+	
+	_common.setInfo = function(config){
+		var duration = (config.duration == null ? 5 : config.duration) * 1000;
+		var info = $('#' + config.prob + '_info');
+		
+		$(config.event.currentTarget).find('input').css('color', 'red');
+		info.html(config.msg);
+		info.css('display', 'block');
+		
+		_common.infoHandler = setTimeout(function(){
+			info.css('display', 'none');
+		}, duration);
+	}
+	
+	_common.closeInfo = function(config){
+		$('#' + config.prob + '_info').css('display', 'none');
+		$(config.event.currentTarget).find('input').css('color', 'black');
+			
+		if(_common.infoHandler){
+			clearTimeout(_common.infoHandler);
+			_common.infoHandler = null;
+		}
+	}
 	
 	var applyIcon = function(row, input){
 		if(row.type == 'number'){
@@ -417,6 +454,27 @@ var CommonMethod = function(theme){
 			}
 		}
 	};
+	
+	_common.callPOST = function(postData, sURL, handler){
+		$.ajax({
+			type: 'post',
+			url: sURL, 
+			data: JSON.stringify(postData),
+			contentType: "application/json; charset=utf-8",
+			success: function(result){
+				handler(result);
+			}
+		});
+	}
+	
+	_common.callGET = function(sURL, handler){
+		$.ajax({
+			url: sURL, 
+			success: function(result){
+				handler(result);
+			}
+		});
+	}
 	
 	init();
 	

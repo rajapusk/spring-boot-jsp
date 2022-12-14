@@ -2,6 +2,7 @@ package com.cardview.demo.web;
 
 import com.cardview.demo.exception.RecordNotFoundException;
 import com.cardview.demo.model.BriefcaseAllowanceEntity;
+import com.cardview.demo.model.EntitledAmount;
 import com.cardview.demo.model.PFAccountEntity;
 import com.cardview.demo.outputModels.BriefcaseAllowanceOutput;
 import com.cardview.demo.service.BriefcaseAllowanceService;
@@ -121,6 +122,15 @@ public class BriefcaseAllowanceController {
                 }
             }
             return result;
+        } catch (Exception ex) {
+            return null;
+        }
+    }
+    
+    @GetMapping("/getEntitle")
+    public EntitledAmount getEntitledAmount() {
+        try {
+            return new EntitledAmount();
         } catch (Exception ex) {
             return null;
         }

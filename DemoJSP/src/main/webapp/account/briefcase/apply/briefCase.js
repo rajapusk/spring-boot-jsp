@@ -153,12 +153,12 @@ var BriefCase = function(){
 	                labelWidth: labelWidth + 'px',
 	                width: '100%',
 	                align: 'left',
-					columnWidth: '20%'
+					columnWidth: '30%'
 	            },{
 					type: 'blank',
 			        name: 'fileUpload',
 			        rowHeight: '75px',
-			        columnWidth: '40%'
+			        columnWidth: '30%'
 				}
 			]
 		},{

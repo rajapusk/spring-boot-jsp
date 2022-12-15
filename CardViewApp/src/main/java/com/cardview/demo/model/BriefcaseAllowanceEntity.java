@@ -142,6 +142,27 @@ public class BriefcaseAllowanceEntity {
         this.approved = value;
     }
 
+    @Column(name="hrRemarks")
+    private String hrRemarks;
+    public String getHrRemarks()
+    {
+        return this.hrRemarks;
+    }
+    public void setHrRemarkss(String value)
+    {
+        this.hrRemarks = value;
+    }
+    @Column(name="MANAGERREMARKS")
+    private String managerRemarks;
+    public String getManagerRemarks()
+    {
+        return this.managerRemarks;
+    }
+    public void setManagerRemarks(String value)
+    {
+        this.managerRemarks = value;
+    }
+
     @Column(name="HRAPPROVED")
     private byte hrApproved;
     public byte getHRApproved()

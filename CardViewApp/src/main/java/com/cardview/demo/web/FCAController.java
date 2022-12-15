@@ -2,9 +2,9 @@ package com.cardview.demo.web;
 
 import com.cardview.demo.exception.RecordNotFoundException;
 import com.cardview.demo.model.*;
-import com.cardview.demo.outputModels.BriefcaseAllowanceOutput;
-import com.cardview.demo.service.BriefcaseAllowanceService;
+import com.cardview.demo.outputModels.FcaOutput;
 import com.cardview.demo.service.EmailServiceImpl;
+import com.cardview.demo.service.FcaService;
 import com.cardview.demo.service.PFAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,30 +14,30 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("/ba")
-public class BriefcaseAllowanceController {
+@RequestMapping("/fca")
+public class FCAController {
 
     @Value("${manager.mail}") private String _managerEmail;
     @Autowired
     PFAccountService paService;
     @Autowired
-    BriefcaseAllowanceService baService;
+    FcaService fcaService;
     @Autowired
     private EmailServiceImpl emailService;
 
     @GetMapping("/get/{id}")
-    public BriefcaseAllowanceEntity getBriefcaseAllowanceById(@PathVariable("id") Long id) {
+    public FcaEntity getBriefcaseAllowanceById(@PathVariable("id") Long id) {
         try {
             System.out.println("@@@ id " + id);
-            return baService.getBriefcaseAllowanceById(id);
+            return fcaService.getFCAById(id);
         } catch (Exception ex) {
             return null;
         }
     }
 
     @RequestMapping(path = "/create", method = RequestMethod.POST)
-    public BriefcaseAllowanceEntity createOrUpdateBriefcaseAllowanceContribution(@RequestBody BriefcaseAllowanceEntity loan) {
-        BriefcaseAllowanceEntity entity = baService.createOrUpdateBriefcaseAllowance(loan);
+    public FcaEntity createOrUpdateBriefcaseAllowanceContribution(@RequestBody FcaEntity loan) {
+        FcaEntity entity = fcaService.createOrUpdateFCA(loan);
 
         try {
             PFAccountEntity account = paService.getPFAccountById(loan.getEmpCode());
@@ -52,20 +52,20 @@ public class BriefcaseAllowanceController {
 
     @DeleteMapping("/delete/id")
     public boolean deleteBriefcaseAllowanceById(@PathVariable("id") long id) throws RecordNotFoundException {
-        return baService.deleteBriefcaseAllowanceById(id);
+        return fcaService.deleteFCAById(id);
     }
 
     @GetMapping("/manager")
-    public List<BriefcaseAllowanceOutput> managerBriefcaseAllowanceGetAll() {
+    public List<FcaOutput> managerFcaGetAll() {
         try {
-            List<BriefcaseAllowanceOutput> result = new ArrayList<BriefcaseAllowanceOutput>();
+            List<FcaOutput> result = new ArrayList<FcaOutput>();
             List<PFAccountEntity> listAllAccount = paService.getAllPFAccount();
-            List<BriefcaseAllowanceEntity> lstBriefcaseAllowance = baService.getAllBriefcaseAllowance();
+            List<FcaEntity> lstBriefcaseAllowance = fcaService.getAllFCA();
 
             for (PFAccountEntity account : listAllAccount) {
-                for (BriefcaseAllowanceEntity ba : lstBriefcaseAllowance) {
+                for (FcaEntity ba : lstBriefcaseAllowance) {
                     if (account.getEMPCODE() == ba.getEmpCode() && ba.getapproved() == 0) {
-                        BriefcaseAllowanceOutput output = new BriefcaseAllowanceOutput();
+                        FcaOutput output = new FcaOutput();
                         output.id = ba.getid();
                         output.doj = account.getDOJ();
                         output.name = account.getNAME();
@@ -76,10 +76,8 @@ public class BriefcaseAllowanceController {
                         output.approved = ba.getapproved();
                         output.hrApproved = ba.getHRApproved();
                         output.entitledAmount = ba.getEntitledAmount();
-                        output.invoiceAmount = ba.getInvoiceAmount();
-                        output.invoiceDate = ba.getInvoiceDate();
-                        output.invoiceNo = ba.getInvoiceNo();
-                        output.vendorName = ba.getVendorName();
+                        output.months = ba.getMonths();
+                        output.quarterType = ba.getQuarterType();
                         output.managerRemarks = ba.getManagerRemarks();
                         output.hrRemarks=ba.getHrRemarks();
                         result.add(output);
@@ -93,16 +91,16 @@ public class BriefcaseAllowanceController {
     }
 
     @GetMapping("/hr")
-    public List<BriefcaseAllowanceOutput> hrBriefcaseAllowanceGetAll() {
+    public List<FcaOutput> hrFcaGetAll() {
         try {
-            List<BriefcaseAllowanceOutput> result = new ArrayList<BriefcaseAllowanceOutput>();
+            List<FcaOutput> result = new ArrayList<FcaOutput>();
             List<PFAccountEntity> listAllAccount = paService.getAllPFAccount();
-            List<BriefcaseAllowanceEntity> lstBriefcaseAllowance = baService.getAllBriefcaseAllowance();
+            List<FcaEntity> lstBriefcaseAllowance = fcaService.getAllFCA();
 
             for (PFAccountEntity account : listAllAccount) {
-                for (BriefcaseAllowanceEntity ba : lstBriefcaseAllowance) {
+                for (FcaEntity ba : lstBriefcaseAllowance) {
                     if (account.getEMPCODE() == ba.getEmpCode() && ba.getapproved() == 1 && ba.getHRApproved() == 0) {
-                        BriefcaseAllowanceOutput output = new BriefcaseAllowanceOutput();
+                        FcaOutput output = new FcaOutput();
                         output.id = ba.getid();
                         output.doj = account.getDOJ();
                         output.name = account.getNAME();
@@ -113,10 +111,8 @@ public class BriefcaseAllowanceController {
                         output.approved = ba.getapproved();
                         output.hrApproved = ba.getHRApproved();
                         output.entitledAmount = ba.getEntitledAmount();
-                        output.invoiceAmount = ba.getInvoiceAmount();
-                        output.invoiceDate = ba.getInvoiceDate();
-                        output.invoiceNo = ba.getInvoiceNo();
-                        output.vendorName = ba.getVendorName();
+                        output.months = ba.getMonths();
+                        output.quarterType = ba.getQuarterType();
                         output.managerRemarks = ba.getManagerRemarks();
                         output.hrRemarks=ba.getHrRemarks();
                         output.grade = account.getGRADE();
@@ -140,19 +136,19 @@ public class BriefcaseAllowanceController {
     }
 
     @RequestMapping(path = "/manager/update", method = RequestMethod.PUT)
-    public boolean UpdateBriefcaseAllowance(@RequestBody PfLoanUpdateInput[] loan) throws RecordNotFoundException {
-        List<BriefcaseAllowanceEntity> lstVPF = baService.updateBriefcaseAllowance(loan, true);
+    public boolean UpdateFCA(@RequestBody PfLoanUpdateInput[] loan) throws RecordNotFoundException {
+        List<FcaEntity> lstVPF = fcaService.updateFCA(loan, true);
 
-        for (BriefcaseAllowanceEntity entity : lstVPF) {
+        for (FcaEntity entity : lstVPF) {
             PFAccountEntity account = paService.getPFAccountById(entity.getEmpCode());
             String subject = "", body = "";
 
             if (entity.getapproved() == 1) {
-                subject = "Briefcase Allowance Approved";
-                body = "Your Briefcase Allowance has been approved by manager.";
+                subject = "FCA Approved";
+                body = "Your FCA has been approved by manager.";
             } else if (entity.getapproved() == 2) {
-                subject = "Briefcase Allowance Rejected";
-                body = "Your Briefcase Allowance has been rejected by manager.";
+                subject = "FCA Rejected";
+                body = "Your FCA has been rejected by manager.";
             }
 
             emailService.sendSimpleMail(account.getEmail(), body, subject);
@@ -162,18 +158,18 @@ public class BriefcaseAllowanceController {
 
     @RequestMapping(path = "/hr/update", method = RequestMethod.PUT)
     public boolean UpdateHrBriefcaseAllowance(@RequestBody PfLoanUpdateInput[] loan) throws RecordNotFoundException {
-        List<BriefcaseAllowanceEntity> lstVPF = baService.updateBriefcaseAllowance(loan, false);
+        List<FcaEntity> lstVPF = fcaService.updateFCA(loan, false);
 
-        for (BriefcaseAllowanceEntity entity : lstVPF) {
+        for (FcaEntity entity : lstVPF) {
             PFAccountEntity account = paService.getPFAccountById(entity.getEmpCode());
             String subject = "", body = "";
 
             if (entity.getapproved() == 1) {
-                subject = "Briefcase Allowance Approved";
-                body = "Your Briefcase Allowance has been approved by HR.";
+                subject = "FCA Approved";
+                body = "Your FCA has been approved by HR.";
             } else if (entity.getapproved() == 2) {
-                subject = "Briefcase Allowance Rejected";
-                body = "Your Briefcase Allowance has been rejected by HR.";
+                subject = "FCA Rejected";
+                body = "Your FCA has been rejected by HR.";
             }
 
             emailService.sendSimpleMail(account.getEmail(), body, subject);

@@ -2,48 +2,42 @@ package com.cardview.demo.service;
 
 import com.cardview.demo.exception.RecordNotFoundException;
 import com.cardview.demo.model.BriefcaseAllowanceEntity;
-import com.cardview.demo.model.PFLoanEntity;
+import com.cardview.demo.model.FcaEntity;
 import com.cardview.demo.model.PfLoanUpdateInput;
-import com.cardview.demo.model.VpfContributionEntity;
 import com.cardview.demo.repository.BriefcaseAllowanceRepository;
+import com.cardview.demo.repository.FcaRepository;
 import com.cardview.demo.repository.PFAccountRepository;
-import com.cardview.demo.repository.PFLoanRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
-public class BriefcaseAllowanceService {
-    @Autowired
-    private EmailServiceImpl emailService;
-
+public class FcaService {
 
     @Autowired
-    BriefcaseAllowanceRepository repository;
+    FcaRepository repository;
 
     @Autowired
     PFAccountRepository accountRepository;
 
 
-    public List<BriefcaseAllowanceEntity> getAllBriefcaseAllowance()
+    public List<FcaEntity> getAllFCA()
     {
-        List<BriefcaseAllowanceEntity> result = (List<BriefcaseAllowanceEntity>) repository.findAll();
+        List<FcaEntity> result = (List<FcaEntity>) repository.findAll();
 
         if(result.size() > 0) {
             return result;
         } else {
-            return new ArrayList<BriefcaseAllowanceEntity>();
+            return new ArrayList<FcaEntity>();
         }
     }
 
-    public boolean deleteBriefcaseAllowanceById(Long id) throws RecordNotFoundException
+    public boolean deleteFCAById(Long id) throws RecordNotFoundException
     {
-        Optional<BriefcaseAllowanceEntity> employee = repository.findById(id);
+        Optional<FcaEntity> employee = repository.findById(id);
 
         if(employee.isPresent()) {
             repository.deleteById(id);
@@ -54,9 +48,9 @@ public class BriefcaseAllowanceService {
 
     }
 
-    public BriefcaseAllowanceEntity getBriefcaseAllowanceById(Long id) throws RecordNotFoundException
+    public FcaEntity getFCAById(Long id) throws RecordNotFoundException
     {
-        Optional<BriefcaseAllowanceEntity> employee = repository.findById(id);
+        Optional<FcaEntity> employee = repository.findById(id);
 
         if(employee.isPresent()) {
             return employee.get();
@@ -65,7 +59,7 @@ public class BriefcaseAllowanceService {
         }
     }
 
-    public BriefcaseAllowanceEntity createOrUpdateBriefcaseAllowance(BriefcaseAllowanceEntity entity)
+    public FcaEntity createOrUpdateFCA(FcaEntity entity)
     {
         if(entity.getid()  == null)
         {
@@ -75,11 +69,11 @@ public class BriefcaseAllowanceService {
         }
         else
         {
-            Optional<BriefcaseAllowanceEntity> employee = repository.findById(entity.getid());
+            Optional<FcaEntity> employee = repository.findById(entity.getid());
 
             if(employee.isPresent())
             {
-                BriefcaseAllowanceEntity newEntity = employee.get();
+                FcaEntity newEntity = employee.get();
                 newEntity.setHRApproved(entity.getHRApproved());
                 newEntity.setapproved(entity.getapproved());
                 newEntity.setremarks(entity.getremarks());
@@ -88,9 +82,8 @@ public class BriefcaseAllowanceService {
                 newEntity.setEntitledAmount(entity.getEntitledAmount());
                 newEntity.setHrRemarkss(entity.getHrRemarks());
                 newEntity.setManagerRemarks(entity.getManagerRemarks());
-                newEntity.setInvoiceAmount(entity.getInvoiceAmount());
-                newEntity.setInvoiceDate(entity.getInvoiceDate());
-                newEntity.setInvoiceNo(entity.getInvoiceNo());
+                newEntity.setMonths(entity.getMonths());
+                newEntity.setQuarterType(entity.getQuarterType());
                 newEntity = repository.save(newEntity);
 
                 return newEntity;
@@ -102,12 +95,12 @@ public class BriefcaseAllowanceService {
         }
     }
 
-    public List<BriefcaseAllowanceEntity> updateBriefcaseAllowance(PfLoanUpdateInput[] entityArray, boolean isManager) {
-        List<BriefcaseAllowanceEntity> result = new ArrayList<BriefcaseAllowanceEntity>();
+    public List<FcaEntity> updateFCA(PfLoanUpdateInput[] entityArray, boolean isManager) {
+        List<FcaEntity> result = new ArrayList<FcaEntity>();
         for(PfLoanUpdateInput entity : entityArray) {
-            Optional<BriefcaseAllowanceEntity> employee = repository.findById(entity.id);
+            Optional<FcaEntity> employee = repository.findById(entity.id);
             if (employee.isPresent()) {
-                BriefcaseAllowanceEntity newEntity = employee.get();
+                FcaEntity newEntity = employee.get();
                 newEntity.setremarks(newEntity.getremarks() + "; " + entity.remarks);
                 if(isManager == true)
                     newEntity.setapproved(entity.approved);

@@ -3,6 +3,7 @@ package com.cardview.demo.service;
 import com.cardview.demo.exception.RecordNotFoundException;
 import com.cardview.demo.model.BriefcaseAllowanceEntity;
 import com.cardview.demo.model.PFLoanEntity;
+import com.cardview.demo.model.PfLoanUpdateInput;
 import com.cardview.demo.model.VpfContributionEntity;
 import com.cardview.demo.repository.BriefcaseAllowanceRepository;
 import com.cardview.demo.repository.PFAccountRepository;
@@ -92,5 +93,26 @@ public class BriefcaseAllowanceService {
                 return entity;
             }
         }
+    }
+
+    public List<BriefcaseAllowanceEntity> updateBriefcaseAllowance(PfLoanUpdateInput[] entityArray, boolean isManager) {
+        List<BriefcaseAllowanceEntity> result = new ArrayList<BriefcaseAllowanceEntity>();
+        for(PfLoanUpdateInput entity : entityArray) {
+            Optional<BriefcaseAllowanceEntity> employee = repository.findById(entity.id);
+            if (employee.isPresent()) {
+                BriefcaseAllowanceEntity newEntity = employee.get();
+                newEntity.setremarks(newEntity.getremarks() + "; " + entity.remarks);
+                if(isManager == true)
+                    newEntity.setapproved(entity.approved);
+                else
+                    newEntity.setHRApproved(entity.hrApproved);
+
+                repository.save(newEntity);
+
+                result.add(newEntity);
+            }
+        }
+
+        return result;
     }
 }

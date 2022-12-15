@@ -1,9 +1,7 @@
 package com.cardview.demo.web;
 
 import com.cardview.demo.exception.RecordNotFoundException;
-import com.cardview.demo.model.BriefcaseAllowanceEntity;
-import com.cardview.demo.model.EntitledAmount;
-import com.cardview.demo.model.PFAccountEntity;
+import com.cardview.demo.model.*;
 import com.cardview.demo.outputModels.BriefcaseAllowanceOutput;
 import com.cardview.demo.service.BriefcaseAllowanceService;
 import com.cardview.demo.service.EmailServiceImpl;
@@ -134,5 +132,47 @@ public class BriefcaseAllowanceController {
         } catch (Exception ex) {
             return null;
         }
+    }
+
+    @RequestMapping(path = "/manager/update", method = RequestMethod.PUT)
+    public boolean UpdateBriefcaseAllowance(@RequestBody PfLoanUpdateInput[] loan) throws RecordNotFoundException {
+        List<BriefcaseAllowanceEntity> lstVPF = baService.updateBriefcaseAllowance(loan, true);
+
+        for (BriefcaseAllowanceEntity entity : lstVPF) {
+            PFAccountEntity account = paService.getPFAccountById(entity.getEmpCode());
+            String subject = "", body = "";
+
+            if (entity.getapproved() == 1) {
+                subject = "Briefcase Allowance Approved";
+                body = "Your Briefcase Allowance has been approved by manager.";
+            } else if (entity.getapproved() == 2) {
+                subject = "Briefcase Allowance Rejected";
+                body = "Your Briefcase Allowance has been rejected by manager.";
+            }
+
+            emailService.sendSimpleMail(account.getEmail(), body, subject);
+        }
+        return true;
+    }
+
+    @RequestMapping(path = "/hr/update", method = RequestMethod.PUT)
+    public boolean UpdateHrBriefcaseAllowance(@RequestBody PfLoanUpdateInput[] loan) throws RecordNotFoundException {
+        List<BriefcaseAllowanceEntity> lstVPF = baService.updateBriefcaseAllowance(loan, false);
+
+        for (BriefcaseAllowanceEntity entity : lstVPF) {
+            PFAccountEntity account = paService.getPFAccountById(entity.getEmpCode());
+            String subject = "", body = "";
+
+            if (entity.getapproved() == 1) {
+                subject = "Briefcase Allowance Approved";
+                body = "Your Briefcase Allowance has been approved by HR.";
+            } else if (entity.getapproved() == 2) {
+                subject = "Briefcase Allowance Rejected";
+                body = "Your Briefcase Allowance has been rejected by HR.";
+            }
+
+            emailService.sendSimpleMail(account.getEmail(), body, subject);
+        }
+        return true;
     }
 }

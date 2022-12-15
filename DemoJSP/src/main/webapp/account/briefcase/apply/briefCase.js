@@ -123,7 +123,7 @@ var BriefCase = function(){
 		},{
 			columns: [
 				{
-					bind: 'entitledAmount ',
+					bind: 'entitledAmount',
 					name: 'entitledAmount',
 	                type: 'number',
 	                label: 'Entitled Amount',
@@ -264,6 +264,21 @@ var BriefCase = function(){
 			dateValidation(config);
 		});
 		
+		$("#dvRefundablePFLoan").jqxForm('getComponentByName', 'invoiceNo').on('change', function(event){
+			formData.invoiceNo = event.args.value;
+		});
+		
+		
+		$("#dvRefundablePFLoan").jqxForm('getComponentByName', 'vendorName').on('change', function(event){
+			formData.vendorName = event.args.value;
+		});
+		
+		$("#dvRefundablePFLoan").jqxForm('getComponentByName', 'invoiceAmount').on('change', function(event){
+			formData.invoiceAmount = !isNaN(event.args.value) ? parseInt(event.args.value) : 0;
+						
+			calculateAmount();
+		});
+		
 		$("#dvRefundablePFLoan").jqxForm('getComponentByName', 'saveDraft').on('click', function(event){
 			submitLoan('DRAFT');
 		});
@@ -277,7 +292,7 @@ var BriefCase = function(){
 			theme: theme, 
 			width: controlWidth
 		}).on('change', function(event){
-			formData.REMARKS = $("#dvRefundablePFLoan").jqxForm('getComponentByName', 'REMARKS').val();
+			formData.REMARKS = $(event.currentTarget).val();
 		});
 	};
 	
@@ -322,19 +337,26 @@ var BriefCase = function(){
 		postData.submitted = 0;
 		postData.type = 1;
 		
+		postData.claimDate = Common.dateFormat(postData.claimDate, 'yyyy-MM-dd');
+		postData.invoiceDate = Common.dateFormat(postData.invoiceDate, 'yyyy-MM-dd');
+		
 		if(sType == 'SUBMIT'){
 			postData.submitted = 1;
 		}
 		
-		$.ajax({
-			type: 'post',
-			url: sURL, 
-			data: JSON.stringify(postData),
-			contentType: "application/json; charset=utf-8",
-			success: function(result){
-				uploadFile(result);
-			}
-		});
+		if(formData.hasFile){
+			$.ajax({
+				type: 'post',
+				url: sURL, 
+				data: JSON.stringify(postData),
+				contentType: "application/json; charset=utf-8",
+				success: function(result){
+					uploadFile(result);
+				}
+			});
+		} else {
+			Common.showToast({message: "Please select the invoice document"});
+		}
 	};	
 	
 	var uploadFile = function(result){
@@ -344,9 +366,6 @@ var BriefCase = function(){
 			if(fileInput != null && fileInput.length > 0){
 				Common.uploadFiles({id: result.id, empCode: result.empcode, fileInput: fileInput, fileIndex: 0, url: Common.HOST + '/pfloan/uploadFile', successHandler: formSuccessHandler});				
 			}
-		}
-		else{
-			formSuccessHandler();
 		}
 	}
 	
@@ -368,15 +387,15 @@ var BriefCase = function(){
 	var getLoanData = function(){
 		var postData = {};
 		var fields = [
-			{field: 'empcode', name: 'empcode'},
-			{field: 'claimDate', name: 'advanceType'}, 
+			{field: 'empCode', name: 'empcode'},
+			{field: 'claimDate', name: 'claimDate'}, 
 			{field: 'vendorName', name: 'vendorName'}, 
 			{field: 'invoiceDate', name: 'invoiceDate'}, 
 			{field: 'invoiceNo', name: 'invoiceNo'}, 
 			{field: 'invoiceAmount', name: 'invoiceAmount'}, 
 			{field: 'entitledAmount', name: 'entitledAmount'},
 			{field: 'claimAmount', name: 'claimAmount'},
-			{field: 'REMARKS', name: 'REMARKS'}
+			{field: 'remarks', name: 'REMARKS'}
 		];
 		
 		for(var sKey in fields){
@@ -395,6 +414,12 @@ var BriefCase = function(){
 		
 		if(entitled != null && entitled[formData.grade] != null){
 			formData.entitledAmount = entitled[formData.grade];
+		}
+		
+		if(formData.entitledAmount <= formData.invoiceAmount){
+			formData.claimAmount = formData.entitledAmount;
+		} else {
+			formData.claimAmount = formData.invoiceAmount;
 		}
 		
 		if(formData.claimAmount == null || formData.claimAmount == 0 || formData.claimDate == null || formData.claimDateDays > 30 

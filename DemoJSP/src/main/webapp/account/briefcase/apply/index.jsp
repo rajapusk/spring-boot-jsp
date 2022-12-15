@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title id='Description'>Refundable PF Loan</title>
+		<title id='Description'>Briefcase</title>
 		<%@include file="../../header.jsp" %>
 		
 	    <link rel="stylesheet" href="briefCase.css" type="text/css" />

@@ -269,7 +269,7 @@ var CommonMethod = function(theme){
 			
 			if(dataModel == null || dataModel == {}){
 				if(row.type == 'input'){
-					$("#" + row.name).jqxInput({ theme: theme, disabled: row.disabled });
+					$("#" + row.name).jqxInput({ theme: theme, disabled: (row.disabled != null ? row.disabled : false) });
 				}else if(row.type == 'date'){
 					$("#" + row.name).jqxDateTimeInput({theme: theme});
 				}else if(row.type == 'option') {

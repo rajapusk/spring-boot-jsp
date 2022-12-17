@@ -125,7 +125,7 @@ var BCManager = function(){
                 for(var sKey in selectedRows){
 					var row = selectedRows[sKey];
 					
-					postData.push({id: row.rowData.id, approved: row.rowData.approved, l1remards: row.hrRemarks})
+					postData.push({id: row.rowData.id, approved: row.rowData.approved, remarks: row.hrRemarks})
 				}
                 
                 if(postData.length > 0){
@@ -153,7 +153,7 @@ var BCManager = function(){
                 
                 $('#dvPFAccount').jqxGrid('updaterow', rowID, dataRecord);
                 $("#popupWindow").jqxWindow('hide'); 
-                approveLoan([{ id: dataRecord.id, approved: bApproved, hrRemarks: shrRemarks}]);
+                approveLoan([{ id: dataRecord.id, approved: bApproved, remarks: shrRemarks}]);
             }
         });        
 	}

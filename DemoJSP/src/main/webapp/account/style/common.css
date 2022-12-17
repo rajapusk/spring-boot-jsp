@@ -175,6 +175,12 @@ div.scRefundablePFLoan td[style="width:20%; background: transparent;"] td[style=
 	padding: 5px 10px !important;
 }
 
+.scRefundablePFLoan .jqx-combobox-content input{
+	width: 0px !important;
+    height: 0px !important;
+    visibility: hidden !important;
+}
+
 div.scRefundablePFLoan > table{
 	background: transparent !important;
 	border: 0px !important;
@@ -240,4 +246,34 @@ div.scRefundablePFLoan .jqx-file-upload{
     border-bottom: 10px solid red;
     border-right: 10px solid transparent;
     border-left: 10px solid transparent;
+}
+
+.scGroupOption, .scDropdownOption{
+	display: flex;
+    width: 100%;
+    justify-content: space-around;
+    height: 32px;
+    align-items: center;
+    border: 1px solid #e1dfdf;
+    border-radius: 5px;
+}
+
+.scDropdownOption{
+	border: 1px solid transparent;
+}
+
+.scOptionBox, .scDropdownBox{
+	width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding-top: 15px;
+}
+
+.scFullWidth{
+	width: 100% !important;
+}
+
+.scFullHeight{
+	height: 100%;
 }

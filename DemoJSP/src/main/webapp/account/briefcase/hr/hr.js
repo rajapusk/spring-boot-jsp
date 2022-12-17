@@ -11,7 +11,7 @@ var BCHR = function(){
 		{name: 'winEntitledAmount', type: 'input', bind: 'entitledAmount', label: 'Entitled Amount', disabled: true},
 		{name: 'winclaimAmount', type: 'input', bind: 'claimAmount', label: 'Claimed Amount', disabled: true},
 		{name: 'winEeRemarks', type: 'input', bind: 'remarks', label: 'EE Remarks', disabled: true},
-		{name: 'winhrRemarks', type: 'input', bind: 'hrRemarks', label: 'L1 Remarks', disabled: true},
+		{name: 'winmanagerRemarks', type: 'input', bind: 'managerRemarks', label: 'Manager Remarks', disabled: true},
 		{name: 'winApproved', type: 'option', bind: 'approvedText', label: 'Approved', source: ['YES', 'NO', 'REJECTED']}
 	];
 	
@@ -26,7 +26,7 @@ var BCHR = function(){
             {name: 'entitledAmount', type: 'number'}, 
             {name: 'claimAmount', type: 'number'},
             {name: 'remarks', type: 'string'},
-            {name: 'hrRemarks', type: 'string'},
+            {name: 'managerRemarks', type: 'string'},
             {name: 'hrApproved', type: 'booelan'}
             
        	],
@@ -42,7 +42,7 @@ var BCHR = function(){
       { text: 'Entitled Amt', datafield: 'entitledAmount', editable: false, width: 120, cellsalign: 'right', renderer: Common.numberIconHeader },
       { text: 'Claimed Amt', datafield: 'claimAmount', editable: false, width: 120, cellsalign: 'right', renderer: Common.numberIconHeader  },
       { text: 'EE Remarks', datafield: 'remarks', width: 120, editable: false, cellsalign: 'left' },      
-      { text: 'L1 Remarks', datafield: 'hrRemarks', width: 120, editable: false, cellsalign: 'left'},
+      { text: 'Manager Remarks', datafield: 'managerRemarks', width: 120, editable: false, cellsalign: 'left'},
       { text: 'Approved', datafield: 'hrApproved', width: 70, threestatecheckbox: true, columntype: 'checkbox', editable: true},
       Common.iconCell({icon: 'fa-pencil',text: 'Action', datafield: 'Edit', width: 60})
     ];    

@@ -151,14 +151,13 @@ var BriefCase = function(){
 	                label: 'Remarks',
 	                labelPosition: 'top',
 	                labelWidth: labelWidth + 'px',
-	                width: '100%',
 	                align: 'left',
-					columnWidth: '30%'
+					columnWidth: '40%'
 	            },{
 					type: 'blank',
 			        name: 'fileUpload',
 			        rowHeight: '75px',
-			        columnWidth: '30%'
+			        columnWidth: '20%'
 				}
 			]
 		},{

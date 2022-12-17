@@ -61,8 +61,12 @@ public class FcaService {
 
     public FcaEntity createOrUpdateFCA(FcaEntity entity)
     {
+        long millis=System.currentTimeMillis();
+
         if(entity.getid()  == null)
         {
+            entity.setCreatedOn(new java.sql.Date(millis));
+            entity.setUpdatedOn(new java.sql.Date(millis));
             entity = repository.save(entity);
 
             return entity;
@@ -84,6 +88,7 @@ public class FcaService {
                 newEntity.setManagerRemarks(entity.getManagerRemarks());
                 newEntity.setMonths(entity.getMonths());
                 newEntity.setQuarterType(entity.getQuarterType());
+                entity.setUpdatedOn(new java.sql.Date(millis));
                 newEntity = repository.save(newEntity);
 
                 return newEntity;
@@ -97,15 +102,18 @@ public class FcaService {
 
     public List<FcaEntity> updateFCA(PfLoanUpdateInput[] entityArray, boolean isManager) {
         List<FcaEntity> result = new ArrayList<FcaEntity>();
-        for(PfLoanUpdateInput entity : entityArray) {
+        for (PfLoanUpdateInput entity : entityArray) {
             Optional<FcaEntity> employee = repository.findById(entity.id);
             if (employee.isPresent()) {
                 FcaEntity newEntity = employee.get();
-                newEntity.setremarks(newEntity.getremarks() + "; " + entity.remarks);
-                if(isManager == true)
+
+                if (isManager == true) {
                     newEntity.setapproved(entity.approved);
-                else
+                    newEntity.setManagerRemarks(entity.remarks);
+                } else {
                     newEntity.setHRApproved(entity.hrApproved);
+                    newEntity.setHrRemarkss(entity.remarks);
+                }
 
                 repository.save(newEntity);
 

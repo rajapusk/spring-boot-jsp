@@ -67,8 +67,12 @@ public class BriefcaseAllowanceService {
 
     public BriefcaseAllowanceEntity createOrUpdateBriefcaseAllowance(BriefcaseAllowanceEntity entity)
     {
+        long millis=System.currentTimeMillis();
+
         if(entity.getid()  == null)
         {
+            entity.setCreatedOn(new java.sql.Date(millis));
+            entity.setUpdatedOn(new java.sql.Date(millis));
             entity = repository.save(entity);
 
             return entity;
@@ -91,6 +95,7 @@ public class BriefcaseAllowanceService {
                 newEntity.setInvoiceAmount(entity.getInvoiceAmount());
                 newEntity.setInvoiceDate(entity.getInvoiceDate());
                 newEntity.setInvoiceNo(entity.getInvoiceNo());
+                entity.setUpdatedOn(new java.sql.Date(millis));
                 newEntity = repository.save(newEntity);
 
                 return newEntity;
@@ -108,14 +113,16 @@ public class BriefcaseAllowanceService {
             Optional<BriefcaseAllowanceEntity> employee = repository.findById(entity.id);
             if (employee.isPresent()) {
                 BriefcaseAllowanceEntity newEntity = employee.get();
-                newEntity.setremarks(newEntity.getremarks() + "; " + entity.remarks);
-                if(isManager == true)
+
+                if (isManager == true) {
                     newEntity.setapproved(entity.approved);
-                else
+                    newEntity.setManagerRemarks(entity.remarks);
+                } else {
                     newEntity.setHRApproved(entity.hrApproved);
+                    newEntity.setHrRemarkss(entity.remarks);
+                }
 
                 repository.save(newEntity);
-
                 result.add(newEntity);
             }
         }

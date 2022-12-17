@@ -131,4 +131,28 @@ public class FcaEntity {
     {
         this.hrApproved = value;
     }
+
+
+
+    @Column(name="CREATED_ON")
+    private java.sql.Date createdOn;
+    public java.sql.Date getCreatedOn()
+    {
+        return this.createdOn;
+    }
+    public void setCreatedOn(java.sql.Date value)
+    {
+        this.createdOn = value;
+    }
+
+    @Column(name="UPDATED_ON")
+    private java.sql.Date updatedOn;
+    public java.sql.Date getUpdatedOn()
+    {
+        return this.updatedOn;
+    }
+    public void setUpdatedOn(java.sql.Date value)
+    {
+        this.updatedOn = value;
+    }
 }

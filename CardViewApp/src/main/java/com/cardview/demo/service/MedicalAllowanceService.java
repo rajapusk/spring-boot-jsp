@@ -1,49 +1,43 @@
 package com.cardview.demo.service;
 
 import com.cardview.demo.exception.RecordNotFoundException;
-import com.cardview.demo.model.BriefcaseAllowanceEntity;
-import com.cardview.demo.model.PFLoanEntity;
+import com.cardview.demo.model.MedicalAllowanceEntity;
 import com.cardview.demo.model.PfLoanUpdateInput;
-import com.cardview.demo.model.VpfContributionEntity;
-import com.cardview.demo.repository.BriefcaseAllowanceRepository;
+import com.cardview.demo.repository.MedicalAllowanceRepository;
 import com.cardview.demo.repository.PFAccountRepository;
-import com.cardview.demo.repository.PFLoanRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
-public class BriefcaseAllowanceService {
+public class MedicalAllowanceService {
     @Autowired
     private EmailServiceImpl emailService;
 
-
     @Autowired
-    BriefcaseAllowanceRepository repository;
+    MedicalAllowanceRepository repository;
 
     @Autowired
     PFAccountRepository accountRepository;
 
 
-    public List<BriefcaseAllowanceEntity> getAllBriefcaseAllowance()
+    public List<MedicalAllowanceEntity> getAllMedicalAllowance()
     {
-        List<BriefcaseAllowanceEntity> result = (List<BriefcaseAllowanceEntity>) repository.findAll();
+        List<MedicalAllowanceEntity> result = (List<MedicalAllowanceEntity>) repository.findAll();
 
         if(result.size() > 0) {
             return result;
         } else {
-            return new ArrayList<BriefcaseAllowanceEntity>();
+            return new ArrayList<MedicalAllowanceEntity>();
         }
     }
 
-    public boolean deleteBriefcaseAllowanceById(Long id) throws RecordNotFoundException
+    public boolean deleteMedicalAllowanceById(Long id) throws RecordNotFoundException
     {
-        Optional<BriefcaseAllowanceEntity> employee = repository.findById(id);
+        Optional<MedicalAllowanceEntity> employee = repository.findById(id);
 
         if(employee.isPresent()) {
             repository.deleteById(id);
@@ -54,9 +48,9 @@ public class BriefcaseAllowanceService {
 
     }
 
-    public BriefcaseAllowanceEntity getBriefcaseAllowanceById(Long id) throws RecordNotFoundException
+    public MedicalAllowanceEntity getMedicalAllowanceById(Long id) throws RecordNotFoundException
     {
-        Optional<BriefcaseAllowanceEntity> employee = repository.findById(id);
+        Optional<MedicalAllowanceEntity> employee = repository.findById(id);
 
         if(employee.isPresent()) {
             return employee.get();
@@ -65,7 +59,7 @@ public class BriefcaseAllowanceService {
         }
     }
 
-    public BriefcaseAllowanceEntity createOrUpdateBriefcaseAllowance(BriefcaseAllowanceEntity entity)
+    public MedicalAllowanceEntity createOrUpdateMedicalAllowance(MedicalAllowanceEntity entity)
     {
         long millis=System.currentTimeMillis();
 
@@ -79,11 +73,11 @@ public class BriefcaseAllowanceService {
         }
         else
         {
-            Optional<BriefcaseAllowanceEntity> employee = repository.findById(entity.getid());
+            Optional<MedicalAllowanceEntity> employee = repository.findById(entity.getid());
 
             if(employee.isPresent())
             {
-                BriefcaseAllowanceEntity newEntity = employee.get();
+                MedicalAllowanceEntity newEntity = employee.get();
                 newEntity.setHRApproved(entity.getHRApproved());
                 newEntity.setapproved(entity.getapproved());
                 newEntity.setremarks(entity.getremarks());
@@ -96,7 +90,7 @@ public class BriefcaseAllowanceService {
                 newEntity.setInvoiceDate(entity.getInvoiceDate());
                 newEntity.setInvoiceNo(entity.getInvoiceNo());
                 entity.setUpdatedOn(new java.sql.Date(millis));
-                entity.setVendorName(entity.getVendorName());
+                entity.setHospitalName(entity.getHospitalName());
                 newEntity = repository.save(newEntity);
 
                 return newEntity;
@@ -108,12 +102,12 @@ public class BriefcaseAllowanceService {
         }
     }
 
-    public List<BriefcaseAllowanceEntity> updateBriefcaseAllowance(PfLoanUpdateInput[] entityArray, boolean isManager) {
-        List<BriefcaseAllowanceEntity> result = new ArrayList<BriefcaseAllowanceEntity>();
+    public List<MedicalAllowanceEntity> updateMedicalAllowance(PfLoanUpdateInput[] entityArray, boolean isManager) {
+        List<MedicalAllowanceEntity> result = new ArrayList<MedicalAllowanceEntity>();
         for(PfLoanUpdateInput entity : entityArray) {
-            Optional<BriefcaseAllowanceEntity> employee = repository.findById(entity.id);
+            Optional<MedicalAllowanceEntity> employee = repository.findById(entity.id);
             if (employee.isPresent()) {
-                BriefcaseAllowanceEntity newEntity = employee.get();
+                MedicalAllowanceEntity newEntity = employee.get();
 
                 if (isManager == true) {
                     newEntity.setapproved(entity.approved);

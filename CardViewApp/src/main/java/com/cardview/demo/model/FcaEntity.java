@@ -35,7 +35,7 @@ public class FcaEntity {
     {
         this.empCode = value;
     }
-    @Column(name="months")
+    @Column(name="MONTHS")
     private String months;
     public String getMonths()
     {

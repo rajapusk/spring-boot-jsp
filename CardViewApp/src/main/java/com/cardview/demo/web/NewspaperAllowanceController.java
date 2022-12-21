@@ -1,11 +1,12 @@
 package com.cardview.demo.web;
 
 import com.cardview.demo.exception.RecordNotFoundException;
-import com.cardview.demo.model.MedicalAllowanceEntity;
+import com.cardview.demo.model.NewspaperAllowanceEntity;
 import com.cardview.demo.model.PFAccountEntity;
 import com.cardview.demo.model.PfLoanUpdateInput;
-import com.cardview.demo.outputModels.MedicalAllowanceOutput;
-import com.cardview.demo.service.MedicalAllowanceService;
+import com.cardview.demo.outputModels.NewspaperAllowanceEntitledAmount;
+import com.cardview.demo.outputModels.NewspaperAllowanceOutput;
+import com.cardview.demo.service.NewspaperAllowanceService;
 import com.cardview.demo.service.EmailServiceImpl;
 import com.cardview.demo.service.PFAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,35 +17,35 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("/medical")
-public class MedicalAllowanceController {
+@RequestMapping("/newspaper")
+public class NewspaperAllowanceController {
 
     @Value("${manager.mail}") private String _managerEmail;
     @Autowired
     PFAccountService paService;
     @Autowired
-    MedicalAllowanceService baService;
+    NewspaperAllowanceService baService;
     @Autowired
     private EmailServiceImpl emailService;
 
     @GetMapping("/get/{id}")
-    public MedicalAllowanceEntity getMedicalAllowanceById(@PathVariable("id") Long id) {
+    public NewspaperAllowanceEntity getNewspaperAllowanceById(@PathVariable("id") Long id) {
         try {
             System.out.println("@@@ id " + id);
-            return baService.getMedicalAllowanceById(id);
+            return baService.getNewspaperAllowanceById(id);
         } catch (Exception ex) {
             return null;
         }
     }
 
     @RequestMapping(path = "/create", method = RequestMethod.POST)
-    public MedicalAllowanceEntity createOrUpdateMedicalAllowanceContribution(@RequestBody MedicalAllowanceEntity loan) {
-        MedicalAllowanceEntity entity = baService.createOrUpdateMedicalAllowance(loan);
+    public NewspaperAllowanceEntity createOrUpdateNewspaperAllowanceContribution(@RequestBody NewspaperAllowanceEntity loan) {
+        NewspaperAllowanceEntity entity = baService.createOrUpdateNewspaperAllowance(loan);
 
         try {
             PFAccountEntity account = paService.getPFAccountById(loan.getEmpCode());
-            String body = account.getNAME() + " has applied the Medical Allowance. ";
-            emailService.sendSimpleMail(_managerEmail, body, "Medical Allowance Application");
+            String body = account.getNAME() + " has applied the Briefcase Allowance. ";
+            emailService.sendSimpleMail(_managerEmail, body, "Newspaper Allowance Application");
 
         } catch (Exception e) {
         }
@@ -53,23 +54,23 @@ public class MedicalAllowanceController {
     }
 
     @DeleteMapping("/delete/id")
-    public boolean deleteMedicalAllowanceById(@PathVariable("id") long id) throws RecordNotFoundException {
-        return baService.deleteMedicalAllowanceById(id);
+    public boolean deleteNewspaperAllowanceById(@PathVariable("id") long id) throws RecordNotFoundException {
+        return baService.deleteNewspaperAllowanceById(id);
     }
 
     @GetMapping("/manager")
-    public List<MedicalAllowanceOutput> managerMedicalAllowanceGetAll() {
+    public List<NewspaperAllowanceOutput> managerNewspaperAllowanceGetAll() {
         try {
-            List<MedicalAllowanceOutput> result = new ArrayList<MedicalAllowanceOutput>();
+            List<NewspaperAllowanceOutput> result = new ArrayList<NewspaperAllowanceOutput>();
             List<PFAccountEntity> listAllAccount = paService.getAllPFAccount();
-            List<MedicalAllowanceEntity> lstMedicalAllowance = baService.getAllMedicalAllowance();
+            List<NewspaperAllowanceEntity> lstNewspaperAllowance = baService.getAllNewspaperAllowance();
 
             for (PFAccountEntity account : listAllAccount) {
-                for (MedicalAllowanceEntity ba : lstMedicalAllowance) {
+                for (NewspaperAllowanceEntity ba : lstNewspaperAllowance) {
                     if (account.getEMPCODE() == ba.getEmpCode() && ba.getapproved() == 0) {
-                        MedicalAllowanceOutput output = new MedicalAllowanceOutput();
+                        NewspaperAllowanceOutput output = new NewspaperAllowanceOutput();
                         output.id = ba.getid();
-                        output.dob = account.getDOB();
+                        output.doj = account.getDOJ();
                         output.name = account.getNAME();
                         output.empcode = account.getEMPCODE();
                         output.claimAmount = ba.getClaimAmount();
@@ -81,9 +82,12 @@ public class MedicalAllowanceController {
                         output.invoiceAmount = ba.getInvoiceAmount();
                         output.invoiceDate = ba.getInvoiceDate();
                         output.invoiceNo = ba.getInvoiceNo();
-                        output.hospitalName = ba.getHospitalName();
+                        output.vendorName = ba.getVendorName();
                         output.managerRemarks = ba.getManagerRemarks();
                         output.hrRemarks=ba.getHrRemarks();
+                        output.glcode = account.getGlcode();
+                        output.months = ba.getMonths();
+                        output.quarterType = ba.getQuarterType();
                         result.add(output);
                     }
                 }
@@ -95,18 +99,18 @@ public class MedicalAllowanceController {
     }
 
     @GetMapping("/hr")
-    public List<MedicalAllowanceOutput> hrMedicalAllowanceGetAll() {
+    public List<NewspaperAllowanceOutput> hrNewspaperAllowanceGetAll() {
         try {
-            List<MedicalAllowanceOutput> result = new ArrayList<MedicalAllowanceOutput>();
+            List<NewspaperAllowanceOutput> result = new ArrayList<NewspaperAllowanceOutput>();
             List<PFAccountEntity> listAllAccount = paService.getAllPFAccount();
-            List<MedicalAllowanceEntity> lstMedicalAllowance = baService.getAllMedicalAllowance();
+            List<NewspaperAllowanceEntity> lstNewspaperAllowance = baService.getAllNewspaperAllowance();
 
             for (PFAccountEntity account : listAllAccount) {
-                for (MedicalAllowanceEntity ba : lstMedicalAllowance) {
+                for (NewspaperAllowanceEntity ba : lstNewspaperAllowance) {
                     if (account.getEMPCODE() == ba.getEmpCode() && ba.getapproved() == 1 && ba.getHRApproved() == 0) {
-                        MedicalAllowanceOutput output = new MedicalAllowanceOutput();
+                        NewspaperAllowanceOutput output = new NewspaperAllowanceOutput();
                         output.id = ba.getid();
-                        output.dob = account.getDOB();
+                        output.doj = account.getDOJ();
                         output.name = account.getNAME();
                         output.empcode = account.getEMPCODE();
                         output.claimAmount = ba.getClaimAmount();
@@ -118,10 +122,12 @@ public class MedicalAllowanceController {
                         output.invoiceAmount = ba.getInvoiceAmount();
                         output.invoiceDate = ba.getInvoiceDate();
                         output.invoiceNo = ba.getInvoiceNo();
-                        output.hospitalName = ba.getHospitalName();
+                        output.vendorName = ba.getVendorName();
                         output.managerRemarks = ba.getManagerRemarks();
                         output.hrRemarks=ba.getHrRemarks();
-                        output.grade = account.getGRADE();
+                        output.glcode = account.getGlcode();
+                        output.months = ba.getMonths();
+                        output.quarterType = ba.getQuarterType();
                         result.add(output);
                     }
                 }
@@ -132,20 +138,29 @@ public class MedicalAllowanceController {
         }
     }
 
-    @RequestMapping(path = "/manager/update", method = RequestMethod.PUT)
-    public boolean UpdateMedicalAllowance(@RequestBody PfLoanUpdateInput[] loan) throws RecordNotFoundException {
-        List<MedicalAllowanceEntity> lstVPF = baService.updateMedicalAllowance(loan, true);
+    @GetMapping("/getEntitle")
+    public NewspaperAllowanceEntitledAmount getEntitledAmount() {
+        try {
+            return new NewspaperAllowanceEntitledAmount();
+        } catch (Exception ex) {
+            return null;
+        }
+    }
 
-        for (MedicalAllowanceEntity entity : lstVPF) {
+    @RequestMapping(path = "/manager/update", method = RequestMethod.PUT)
+    public boolean UpdateNewspaperAllowance(@RequestBody PfLoanUpdateInput[] loan) throws RecordNotFoundException {
+        List<NewspaperAllowanceEntity> lstVPF = baService.updateNewspaperAllowance(loan, true);
+
+        for (NewspaperAllowanceEntity entity : lstVPF) {
             PFAccountEntity account = paService.getPFAccountById(entity.getEmpCode());
             String subject = "", body = "";
 
             if (entity.getapproved() == 1) {
-                subject = "Medical Allowance Approved";
-                body = "Your Medical Allowance has been approved by manager.";
+                subject = "Newspaper Allowance Approved";
+                body = "Your Newspaper Allowance has been approved by manager.";
             } else if (entity.getapproved() == 2) {
-                subject = "Medical Allowance Rejected";
-                body = "Your Medical Allowance has been rejected by manager.";
+                subject = "Newspaper Allowance Rejected";
+                body = "Your Newspaper Allowance has been rejected by manager.";
             }
 
             emailService.sendSimpleMail(account.getEmail(), body, subject);
@@ -154,19 +169,19 @@ public class MedicalAllowanceController {
     }
 
     @RequestMapping(path = "/hr/update", method = RequestMethod.PUT)
-    public boolean UpdateHrMedicalAllowance(@RequestBody PfLoanUpdateInput[] loan) throws RecordNotFoundException {
-        List<MedicalAllowanceEntity> lstVPF = baService.updateMedicalAllowance(loan, false);
+    public boolean UpdateHrNewspaperAllowance(@RequestBody PfLoanUpdateInput[] loan) throws RecordNotFoundException {
+        List<NewspaperAllowanceEntity> lstVPF = baService.updateNewspaperAllowance(loan, false);
 
-        for (MedicalAllowanceEntity entity : lstVPF) {
+        for (NewspaperAllowanceEntity entity : lstVPF) {
             PFAccountEntity account = paService.getPFAccountById(entity.getEmpCode());
             String subject = "", body = "";
 
             if (entity.getapproved() == 1) {
-                subject = "Medical Allowance Approved";
-                body = "Your Medical Allowance has been approved by HR.";
+                subject = "Newspaper Allowance Approved";
+                body = "Your Newspaper Allowance has been approved by HR.";
             } else if (entity.getapproved() == 2) {
-                subject = "Medical Allowance Rejected";
-                body = "Your Medical Allowance has been rejected by HR.";
+                subject = "Newspaper Allowance Rejected";
+                body = "Your Newspaper Allowance has been rejected by HR.";
             }
 
             emailService.sendSimpleMail(account.getEmail(), body, subject);

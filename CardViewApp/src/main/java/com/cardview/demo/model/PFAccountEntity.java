@@ -166,6 +166,17 @@ public class PFAccountEntity
 		this._GRADE = value;
 	}
 
+	@Column(name="GLCODE")
+	private String _glcode;
+	public String getGlcode()
+	{
+		return this._glcode;
+	}
+	public void setGlcode(String value)
+	{
+		this._glcode = value;
+	}
+
 	@Column(name="BAND")
 	private String _BAND;
 	public String getBAND()

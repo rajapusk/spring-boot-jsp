@@ -1,6 +1,6 @@
-package com.cardview.demo.model;
+package com.cardview.demo.outputModels;
 
-public class EntitledAmount
+public class BriefcaseAllowanceEntitledAmount
 {
     public int I = 1500;
     public int II = 1500;

@@ -2,6 +2,7 @@ package com.cardview.demo.web;
 
 import com.cardview.demo.exception.RecordNotFoundException;
 import com.cardview.demo.model.*;
+import com.cardview.demo.outputModels.BriefcaseAllowanceEntitledAmount;
 import com.cardview.demo.outputModels.BriefcaseAllowanceOutput;
 import com.cardview.demo.service.BriefcaseAllowanceService;
 import com.cardview.demo.service.EmailServiceImpl;
@@ -131,9 +132,9 @@ public class BriefcaseAllowanceController {
     }
     
     @GetMapping("/getEntitle")
-    public EntitledAmount getEntitledAmount() {
+    public BriefcaseAllowanceEntitledAmount getEntitledAmount() {
         try {
-            return new EntitledAmount();
+            return new BriefcaseAllowanceEntitledAmount();
         } catch (Exception ex) {
             return null;
         }

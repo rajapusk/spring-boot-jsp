@@ -3,8 +3,8 @@ package com.cardview.demo.model;
 import javax.persistence.*;
 
 @Entity
-@Table(name="TBL_BriefcaseAllowance")
-public class BriefcaseAllowanceEntity {
+@Table(name="TBL_VehicleAllowance")
+public class VehicleAllowanceEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -13,15 +13,15 @@ public class BriefcaseAllowanceEntity {
         return this.id;
     }
 
-    @Column(name="VENDORNAME")
-    private String vendorName;
-    public String getVendorName()
+    @Column(name="SERVICECENTRENAME")
+    private String serviceCentreName;
+    public String getServiceCentreName()
     {
-        return this.vendorName;
+        return this.serviceCentreName;
     }
-    public void setVendorName(String value)
+    public void setServiceCentreName(String value)
     {
-        this.vendorName = value;
+        this.serviceCentreName = value;
     }
 
     @Column(name="EMPCODE")
@@ -142,7 +142,7 @@ public class BriefcaseAllowanceEntity {
         this.approved = value;
     }
 
-    @Column(name="HRREMARKS")
+    @Column(name="hrRemarks")
     private String hrRemarks;
     public String getHrRemarks()
     {

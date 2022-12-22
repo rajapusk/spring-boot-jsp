@@ -43,7 +43,7 @@ var BCHR = function(){
       { text: 'Claimed Amt', datafield: 'claimAmount', editable: false, width: 120, cellsalign: 'right', renderer: Common.numberIconHeader  },
       { text: 'EE Remarks', datafield: 'remarks', width: 120, editable: false, cellsalign: 'left' },      
       { text: 'Manager Remarks', datafield: 'managerRemarks', width: 120, editable: false, cellsalign: 'left'},
-      { text: 'Approved', datafield: 'hrApproved', width: 70, threestatecheckbox: true, columntype: 'checkbox', editable: true},
+      { text: 'Approved', datafield: 'hrApproved', width: 120, threestatecheckbox: true, columntype: 'checkbox', editable: true},
       Common.iconCell({icon: 'fa-pencil',text: 'Action', datafield: 'Edit', width: 60})
     ];    
     

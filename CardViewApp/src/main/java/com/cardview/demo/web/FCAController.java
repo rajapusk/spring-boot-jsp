@@ -125,16 +125,7 @@ public class FCAController {
             return null;
         }
     }
-    
-    @GetMapping("/getEntitle")
-    public EntitledAmount getEntitledAmount() {
-        try {
-            return new EntitledAmount();
-        } catch (Exception ex) {
-            return null;
-        }
-    }
-
+  
     @RequestMapping(path = "/manager/update", method = RequestMethod.PUT)
     public boolean UpdateFCA(@RequestBody PfLoanUpdateInput[] loan) throws RecordNotFoundException {
         List<FcaEntity> lstVPF = fcaService.updateFCA(loan, true);

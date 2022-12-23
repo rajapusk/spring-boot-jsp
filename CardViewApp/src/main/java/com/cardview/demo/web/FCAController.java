@@ -1,17 +1,30 @@
 package com.cardview.demo.web;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.cardview.demo.exception.RecordNotFoundException;
-import com.cardview.demo.model.*;
+import com.cardview.demo.model.EmpDocEntity;
+import com.cardview.demo.model.FcaEntity;
+import com.cardview.demo.model.PFAccountEntity;
+import com.cardview.demo.model.PfLoanUpdateInput;
 import com.cardview.demo.outputModels.FcaOutput;
 import com.cardview.demo.service.EmailServiceImpl;
 import com.cardview.demo.service.FcaService;
 import com.cardview.demo.service.PFAccountService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.cardview.demo.service.PFLoanService;
 
 @RestController
 @RequestMapping("/fca")
@@ -25,6 +38,9 @@ public class FCAController {
     @Autowired
     private EmailServiceImpl emailService;
 
+    @Autowired
+   	PFLoanService pfService;
+    
     @GetMapping("/get/{id}")
     public FcaEntity getBriefcaseAllowanceById(@PathVariable("id") Long id) {
         try {
@@ -167,4 +183,19 @@ public class FCAController {
         }
         return true;
     }
+    
+    @RequestMapping(path = "/uploadFile", method = RequestMethod.POST)
+   	public EmpDocEntity uploadFile(@RequestParam("emp_doc") MultipartFile file, String pageId, String empCode) {
+   		try {
+   			if (pageId != null) {
+   				if (!file.isEmpty()) {
+   					return FileUploadHelper.uploadFile(file, pageId, empCode, "fca", pfService);
+   				}
+   			}
+   		} catch (Exception e) {
+   			e.printStackTrace();
+   		}
+
+   		return null;
+   	}
 }

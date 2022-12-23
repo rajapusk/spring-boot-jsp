@@ -227,12 +227,12 @@ var BriefCase = function(){
 		.jqxForm('getComponentByName', 'fileUpload')
 		.jqxFileUpload({ 
 			width: '100%%', 
-			fileInputName: 'pf_loan_doc',
+			fileInputName: 'emp_doc',
 			multipleFilesUpload: true, 
 			autoUpload: false, 
 			theme: theme, 
 			uploadTemplate: 'primary' ,
-			uploadUrl:  Common.HOST + '/pfloan/uploadFile' 
+			uploadUrl:  Common.HOST + '/ba/uploadFile' 
 		}).on('select', function (event) {
 		   	formData.hasFile = true;
 		}).on('remove', function (event) {
@@ -363,7 +363,7 @@ var BriefCase = function(){
 			var fileInput = $('input[type=file]');
 			
 			if(fileInput != null && fileInput.length > 0){
-				Common.uploadFiles({id: result.id, empCode: result.empcode, fileInput: fileInput, fileIndex: 0, url: Common.HOST + '/pfloan/uploadFile', successHandler: formSuccessHandler});				
+				Common.uploadFiles({id: result.id, empCode: result.empcode, fileInput: fileInput, fileIndex: 0, url: Common.HOST + '/ba/uploadFile', successHandler: formSuccessHandler});				
 			}
 		}
 	}

@@ -396,7 +396,7 @@ var PFLoan = function(){
 		.jqxForm('getComponentByName', 'fileUpload')
 		.jqxFileUpload({ 
 			width: '100%%', 
-			fileInputName: 'pf_loan_doc',
+			fileInputName: 'emp_doc',
 			multipleFilesUpload: true, 
 			autoUpload: false, 
 			theme: theme, 

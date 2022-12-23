@@ -425,8 +425,8 @@ var CommonMethod = function(theme){
 				
 				if(file != null && file.length > 0){
 					var fileData = new FormData();
-					fileData.append("pf_loan_doc", file[0]);
-					fileData.append("pfLoanId", config.id);
+					fileData.append("emp_doc", file[0]);
+					fileData.append("pageId", config.id);
 					fileData.append("empCode", config.empCode);
 				
 					$.ajax({

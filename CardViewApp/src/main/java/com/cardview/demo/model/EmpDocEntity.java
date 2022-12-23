@@ -20,25 +20,36 @@ public class EmpDocEntity
 	}
 
 	@Column(name="EMPCODE")
-	private long _empcode;
-	public long getempcode()
+	private String _empcode;
+	public String getempcode()
 	{
 		return this._empcode;
 	}
-	public void setempcode(long value)
+	public void setempcode(String value)
 	{
 		this._empcode = value;
 	}
 	
-	@Column(name="PF_LOAN_ID")
-	private long pfLoanId;
-	public long getpfLoanId()
+	@Column(name="PAGE")
+	private String page;
+	public String getpage()
 	{
-		return this.pfLoanId;
+		return this.page;
 	}
-	public void setpfLoanId(long value)
+	public void setpage(String value)
 	{
-		this.pfLoanId = value;
+		this.page = value;
+	}
+	
+	@Column(name="pageID")
+	private String pageId;
+	public String getpageId()
+	{
+		return this.pageId;
+	}
+	public void setpageId(String value)
+	{
+		this.pageId = value;
 	}
 	
 	@Column(name="fileNAME")

@@ -45,8 +45,7 @@ public class PFLoanController {
 	@Value("${manager.mail}") private String _managerEmail;
 	@Value("${spring.project.directory}")
 	private String targetPath;
-	private String rootDocPath = "C:/Program Files/Apache Software Foundation/Tomcat 8.5/webapps/static/images/";
-	private String docURL = "http://localhost:8080/static/images/";
+	private String docURL = "http://localhost:8080/static/images/pfloan";
 
 	@Autowired
 	PFAccountService paService;
@@ -96,34 +95,11 @@ public class PFLoanController {
 	}
 
 	@RequestMapping(path = "/uploadFile", method = RequestMethod.POST)
-	public EmpDocEntity uploadFile(@RequestParam("pf_loan_doc") MultipartFile file, String pfLoanId, String empCode) {
+	public EmpDocEntity uploadFile(@RequestParam("emp_doc") MultipartFile file, String pageId, String empCode) {
 		try {
-			if (pfLoanId != null) {
+			if (pageId != null) {
 				if (!file.isEmpty()) {
-					byte[] bytes = file.getBytes();
-					String filename = file.getOriginalFilename();
-					File newFile = new File(rootDocPath);
-
-					if (!newFile.exists()) {
-						newFile.mkdirs();
-					}
-
-					String fullName = new Date().getTime() + "_" +  pfLoanId + "_" + filename;
-					String filePath = rootDocPath + fullName;
-
-					BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(new File(filePath)));
-					stream.write(bytes);
-					System.out.println("File saved successfully. " + filePath);
-					stream.flush();
-					stream.close();
-
-					EmpDocEntity entiry = new EmpDocEntity();
-
-					entiry.setpfLoanId(Long.parseLong(pfLoanId));
-					entiry.setfileName(fullName);
-					entiry.setempcode(Long.parseLong(empCode));
-					
-					return pfService.updateDocs(entiry);
+					return FileUploadHelper.uploadFile(file, pageId, empCode, "pfloan", pfService);
 				}
 			}
 		} catch (Exception e) {

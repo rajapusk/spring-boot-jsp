@@ -1,6 +1,7 @@
 package com.cardview.demo.web;
 
 import com.cardview.demo.exception.RecordNotFoundException;
+import com.cardview.demo.model.EmpDocEntity;
 import com.cardview.demo.model.MedicalAllowanceEntity;
 import com.cardview.demo.model.PFAccountEntity;
 import com.cardview.demo.model.PfLoanUpdateInput;
@@ -8,9 +9,12 @@ import com.cardview.demo.outputModels.MedicalAllowanceOutput;
 import com.cardview.demo.service.MedicalAllowanceService;
 import com.cardview.demo.service.EmailServiceImpl;
 import com.cardview.demo.service.PFAccountService;
+import com.cardview.demo.service.PFLoanService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +30,9 @@ public class MedicalAllowanceController {
     MedicalAllowanceService baService;
     @Autowired
     private EmailServiceImpl emailService;
+    
+    @Autowired
+	PFLoanService pfService;
 
     @GetMapping("/get/{id}")
     public MedicalAllowanceEntity getMedicalAllowanceById(@PathVariable("id") Long id) {
@@ -173,4 +180,19 @@ public class MedicalAllowanceController {
         }
         return true;
     }
+    
+    @RequestMapping(path = "/uploadFile", method = RequestMethod.POST)
+	public EmpDocEntity uploadFile(@RequestParam("emp_doc") MultipartFile file, String pageId, String empCode) {
+		try {
+			if (pageId != null) {
+				if (!file.isEmpty()) {
+					return FileUploadHelper.uploadFile(file, pageId, empCode, "medical", pfService);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
 }

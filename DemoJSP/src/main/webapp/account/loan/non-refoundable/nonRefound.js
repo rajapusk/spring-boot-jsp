@@ -329,7 +329,7 @@ var PFLoan = function(){
 		.jqxForm('getComponentByName', 'fileUpload')
 		.jqxFileUpload({ 
 			width: '100%%', 
-			fileInputName: 'pf_loan_doc',
+			fileInputName: 'emp_doc',
 			multipleFilesUpload: false, 
 			autoUpload: false, 
 			theme: theme, 
@@ -460,7 +460,7 @@ var PFLoan = function(){
 				if(fileInput[0].files != null && fileInput[0].files.length > 0){
 					var files = fileInput[0].files;
 					var fileData = new FormData();
-     				fileData.append("pf_loan_doc", files[0]);
+     				fileData.append("emp_doc", files[0]);
      				fileData.append("id", result.id);
       			
       				$.ajax({

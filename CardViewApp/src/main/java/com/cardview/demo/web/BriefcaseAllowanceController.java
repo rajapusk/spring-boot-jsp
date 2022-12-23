@@ -7,9 +7,12 @@ import com.cardview.demo.outputModels.BriefcaseAllowanceOutput;
 import com.cardview.demo.service.BriefcaseAllowanceService;
 import com.cardview.demo.service.EmailServiceImpl;
 import com.cardview.demo.service.PFAccountService;
+import com.cardview.demo.service.PFLoanService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +29,9 @@ public class BriefcaseAllowanceController {
     @Autowired
     private EmailServiceImpl emailService;
 
+    @Autowired
+   	PFLoanService pfService;
+    
     @GetMapping("/get/{id}")
     public BriefcaseAllowanceEntity getBriefcaseAllowanceById(@PathVariable("id") Long id) {
         try {
@@ -181,4 +187,19 @@ public class BriefcaseAllowanceController {
         }
         return true;
     }
+    
+    @RequestMapping(path = "/uploadFile", method = RequestMethod.POST)
+   	public EmpDocEntity uploadFile(@RequestParam("emp_doc") MultipartFile file, String pageId, String empCode) {
+   		try {
+   			if (pageId != null) {
+   				if (!file.isEmpty()) {
+   					return FileUploadHelper.uploadFile(file, pageId, empCode, "briefcase", pfService);
+   				}
+   			}
+   		} catch (Exception e) {
+   			e.printStackTrace();
+   		}
+
+   		return null;
+   	}
 }

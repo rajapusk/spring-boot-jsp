@@ -323,7 +323,7 @@ var FCA = function(){
 			var fileInput = $('input[type=file]');
 			
 			if(fileInput != null && fileInput.length > 0){
-				Common.uploadFiles({id: result.id, empCode: result.empcode, fileInput: fileInput, fileIndex: 0, url: Common.HOST + '/pfloan/uploadFile', successHandler: formSuccessHandler});				
+				Common.uploadFiles({id: result.id, empCode: result.empcode, fileInput: fileInput, fileIndex: 0, url: Common.HOST + '/fca/uploadFile', successHandler: formSuccessHandler});				
 			}
 		}else{
 			formSuccessHandler();

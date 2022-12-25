@@ -1,4 +1,4 @@
-var MedicalHR = function(){
+var NewsManager = function(){
 	var theme =  'light';
 	var Common = new CommonMethod(theme);
 	var selectedRows = [];
@@ -11,8 +11,7 @@ var MedicalHR = function(){
 		{name: 'winEntitledAmount', type: 'input', bind: 'entitledAmount', label: 'Entitled Amount', disabled: true},
 		{name: 'winclaimAmount', type: 'input', bind: 'claimAmount', label: 'Claimed Amount', disabled: true},
 		{name: 'winEeRemarks', type: 'input', bind: 'remarks', label: 'EE Remarks', disabled: true},
-		{name: 'winmanagerRemarks', type: 'input', bind: 'managerRemarks', label: 'L1 Remarks', disabled: true},
-		{name: 'wihrRemarks', type: 'input', bind: 'hrRemarks', label: 'HR Remarks' },
+		{name: 'winmanagerRemarks', type: 'input', bind: 'managerRemarks', label: 'L1 Remarks'},
 		{name: 'winApproved', type: 'option', bind: 'approvedText', label: 'Approved', source: ['YES', 'NO', 'REJECTED']}
 	];
 	
@@ -28,8 +27,7 @@ var MedicalHR = function(){
             {name: 'claimAmount', type: 'number'},
             {name: 'remarks', type: 'string'},
             {name: 'managerRemarks', type: 'string'},
-            {name: 'hrRemarks', type: 'string'},
-            {name: 'hrApproved', type: 'booelan'}
+            {name: 'approved', type: 'booelan'}
             
        	],
         localdata: []
@@ -45,8 +43,7 @@ var MedicalHR = function(){
       { text: 'Claimed Amt', datafield: 'claimAmount', editable: false, width: 120, cellsalign: 'right', renderer: Common.numberIconHeader  },
       { text: 'EE Remarks', datafield: 'remarks', width: 120, editable: false, cellsalign: 'left' },      
       { text: 'L1 Remarks', datafield: 'managerRemarks', width: 120, editable: false, cellsalign: 'left'},
-      { text: 'HR Remarks', datafield: 'hrRemarks', width: 120, editable: false, cellsalign: 'left'},
-      { text: 'Approved', datafield: 'hrApproved', width: 70, threestatecheckbox: true, columntype: 'checkbox', editable: true},
+      { text: 'Approved', datafield: 'approved', width: 70, threestatecheckbox: true, columntype: 'checkbox', editable: true},
       Common.iconCell({icon: 'fa-pencil',text: 'Action', datafield: 'Edit', width: 60})
     ];    
     
@@ -95,7 +92,7 @@ var MedicalHR = function(){
 	             var xPos = (($("body").width() / 2) - ($("#popupWindow").width() / 2));
 	             var yPos = 100;
 	             var dataRecord = event.args.row.bounddata;	             
-	             dataRecord.approvedText = (dataRecord.hrApproved == 1 ? 'YES' : (dataRecord.hrApproved == 2 ? 'REJECTED' : 'NO'));
+	             dataRecord.approvedText = (dataRecord.approved == 1 ? 'YES' : (dataRecord.approved == 2 ? 'REJECTED' : 'NO'));
 	             
 	             Common.renderInputs(dataRecord, popupConfig);
 	             $("#popupWindow").jqxWindow({ position: { x: xPos, y: yPos } });
@@ -128,7 +125,7 @@ var MedicalHR = function(){
                 for(var sKey in selectedRows){
 					var row = selectedRows[sKey];
 					
-					postData.push({id: row.rowData.id, hrApproved: row.rowData.hrApproved, rewards: row.rowData.hrRewards})
+					postData.push({id: row.rowData.id, approved: row.rowData.approved, remarks: row.rowData.managerRemarks})
 				}
                 
                 if(postData.length > 0){
@@ -146,15 +143,17 @@ var MedicalHR = function(){
         $("#winSave").click(function () {
             if (editRowId >= 0) {
 				var sApproved = $("#winApproved").val();
+				var smanagerRemarks = $("#winmanagerRemarks").val();
 				var dataRecord = $("#dvPFAccount").jqxGrid('getrowdata', editRowId);
-				var shrRemarks = $("#wihrRemarks").val();
 				var bApproved = (sApproved == 'YES' ? 1 : (sApproved == 'NO' ? 0 : 2));
-				var rowID = $('#dvPFAccount').jqxGrid('getrowid', editRowId);                           
-                dataRecord.hrApproved = bApproved;
-                dataRecord.hrRemarks = shrRemarks;
+				var rowID = $('#dvPFAccount').jqxGrid('getrowid', editRowId); 
+				                          
+                dataRecord.approved = bApproved;
+                dataRecord.managerRemarks = smanagerRemarks;
+                
                 $('#dvPFAccount').jqxGrid('updaterow', rowID, dataRecord);
                 $("#popupWindow").jqxWindow('hide'); 
-                approveLoan([{ id: dataRecord.id, hrApproved: bApproved, rewards: shrRemarks}]);
+                approveLoan([{ id: dataRecord.id, approved: bApproved, remarks: smanagerRemarks}]);
             }
         });        
 	}
@@ -168,7 +167,7 @@ var MedicalHR = function(){
 	var approveLoan = function(postData){
 		$.ajax({
 			type: 'PUT',
-			url: Common.HOST + '/medical/hr/update', 
+			url: Common.HOST + '/newspaper/manager/update', 
 			data: JSON.stringify(postData),
 			contentType: "application/json; charset=utf-8",
 			success: function(result){
@@ -180,7 +179,7 @@ var MedicalHR = function(){
 	var loadData = function(){
 		$.ajax({
 			type: 'GET',
-			url: Common.HOST + '/medical/hr',
+			url: Common.HOST + '/newspaper/manager',
 			contentType: "application/json; charset=utf-8",
 			success: function(result){
 				source.localdata = result;

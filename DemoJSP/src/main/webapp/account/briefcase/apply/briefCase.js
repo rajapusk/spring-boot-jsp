@@ -374,7 +374,7 @@ var BriefCase = function(){
 		$("#searchData").jqxInput('val', '');
 		$("#dvRefundablePFLoan").jqxForm('getComponentByName', 'fileUpload').jqxFileUpload('cancelAll');
 		
-		var config = {REMARKS: ''};		
+		var config = {REMARKS: ''};			
 		Common.loopInput(jqxFormTmp, 'dvRefundablePFLoan', Common.updateValue, config);
 	}
 	

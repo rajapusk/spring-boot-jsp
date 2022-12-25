@@ -354,7 +354,7 @@ var FCA = function(){
 		//var config = {REMARKS: ''};		
 		//Common.loopInput(jqxFormTmp, 'dvRefundablePFLoan', Common.updateValue, config);
 		resetOption(true);
-		$("#searchData").jqxInput('val', '');				
+		$("#searchData").jqxInput('val', '');			
 		$("#forMonth").jqxComboBox({source: []});
 	}
 	

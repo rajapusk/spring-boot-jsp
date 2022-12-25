@@ -1,4 +1,4 @@
-var MedicalHR = function(){
+var NewsHR = function(){
 	var theme =  'light';
 	var Common = new CommonMethod(theme);
 	var selectedRows = [];
@@ -128,7 +128,7 @@ var MedicalHR = function(){
                 for(var sKey in selectedRows){
 					var row = selectedRows[sKey];
 					
-					postData.push({id: row.rowData.id, hrApproved: row.rowData.hrApproved, rewards: row.rowData.hrRewards})
+					postData.push({id: row.rowData.id, hrApproved: row.rowData.hrApproved, remarks: row.rowData.hrRemarks})
 				}
                 
                 if(postData.length > 0){
@@ -146,15 +146,15 @@ var MedicalHR = function(){
         $("#winSave").click(function () {
             if (editRowId >= 0) {
 				var sApproved = $("#winApproved").val();
-				var dataRecord = $("#dvPFAccount").jqxGrid('getrowdata', editRowId);
 				var shrRemarks = $("#wihrRemarks").val();
+				var dataRecord = $("#dvPFAccount").jqxGrid('getrowdata', editRowId);
 				var bApproved = (sApproved == 'YES' ? 1 : (sApproved == 'NO' ? 0 : 2));
 				var rowID = $('#dvPFAccount').jqxGrid('getrowid', editRowId);                           
                 dataRecord.hrApproved = bApproved;
-                dataRecord.hrRemarks = shrRemarks;
+				dataRecord.hrRemarks = shrRemarks;
                 $('#dvPFAccount').jqxGrid('updaterow', rowID, dataRecord);
                 $("#popupWindow").jqxWindow('hide'); 
-                approveLoan([{ id: dataRecord.id, hrApproved: bApproved, rewards: shrRemarks}]);
+                approveLoan([{ id: dataRecord.id, hrApproved: bApproved, remarks: shrRemarks}]);
             }
         });        
 	}
@@ -168,7 +168,7 @@ var MedicalHR = function(){
 	var approveLoan = function(postData){
 		$.ajax({
 			type: 'PUT',
-			url: Common.HOST + '/medical/hr/update', 
+			url: Common.HOST + '/newspaper/hr/update', 
 			data: JSON.stringify(postData),
 			contentType: "application/json; charset=utf-8",
 			success: function(result){
@@ -180,7 +180,7 @@ var MedicalHR = function(){
 	var loadData = function(){
 		$.ajax({
 			type: 'GET',
-			url: Common.HOST + '/medical/hr',
+			url: Common.HOST + '/newspaper/hr',
 			contentType: "application/json; charset=utf-8",
 			success: function(result){
 				source.localdata = result;

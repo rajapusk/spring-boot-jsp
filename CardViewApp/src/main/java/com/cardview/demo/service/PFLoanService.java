@@ -118,11 +118,6 @@ public class PFLoanService {
 		return result;
 	}
 
-	public void sendMail(PFLoanEntity entity)
-	{
-
-	}
-	
 	public EmpDocEntity updateDocs(EmpDocEntity entity) {
 		docRepository.save(entity);
 		

@@ -1,9 +1,6 @@
 package com.cardview.demo.service;
 
-import com.cardview.demo.outputModels.BranchOutput;
-import com.cardview.demo.outputModels.ContributionOutput;
-import com.cardview.demo.outputModels.LedgerOutput;
-import com.cardview.demo.outputModels.WithdrawalOutput;
+import com.cardview.demo.outputModels.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -31,7 +28,7 @@ public class TravelExpenseService {
             Class.forName("com.mysql.jdbc.Driver");
             Connection dbConnection = DriverManager.getConnection(driverUrl, userName,password);
             Statement getFromDb = dbConnection.createStatement();
-            String query = " SELECT BRANCH_CODE,LOCATION_NAME, City, POPULATION, Type, Category FROM vetan10.tbl_branches where BRANCH_CODE = "+code+"";
+            String query = " SELECT BRANCH_CODE,LOCATION_NAME, City, POPULATION, Type, Category FROM vetan10.tbl_branches where BRANCH_CODE = "+code+";";
             ResultSet emplics = getFromDb
                     .executeQuery(query);
             while (emplics.next()) {
@@ -52,6 +49,34 @@ public class TravelExpenseService {
             e.printStackTrace();
         }
         return output;
+    }
+
+    public List<LodgingEntitlementAmountOutput> getLodgingEntitlementAmount() throws ClassNotFoundException {
+        List<LodgingEntitlementAmountOutput> lodgingEntitlementAmountOutputList = new ArrayList<LodgingEntitlementAmountOutput>();
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+            Connection dbConnection = DriverManager.getConnection(driverUrl, userName,password);
+            Statement getFromDb = dbConnection.createStatement();
+            String query = " SELECT DESIGNATION, Area1_12L, Area1_7L,Others, State_Capital FROM vetan10.tbl_lodging_entitlement;";
+            ResultSet emplics = getFromDb
+                    .executeQuery(query);
+            while (emplics.next()) {
+                LodgingEntitlementAmountOutput output = new LodgingEntitlementAmountOutput();
+
+                output.designation = emplics.getString("DESIGNATION");
+                output.area12L = emplics.getInt("Area1_12L");
+                output.area7l = emplics.getInt("Area1_7L");
+                output.Others = emplics.getInt("Others");
+                output.stateCapital = emplics.getInt("State_Capital");
+                lodgingEntitlementAmountOutputList.add(output);
+            }
+
+
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return lodgingEntitlementAmountOutputList;
     }
 
 }

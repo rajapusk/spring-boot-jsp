@@ -2,6 +2,7 @@ package com.cardview.demo.web;
 
 import com.cardview.demo.model.VehicleAllowanceEntity;
 import com.cardview.demo.outputModels.BranchOutput;
+import com.cardview.demo.outputModels.HaltingEntitlementAmountOutput;
 import com.cardview.demo.outputModels.LodgingEntitlementAmountOutput;
 import com.cardview.demo.service.EmailServiceImpl;
 import com.cardview.demo.service.TravelExpenseService;
@@ -36,6 +37,15 @@ public class TravelExpenseController {
     public List<LodgingEntitlementAmountOutput> getLodgingEntitlementAmount() {
         try {
             return teService.getLodgingEntitlementAmount();
+        } catch (Exception ex) {
+            return null;
+        }
+    }
+
+    @GetMapping("/halting")
+    public List<HaltingEntitlementAmountOutput> getHaltingEntitlementAmount() {
+        try {
+            return teService.getHaltingEntitlementAmount();
         } catch (Exception ex) {
             return null;
         }

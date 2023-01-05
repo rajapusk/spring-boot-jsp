@@ -70,13 +70,38 @@ public class TravelExpenseService {
                 output.stateCapital = emplics.getInt("State_Capital");
                 lodgingEntitlementAmountOutputList.add(output);
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return lodgingEntitlementAmountOutputList;
+    }
+
+    public List<HaltingEntitlementAmountOutput> getHaltingEntitlementAmount() throws ClassNotFoundException {
+        List<HaltingEntitlementAmountOutput> haltingEntitlementAmountOutputList = new ArrayList<HaltingEntitlementAmountOutput>();
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+            Connection dbConnection = DriverManager.getConnection(driverUrl, userName,password);
+            Statement getFromDb = dbConnection.createStatement();
+            String query = " SELECT DESIGNATION, Area1_12L, Area1_7L,Others, State_Capital FROM vetan10.tbl_Halting_entitlement;";
+            ResultSet emplics = getFromDb
+                    .executeQuery(query);
+            while (emplics.next()) {
+                HaltingEntitlementAmountOutput output = new HaltingEntitlementAmountOutput();
+
+                output.designation = emplics.getString("DESIGNATION");
+                output.area12L = emplics.getInt("Area1_12L");
+                output.area7l = emplics.getInt("Area1_7L");
+                output.Others = emplics.getInt("Others");
+                output.stateCapital = emplics.getInt("State_Capital");
+                haltingEntitlementAmountOutputList.add(output);
+            }
 
 
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return lodgingEntitlementAmountOutputList;
+        return haltingEntitlementAmountOutputList;
     }
 
 }

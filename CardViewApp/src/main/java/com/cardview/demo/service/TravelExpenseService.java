@@ -1,6 +1,9 @@
 package com.cardview.demo.service;
 
 import com.cardview.demo.outputModels.*;
+import com.cardview.demo.repository.TravelExpenseDetailRepository;
+import com.cardview.demo.repository.TravelExpenseRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +24,9 @@ public class TravelExpenseService {
 
     @Value("${spring.datasource.password}")
     private String password;
+
+    @Autowired
+    TravelExpenseRepository repository;
 
     public BranchOutput getBranchByCode(int code) throws ClassNotFoundException {
         BranchOutput output = null;

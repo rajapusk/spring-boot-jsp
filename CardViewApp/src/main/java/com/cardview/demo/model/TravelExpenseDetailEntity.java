@@ -237,5 +237,4 @@ public class TravelExpenseDetailEntity {
         this.remarks = value;
     }
 
-
 }

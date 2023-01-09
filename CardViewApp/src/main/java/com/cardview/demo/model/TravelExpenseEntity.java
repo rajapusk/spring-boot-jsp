@@ -9,6 +9,9 @@ public class TravelExpenseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    public Long getId() {
+        return this.id;
+    }
 
     @Column(name = "EmpCode")
     private long empCode;

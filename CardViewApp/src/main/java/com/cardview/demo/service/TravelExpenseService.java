@@ -1,5 +1,9 @@
 package com.cardview.demo.service;
 
+import com.cardview.demo.exception.RecordNotFoundException;
+import com.cardview.demo.model.PFNomineeEntity;
+import com.cardview.demo.model.PfLoanUpdateInput;
+import com.cardview.demo.model.TravelExpenseEntity;
 import com.cardview.demo.outputModels.*;
 import com.cardview.demo.repository.TravelExpenseDetailRepository;
 import com.cardview.demo.repository.TravelExpenseRepository;
@@ -10,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class TravelExpenseService {
@@ -73,7 +78,7 @@ public class TravelExpenseService {
                 output.Area1_2L = emplics.getInt("Area1_12L");
                 output.Area1_7L = emplics.getInt("Area1_7L");
                 output.Others = emplics.getInt("Others");
-                output.stateCapital = emplics.getInt("State_Capital");
+                output.State_capital = emplics.getInt("State_Capital");
                 lodgingEntitlementAmountOutputList.add(output);
             }
         } catch (SQLException e) {
@@ -98,7 +103,7 @@ public class TravelExpenseService {
                 output.Area1_2L = emplics.getInt("Area1_2L");
                 output.Area1_7L = emplics.getInt("Area1_7L");
                 output.Others = emplics.getInt("Others");
-                output.stateCapital = emplics.getInt("State_Capital");
+                output.State_capital = emplics.getInt("State_Capital");
                 haltingEntitlementAmountOutputList.add(output);
             }
 
@@ -110,4 +115,109 @@ public class TravelExpenseService {
         return haltingEntitlementAmountOutputList;
     }
 
+    public List<TravelExpenseEntity> getAllTravelExpense()
+    {
+        List<TravelExpenseEntity> result = (List<TravelExpenseEntity>) repository.findAll();
+
+        if(result.size() > 0) {
+            return result;
+        } else {
+            return new ArrayList<TravelExpenseEntity>();
+        }
+    }
+
+    public TravelExpenseEntity getTravelExpenseById(Long id) throws RecordNotFoundException
+    {
+        Optional<TravelExpenseEntity> employee = repository.findById(id);
+
+        if(employee.isPresent()) {
+            return employee.get();
+        } else {
+            throw new RecordNotFoundException("No employee record exist for given id");
+        }
+    }
+
+    public boolean deleteTravelExpenseById(Long id) throws RecordNotFoundException
+    {
+        Optional<TravelExpenseEntity> employee = repository.findById(id);
+
+        if(employee.isPresent()) {
+            repository.deleteById(id);
+            return true;
+        } else {
+            throw new RecordNotFoundException("No employee record exist for given id");
+        }
+
+    }
+
+    public TravelExpenseEntity createOrUpdateTravelExpenseEntity(TravelExpenseEntity entity)
+    {
+        long millis=System.currentTimeMillis();
+        if(entity.getId()  == null || entity.getId()  == 0)
+        {
+            entity = repository.save(entity);
+            entity.setCreatedOn(new java.sql.Date(millis));
+            entity.setUpdatedOn(new java.sql.Date(millis));
+            return entity;
+        }
+        else
+        {
+            Optional<TravelExpenseEntity> employee = repository.findById(entity.getId());
+
+            if(employee.isPresent())
+            {
+                TravelExpenseEntity newEntity = employee.get();
+                newEntity.setL1Approved(entity.getL1Approved());
+                newEntity.setL2Approved(entity.getL2Approved());
+                newEntity.setHRApproved(entity.getHRApproved());
+                newEntity.setEmpCode(entity.getEmpCode());
+                newEntity.setSubmitted(entity.getSubmitted());
+                newEntity.setUpdatedOn(new java.sql.Date(millis));
+                newEntity.setAdvanceAmount(entity.getAdvanceAmount());
+                newEntity.setTravelPurpose(entity.getTravelPurpose());
+                newEntity.setDestinationBranchCode(entity.getDestinationBranchCode());
+                newEntity.setHrRemarks(entity.getHrRemarks());
+                newEntity.setL1ManagerRemarks(entity.getL1ManagerRemarks());
+                newEntity.setL2ManagerRemarks(entity.getL2ManagerRemarks());
+                newEntity.setOriginBranchCode(entity.getOriginBranchCode());
+                newEntity.setPermissionMode(entity.getPermissionMode());
+                newEntity.setPermittedBy(entity.getPermittedBy());
+                newEntity.setPermittedName(entity.getPermittedName());
+                newEntity.setPermittedTime(entity.getPermittedTime());
+                newEntity.setPermittedDate(entity.getPermittedDate());
+                newEntity.setTotalAmount(entity.getTotalAmount());
+                newEntity.setSubmitted(entity.getSubmitted());
+                newEntity = repository.save(newEntity);
+
+                return newEntity;
+            } else {
+                entity = repository.save(entity);
+
+                return entity;
+            }
+        }
+    }
+
+    public List<TravelExpenseEntity> updateTravelExpenseEntity(PfLoanUpdateInput[] entityArray, boolean isManager) {
+        List<TravelExpenseEntity> result = new ArrayList<TravelExpenseEntity>();
+        for(PfLoanUpdateInput entity : entityArray) {
+            Optional<TravelExpenseEntity> employee = repository.findById(entity.id);
+            if (employee.isPresent()) {
+                TravelExpenseEntity newEntity = employee.get();
+
+                if(isManager == true)
+                    newEntity.setL1Approved(entity.approved);
+                else
+                    newEntity.setHRApproved(entity.hrApproved);
+
+                repository.save(newEntity);
+
+                result.add(newEntity);
+            }
+        }
+
+        return result;
+    }
+
 }
+

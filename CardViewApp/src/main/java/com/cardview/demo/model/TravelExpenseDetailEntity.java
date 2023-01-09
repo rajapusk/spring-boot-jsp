@@ -9,16 +9,8 @@ public class TravelExpenseDetailEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(name = "EmpCode")
-    private long empCode;
-
-    public long getEmpCode() {
-        return this.empCode;
-    }
-
-    public void setEmpCode(long value) {
-        this.empCode = value;
+    public Long getId() {
+        return this.id;
     }
 
     @Column(name = "TravelExpenseId")

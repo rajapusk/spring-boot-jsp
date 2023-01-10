@@ -4,11 +4,13 @@ import com.cardview.demo.model.*;
 import com.cardview.demo.outputModels.*;
 import com.cardview.demo.service.EmailServiceImpl;
 import com.cardview.demo.service.PFAccountService;
+import com.cardview.demo.service.PFLoanService;
 import com.cardview.demo.service.TravelExpenseDetailService;
 import com.cardview.demo.service.TravelExpenseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -25,6 +27,9 @@ public class TravelExpenseController {
     @Autowired
     private TravelExpenseDetailService expenseDetailService;
 
+    @Autowired
+   	PFLoanService pfService;
+    
     @GetMapping("/branch/{id}")
     public BranchOutput getBranchByCode(@PathVariable("id") int code) {
         try {
@@ -108,5 +113,20 @@ public class TravelExpenseController {
 
         return  entity;
     }
+    
+    @RequestMapping(path = "/uploadFile", method = RequestMethod.POST)
+   	public EmpDocEntity uploadFile(@RequestParam("emp_doc") MultipartFile file, String pageId, String empCode) {
+   		try {
+   			if (pageId != null) {
+   				if (!file.isEmpty()) {
+   					return FileUploadHelper.uploadFile(file, pageId, empCode, "expense_detail", pfService);
+   				}
+   			}
+   		} catch (Exception e) {
+   			e.printStackTrace();
+   		}
+
+   		return null;
+   	}
 }
 

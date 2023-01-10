@@ -5,5 +5,5 @@ public class HaltingEntitlementAmountOutput {
     public int State_capital;
     public int Others;
     public int Area1_7L;
-    public int Area1_2L;
+    public int Area1_12L;
 }

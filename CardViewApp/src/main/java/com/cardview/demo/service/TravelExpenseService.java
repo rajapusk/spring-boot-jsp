@@ -75,7 +75,7 @@ public class TravelExpenseService {
                 LodgingEntitlementAmountOutput output = new LodgingEntitlementAmountOutput();
 
                 output.designation = emplics.getString("DESIGNATION");
-                output.Area1_2L = emplics.getInt("Area1_12L");
+                output.Area1_12L = emplics.getInt("Area1_12L");
                 output.Area1_7L = emplics.getInt("Area1_7L");
                 output.Others = emplics.getInt("Others");
                 output.State_capital = emplics.getInt("State_Capital");
@@ -100,7 +100,7 @@ public class TravelExpenseService {
                 HaltingEntitlementAmountOutput output = new HaltingEntitlementAmountOutput();
 
                 output.designation = emplics.getString("DESIGNATION");
-                output.Area1_2L = emplics.getInt("Area1_2L");
+                output.Area1_12L = emplics.getInt("Area1_12L");
                 output.Area1_7L = emplics.getInt("Area1_7L");
                 output.Others = emplics.getInt("Others");
                 output.State_capital = emplics.getInt("State_Capital");

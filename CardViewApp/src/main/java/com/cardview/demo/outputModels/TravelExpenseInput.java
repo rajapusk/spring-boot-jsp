@@ -13,7 +13,6 @@ public class TravelExpenseInput {
     public byte l1Approved;
     public byte l2Approved;
     public List<TravelExpenseDetailInput> expenses = new ArrayList<>();
-
     public byte approved;
     public byte getL2Approved;
     public byte getHRApproved;

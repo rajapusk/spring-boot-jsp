@@ -1,6 +1,7 @@
 package com.cardview.demo.model;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 
 @Entity
 @Table(name="TBL_TravelExpense")
@@ -238,7 +239,15 @@ public class TravelExpenseEntity {
         this.updatedOn = value;
     }
 
-
+    private ArrayList<TravelExpenseDetailEntity> travelExpenseDetailEntity;
+    public ArrayList<TravelExpenseDetailEntity> getTravelExpenseDetailEntity()
+    {
+        return this.travelExpenseDetailEntity;
+    }
+    public void setTravelExpenseDetailEntity(ArrayList<TravelExpenseDetailEntity> value)
+    {
+        this.travelExpenseDetailEntity = value;
+    }
 
 
 }

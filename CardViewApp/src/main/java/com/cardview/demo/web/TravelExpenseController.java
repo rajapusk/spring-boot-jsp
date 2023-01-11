@@ -118,15 +118,18 @@ public class TravelExpenseController {
     
     @RequestMapping(path = "/uploadFile", method = RequestMethod.POST)
    	public EmpDocEntity uploadFile(@RequestParam("emp_doc") MultipartFile file, String pageId, String empCode) {
-   		try {
-   			if (pageId != null) {
-   				if (!file.isEmpty()) {
-   					return FileUploadHelper.uploadFile(file, pageId, empCode, "expense_detail", pfService);
-   				}
-   			}
-   		} catch (Exception e) {
-   			e.printStackTrace();
-   		}
+        try {
+            if (pageId != null) {
+                if (!file.isEmpty()) {
+                    return FileUploadHelper.uploadFile(file, pageId, empCode, "expense_detail", pfService);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 
     @GetMapping("/hr")
     public List<FcaOutput> hrFcaGetAll() {

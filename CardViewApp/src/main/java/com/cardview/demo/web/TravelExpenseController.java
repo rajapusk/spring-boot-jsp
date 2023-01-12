@@ -113,7 +113,7 @@ public class TravelExpenseController {
         } catch (Exception e) {
         }
 
-        return  entity;
+        return  dbEntity;
     }
     
     @RequestMapping(path = "/uploadFile", method = RequestMethod.POST)

@@ -169,27 +169,46 @@ var CommonMethod = function(theme){
 	
 	_common.getRow = function(rowData){
 		var rowHTML = '<tr>\n';
+		var redStar = '<sup style="color: red;">*</sup>';
+		var whiteStar = '<sup style="color: white;">*</sup>';
 		
 		if(rowData != null){
 			for(var sKey in rowData){
 				var row = rowData[sKey];				
 				
 				if(row != null && row.label != null){
-					rowHTML += '<td align="left">' + (row.required ? '<sup style="color: red;">*</sup>' : '') + row.label + '</td>\n'
-						+ '<td style="display: flex;" align="left">:&nbsp;&nbsp;';
+					rowHTML += '<td align="left">' 
+							+ (row.required ? redStar : whiteStar) 
+							+ row.label 
+						+ '</td>\n'
+						+ '<td style="display: flex;align-items: center;" align="left">:&nbsp;&nbsp;';
 						
+					rowHTML += '<div style="position: relative; width: 100%;">';
+					
 					if(row.type == 'option'){
 						rowHTML += '<div id="' + row.name + '"></div>';
-					}else if(row.type == 'ratio'){						
+					}else if(row.type == 'ratio'){
+						rowHTML += '<div class="scRatioDv">';
+						
 						for(var src in row.source){
 							var source = row.source[src];
 							
 							rowHTML += '<div id="' + source.name + '">' + source.label + '</div>';
 						}
+						
+						rowHTML += '</div>';
+					} else if(row.type == 'upload'){
+						rowHTML += '<div id="' + row.name + '"></div>';
 					}
 					else{
-						rowHTML += '<input id="' + row.name + '" /></td>\n';
-					}						
+						rowHTML += '<input id="' + row.name + '" />';
+					}
+					
+					if(row.info != null){
+						rowHTML += '<div id="' + row.name + '_info" class="scInfo"></div>';
+					}	
+					
+					rowHTML += '</div></td>\n';					
 				}
 			}
 		}
@@ -247,7 +266,7 @@ var CommonMethod = function(theme){
 				for(var sKey in template.buttons){
 					let button = template.buttons[sKey];
 					
-					sHTML += '<input style="margin-right: 5px; width: 100px;" type="button" id="' + button.name + '" value="' + button.label + '" />\n';
+					sHTML += '<input style="margin: 0px 5px; width: 100px;" type="button" id="' + button.name + '" value="' + button.label + '" />\n';
 				}
 			
 				sHTML +=  '</td>\n</tr>\n';
@@ -267,25 +286,47 @@ var CommonMethod = function(theme){
 		for(var sKey in popupConfig){
 			var row = popupConfig[sKey];
 			
-			if(dataModel == null || dataModel == {}){
-				if(row.type == 'input'){
-					$("#" + row.name).jqxInput({ theme: theme, disabled: (row.disabled != null ? row.disabled : false) });
-				}else if(row.type == 'date'){
-					$("#" + row.name).jqxDateTimeInput({theme: theme});
-				}else if(row.type == 'option') {
-					$("#" + row.name).jqxDropDownList({theme: theme, source: row.source});
-				}
-			}
-			else{
-				if(dataModel[row.bind] == null){
-					if(row.type == 'option') {
-						$("#" + row.name).jqxDropDownList('clearSelection'); 
-					} else {
-						$("#" + row.name).val('');
+			if(row.type != 'ratio'){
+				if(dataModel == null || dataModel == {}){
+					if(row.type == 'input'){
+						$("#" + row.name).jqxInput({ theme: theme, disabled: (row.disabled != null ? row.disabled : false) });
+					}else if(row.type == 'number'){
+						$("#" + row.name).jqxNumberInput({ theme: theme, disabled: (row.disabled != null ? row.disabled : false), promptChar: '', groupSeparator: ''});
+						$("#" + row.name).addClass('fa fa-inr');
+					}else if(row.type == 'date'){
+						$("#" + row.name).jqxDateTimeInput({theme: theme});
+						
+						if(row.dateConfig != null){
+							$("#" + row.name).jqxDateTimeInput(row.dateConfig);
+						}
+					}else if(row.type == 'option') {
+						$("#" + row.name).jqxDropDownList({theme: theme, source: row.source});
 					}
 				}
 				else{
-					$("#" + row.name).val(dataModel[row.bind]);
+					if(dataModel[row.bind] == null){
+						if(row.type == 'option') {
+							$("#" + row.name).jqxDropDownList('clearSelection'); 
+						} else if (row.type == 'number') {
+							$("#" + row.name).val(0);
+						} else {
+							$("#" + row.name).val('');
+						}
+					}
+					else {
+						$("#" + row.name).val(dataModel[row.bind]);
+					}
+				}
+			} else if(row.type == 'ratio'){
+				for(var src in row.source){
+					var source = row.source[src];
+					
+					if(dataModel == null || dataModel[row.bind] == null || source.checked != true){
+						$('#' + source.name).jqxRadioButton({theme: theme });
+					}
+					else {
+						$('#' + source.name).jqxRadioButton({theme: theme, checked: true});
+					}
 				}
 			}
 		}
@@ -297,7 +338,26 @@ var CommonMethod = function(theme){
 		for(var sKey in popupConfig){
 			var row = popupConfig[sKey];
 			
-			config.dataModel[row.bind] = $("#" + row.name).val();
+			if(row.type == 'ratio'){
+				for(var src in row.source){
+					var source = row.source[src];
+					var value = $('#' + source.name).jqxRadioButton('val');
+					
+					if(value == true){
+						config.dataModel[row.bind] = (value == true ? 1 : 0);
+						
+						break;
+					}
+				}
+			} else if(row.type == 'date' && _common.edit_model != null && _common.edit_model[row.bind + '_date'] != null){
+				var formatText = row.format != null ? row.format : 'yyyy-MM-dd';
+				
+				config.dataModel[row.bind + '_format'] = _common.dateFormat(_common.edit_model[row.bind + '_date'], formatText);
+				config.dataModel[row.bind + '_date'] = _common.edit_model[row.bind + '_date'];
+				config.dataModel[row.bind] = $("#" + row.name).val();
+			} else {
+				config.dataModel[row.bind] = $("#" + row.name).val();
+			}
 			
 			if(row.required && (config.dataModel[row.bind] == null || config.dataModel[row.bind] == '')){
 				config.valid = false;
@@ -305,9 +365,65 @@ var CommonMethod = function(theme){
 		}
 		
 		return config;
-	}
+	};
 	
-	_common.formatter = function(input, row, val){		
+	_common.setEditModel = function(model){
+		_common.edit_model = model;
+	};
+	
+	_common.bindOnChange = function(popupConfig){
+		var onChange = function(row){
+			var changeHandler = function(event){
+				if(_common.edit_model == null){
+					_common.edit_model = {};
+				}
+				
+				_common.edit_model[row.bind] = $("#" + row.name).val();
+				
+				if(row.ref != null){
+					if(row.ref.type == 'number'){
+						var sum = 0;
+						
+						for(var sKey in row.ref.values){
+							var modelField = row.ref.values[sKey];
+							
+							_common.edit_model[modelField] = (_common.edit_model[modelField] != null && _common.edit_model[modelField] != '' ? _common.edit_model[modelField] * 1 : 0);
+							sum += _common.edit_model[modelField];
+						}
+						
+						_common.edit_model[row.ref.field] = sum;
+						$("#" + row.ref.name).val(sum);
+					}
+				}
+				
+				if(row.type == 'date'){
+					_common.edit_model[row.bind + '_date'] = event.args.date;
+				}
+				
+				if(row.change != null){
+					if(event != null){
+						row.change(event);
+					}
+				}
+			};
+			
+			if(row.type == 'number'){
+				$('#' + row.name).on('valueChanged', changeHandler);
+			} else {
+				$('#' + row.name).on('change', changeHandler);
+			}
+		}
+		
+		for(var sKey in popupConfig){
+			var row = popupConfig[sKey];
+			
+			if(row.disabled != true || row.change != null){
+				onChange(row);
+			}
+		}
+	};
+	
+	_common.formatter = function(input, row, val){
 		if(val != null && val != ''){
 			var r = /\d{4}/g;			
 			var results = val.match(r);
@@ -418,6 +534,43 @@ var CommonMethod = function(theme){
 		return iconHeader(defaultText, 'fa-percent', 'right');
 	};
 	
+	_common.upload = function(config){	
+		if(config != null){
+			if(config.fileInput != null && config.fileInput.length > 0 && config.fileIndex < config.fileInput.length){
+				var file = config.fileInput[config.fileIndex];
+				
+				if(file != null){
+					var fileData = new FormData();
+					fileData.append("emp_doc", file.data);
+					fileData.append("pageId", file.extra);
+					fileData.append("empCode", config.empCode);
+				
+					$.ajax({
+						type: 'post',
+						url: config.url, 
+						data: fileData,
+						contentType: false,
+						cache: false,
+						processData:false,
+						success: function(result){
+							config.fileIndex++;
+							
+							_common.upload(config);
+						}
+					});
+				} else {
+					config.fileIndex++;
+							
+					_common.upload(config);
+				}
+			}else{
+				if(config.successHandler != null){
+					config.successHandler();
+				}
+			}
+		}
+	};
+	
 	_common.uploadFiles = function(config){	
 		if(config != null){
 			if(config.fileInput != null && config.fileInput.length > 0 && config.fileIndex < config.fileInput.length){
@@ -455,6 +608,10 @@ var CommonMethod = function(theme){
 		}
 	};
 	
+	_common.timeVisible = function(){
+		Console.log($('.qx-time-picker').childeren());
+	}
+	
 	_common.callPOST = function(postData, sURL, handler){
 		$.ajax({
 			type: 'post',
@@ -467,13 +624,43 @@ var CommonMethod = function(theme){
 		});
 	}
 	
+	_common.addAll = function(from, to, extra){
+		if(from != null){
+			for(var idx = 0; idx < from.length; idx++){
+				var data = from[idx];
+				
+				if(extra == null){
+					to.push(data);
+				} else {
+					to.push({data: data, extra: extra});
+				}
+			}
+		}
+	}
+	
 	_common.callGET = function(sURL, handler){
 		$.ajax({
 			url: sURL, 
 			success: function(result){
-				handler(result);
+				if(handler != null)
+					handler(result);
 			}
 		});
+	}
+	
+	_common.callPOST = function(sURL, postData, handler){
+		if(sURL != null && postData != null){
+			$.ajax({
+				type: 'post',
+				url: sURL, 
+				data: JSON.stringify(postData),
+				contentType: "application/json; charset=utf-8",
+				success: function(result){
+					if(handler != null)
+						handler(result);
+				}
+			});
+		}
 	}
 	
 	init();

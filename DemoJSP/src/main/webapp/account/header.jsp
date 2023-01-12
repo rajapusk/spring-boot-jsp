@@ -39,4 +39,6 @@
 <script type="text/javascript" src="<%= url_jqwidgets%>/jqxform.js"></script> 
 <script type="text/javascript" src="<%= url_jqwidgets%>/jqxradiobutton.js"></script>
 <script type="text/javascript" src="<%= url_jqwidgets%>/jqxcombobox.js"></script>
+<script type="text/javascript" src="<%= url_jqwidgets%>/jqxtimepicker.js"></script>
+<script type="text/javascript" src="<%= url_jqwidgets%>/jqxdraw.js"></script>
 <script type="text/javascript" src="<%= url_path %>/scripts/common.js"></script>

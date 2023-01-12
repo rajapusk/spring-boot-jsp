@@ -18,8 +18,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/travel")
 public class TravelExpenseController {
-    @Value("${manager.mail}")
-    private String _managerEmail;
+    @Value("${manager.mail}") private String _managerEmail;
     @Autowired
     private EmailServiceImpl emailService;
     @Autowired
@@ -30,8 +29,8 @@ public class TravelExpenseController {
     private TravelExpenseDetailService expenseDetailService;
 
     @Autowired
-    PFLoanService pfService;
-
+   	PFLoanService pfService;
+    
     @GetMapping("/branch/{id}")
     public BranchOutput getBranchByCode(@PathVariable("id") int code) {
         try {
@@ -81,7 +80,7 @@ public class TravelExpenseController {
 
         TravelExpenseEntity dbEntity = teService.createOrUpdateTravelExpenseEntity(entity);
         ArrayList<TravelExpenseDetailEntity> lst = new ArrayList<TravelExpenseDetailEntity>();
-        for (TravelExpenseDetailInput data : input.expenses) {
+        for (TravelExpenseDetailInput data:input.expenses) {
             TravelExpenseDetailEntity expense = new TravelExpenseDetailEntity();
             expense.setTravelExpenseId(dbEntity.getId());
             expense.setBillAvailable(data.billAvailable);
@@ -114,11 +113,11 @@ public class TravelExpenseController {
         } catch (Exception e) {
         }
 
-        return entity;
+        return  dbEntity;
     }
-
+    
     @RequestMapping(path = "/uploadFile", method = RequestMethod.POST)
-    public EmpDocEntity uploadFile(@RequestParam("emp_doc") MultipartFile file, String pageId, String empCode) {
+   	public EmpDocEntity uploadFile(@RequestParam("emp_doc") MultipartFile file, String pageId, String empCode) {
         try {
             if (pageId != null) {
                 if (!file.isEmpty()) {

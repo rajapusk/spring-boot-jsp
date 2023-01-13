@@ -198,23 +198,35 @@ public class TravelExpenseService {
         }
     }
 
-    public List<TravelExpenseEntity> updateTravelExpenseEntity(PfLoanUpdateInput[] entityArray, boolean isManager) {
+    public List<TravelExpenseEntity> updateTravelExpenseEntity(PfLoanUpdateInput[] entityArray, String type) {
         List<TravelExpenseEntity> result = new ArrayList<TravelExpenseEntity>();
-        for(PfLoanUpdateInput entity : entityArray) {
+        for (PfLoanUpdateInput entity : entityArray) {
             Optional<TravelExpenseEntity> employee = repository.findById(entity.id);
             if (employee.isPresent()) {
                 TravelExpenseEntity newEntity = employee.get();
 
-                if(isManager == true)
-                    newEntity.setL1Approved(entity.approved);
-                else
-                    newEntity.setHRApproved(entity.hrApproved);
+                if (type == "l1") {
 
+                    newEntity.setL1Approved(entity.l1Approved);
+
+                    if(newEntity.getTotalAmount() >=2000)
+                    {
+                        newEntity.setL2Approved(entity.l1Approved);
+                    }
+                } else if (type == "l2") {
+                    newEntity.setL2Approved(entity.l2Approved);
+                    newEntity.setHRApproved(entity.hrApproved);
+                } else {
+                    newEntity.setHRApproved(entity.hrApproved);
+                }
                 repository.save(newEntity);
 
                 result.add(newEntity);
             }
+
+
         }
+
 
         return result;
     }

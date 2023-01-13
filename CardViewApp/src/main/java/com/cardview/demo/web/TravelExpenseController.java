@@ -1,5 +1,6 @@
 package com.cardview.demo.web;
 
+import com.cardview.demo.exception.RecordNotFoundException;
 import com.cardview.demo.model.*;
 import com.cardview.demo.outputModels.*;
 import com.cardview.demo.service.EmailServiceImpl;
@@ -29,8 +30,8 @@ public class TravelExpenseController {
     private TravelExpenseDetailService expenseDetailService;
 
     @Autowired
-   	PFLoanService pfService;
-    
+    PFLoanService pfService;
+
     @GetMapping("/branch/{id}")
     public BranchOutput getBranchByCode(@PathVariable("id") int code) {
         try {
@@ -78,6 +79,11 @@ public class TravelExpenseController {
         entity.setPermittedDate(input.permittedDate);
         entity.setTotalAmount(input.totalAmount);
 
+        if(input.totalAmount >=50000 ){
+            entity.setL1Approved((byte) 1);
+            entity.setL2Approved((byte)1);
+        }
+
         TravelExpenseEntity dbEntity = teService.createOrUpdateTravelExpenseEntity(entity);
         ArrayList<TravelExpenseDetailEntity> lst = new ArrayList<TravelExpenseDetailEntity>();
         for (TravelExpenseDetailInput data:input.expenses) {
@@ -115,9 +121,9 @@ public class TravelExpenseController {
 
         return  dbEntity;
     }
-    
+
     @RequestMapping(path = "/uploadFile", method = RequestMethod.POST)
-   	public EmpDocEntity uploadFile(@RequestParam("emp_doc") MultipartFile file, String pageId, String empCode) {
+    public EmpDocEntity uploadFile(@RequestParam("emp_doc") MultipartFile file, String pageId, String empCode) {
         try {
             if (pageId != null) {
                 if (!file.isEmpty()) {
@@ -330,6 +336,70 @@ public class TravelExpenseController {
         } catch (Exception ex) {
             return null;
         }
+    }
+
+    @RequestMapping(path = "/l1/update", method = RequestMethod.PUT)
+    public boolean UpdateL1(@RequestBody PfLoanUpdateInput[] loan) throws RecordNotFoundException {
+        List<TravelExpenseEntity> lstVPF = teService.updateTravelExpenseEntity(loan, "l1");
+
+        for (TravelExpenseEntity entity : lstVPF) {
+            PFAccountEntity account = paService.getPFAccountById(entity.getEmpCode());
+            String subject = "", body = "";
+
+            if (entity.getL1Approved() == 1) {
+                subject = "Travel Expense Approved";
+                body = "Your Travel Expense has been approved by L1 manager.";
+            } else if (entity.getL1Approved() == 2) {
+                subject = "Travel Expense Rejected";
+                body = "Your Travel Expense has been rejected by L1 manager.";
+            }
+
+            emailService.sendSimpleMail(account.getEmail(), body, subject);
+        }
+        return true;
+    }
+
+    @RequestMapping(path = "/l2/update", method = RequestMethod.PUT)
+    public boolean UpdateL2(@RequestBody PfLoanUpdateInput[] loan) throws RecordNotFoundException {
+        List<TravelExpenseEntity> lstVPF = teService.updateTravelExpenseEntity(loan, "l2");
+
+        for (TravelExpenseEntity entity : lstVPF) {
+            PFAccountEntity account = paService.getPFAccountById(entity.getEmpCode());
+            String subject = "", body = "";
+
+
+            if (entity.getL2Approved() == 1) {
+                subject = "Travel Expense Approved";
+                body = "Your Travel Expense has been approved by L2 manager.";
+            } else if (entity.getL2Approved() == 2) {
+                subject = "Travel Expense Rejected";
+                body = "Your Travel Expense has been rejected by L2 manager.";
+            }
+
+            emailService.sendSimpleMail(account.getEmail(), body, subject);
+        }
+        return true;
+    }
+
+    @RequestMapping(path = "/hr/update", method = RequestMethod.PUT)
+    public boolean UpdateHrTravelExpenseseAllowance(@RequestBody PfLoanUpdateInput[] loan) throws RecordNotFoundException {
+        List<TravelExpenseEntity> lstVPF = teService.updateTravelExpenseEntity(loan, "hr");
+
+        for (TravelExpenseEntity entity : lstVPF) {
+            PFAccountEntity account = paService.getPFAccountById(entity.getEmpCode());
+            String subject = "", body = "";
+
+            if (entity.getHRApproved() == 1) {
+                subject = "Travel Expense Approved";
+                body = "Your Travel Expense has been approved by HR.";
+            } else if (entity.getHRApproved() == 2) {
+                subject = "Travel Expense Rejected";
+                body = "Your Travel Expense has been rejected by HR.";
+            }
+
+            emailService.sendSimpleMail(account.getEmail(), body, subject);
+        }
+        return true;
     }
 }
 

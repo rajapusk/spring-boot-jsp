@@ -162,6 +162,7 @@ html, body{
     left: 20px;
 } 
 
+div.scRefundablePFLoan td[style="width:10%; background: transparent;"] td[style="width:10%; background: transparent;"],
 div.scRefundablePFLoan td[style="width:20%; background: transparent;"] td[style="width:20%; background: transparent;"]
 ,div.scRefundablePFLoan td[style="width:15%; background: transparent;"] td[style="width:15%; background: transparent;"]
 ,div.scRefundablePFLoan td[style="width:13.33%; background: transparent;"] td[style="width:13.33%; background: transparent;"]

@@ -37,7 +37,11 @@ var TravelList = function(){
 					$("#winNoofdays").val(diff.totalDays);
 				}
 				
-				$("#wintravelEndDate").jqxDateTimeInput({min: event.args.date});
+				var startDate = event.args.date;
+				
+				startDate.setDate(startDate.getDate() + 1);
+				
+				$("#wintravelEndDate").jqxDateTimeInput({min: startDate});
 			}
 		}},
 		{name: 'wintravelEndDate', type: 'date', bind: 'travelEndDate', label: 'Travel End Date & Time', format:'yyyy-MM-ddTHH:mm:ssZ', required: true, disabled: false, dateConfig: dateConfig, change: function(event){
@@ -252,7 +256,10 @@ var TravelList = function(){
         $("#popupWindow").jqxWindow({ position: { x: xPos, y: yPos } });
         $("#popupWindow").jqxWindow('open');
         
-        $("#wintravelStartDate").jqxDateTimeInput({min: new Date()});
+        let today = new Date();
+        today.setDate(today.getDate() + 30);
+        
+        $("#wintravelStartDate").jqxDateTimeInput({min: today});
         $("#wintravelEndDate").jqxDateTimeInput({min: dataRecord.travelStartDate});
         buttonAddAction(0);	
 	};

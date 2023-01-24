@@ -21,7 +21,8 @@ var TravelApply = function(){
 				{
 			        type: 'blank',
 			        name: 'searchPanel',
-			        rowHeight: '5px'
+			        rowHeight: '5px',
+			        columnWidth: '20%'
 			    },{
 					bind: 'name',
 	                type: 'text',
@@ -43,7 +44,7 @@ var TravelApply = function(){
 	                labelWidth: labelWidth + 'px',
 	                width: controlWidth + 'px',
 					align: 'left',
-					columnWidth: '20%'
+					columnWidth: '13.33%'
 				},{
 					bind: 'destinationBranchCode',
 	                type: 'text',
@@ -53,12 +54,12 @@ var TravelApply = function(){
 	                labelWidth: labelWidth + 'px',
 	                width: controlWidth + 'px',
 					align: 'left',
-					columnWidth: '20%'
+					columnWidth: '13.33%'
 				},{
 			        type: 'blank',
 			        name: 'travelPurpose',
 			        rowHeight: '5px',
-			        columnWidth: '20%'
+			        columnWidth: '40%'
 			    }
 			]
 		},{
@@ -70,7 +71,8 @@ var TravelApply = function(){
 				{
 			        type: 'blank',
 			        name: 'searchPanel2',
-			        rowHeight: '5px'
+			        rowHeight: '5px',
+			        columnWidth: '20%'
 			    },{
 					bind: 'permittedName',
 	                type: 'text',
@@ -92,16 +94,16 @@ var TravelApply = function(){
 					labelWidth: labelWidth + 'px',
 					width: controlWidth + 'px',
 					align: 'left',
-					columnWidth: '20%'
+					columnWidth: '13.33%'
 				},{
 					type: 'blank',
 					name: 'permittedTime',
-					columnWidth: '20%',					
+					columnWidth: '13.33%',					
 				},{
 			        type: 'blank',
 			        name: 'permissionMode',
 			        rowHeight: '5px',
-			        columnWidth: '20%'
+			        columnWidth: '40%'
 			    }
 			]
 		},{
@@ -225,6 +227,7 @@ var TravelApply = function(){
 			var val = (event.args.value != null && event.args.value != '' ? event.args.value : 0) * 1;
 			
 			bindValue(val, 'advanceAmount');
+			$("#btnAdd").addClass('scButton');
 		});
             
 		var initOption = function(){
@@ -252,12 +255,6 @@ var TravelApply = function(){
 				formData.permissionMode = event.currentTarget.innerText;
 			}
 		}
-		
-		
-        /*
-        entity.setPermittedTime(input.permittedTime);
-        entity.setTotalAmount(input.totalAmount);
-        */
         
 		initOption();
 		$('#optQ1').on('change', setComboSource); 

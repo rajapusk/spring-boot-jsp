@@ -347,7 +347,7 @@ var MedicalCheckup = function(){
 				data: JSON.stringify(postData),
 				contentType: "application/json; charset=utf-8",
 				success: function(result){
-					uploadFile(result);
+					uploadFile(result, postData);
 				}
 			});
 		} else {
@@ -355,12 +355,14 @@ var MedicalCheckup = function(){
 		}
 	};	
 	
-	var uploadFile = function(result){
+	var uploadFile = function(result, postData){
 		if(formData.hasFile){
 			var fileInput = $('input[type=file]');
 			
 			if(fileInput != null && fileInput.length > 0){
-				Common.uploadFiles({id: result.id, empCode: result.empcode, fileInput: fileInput, fileIndex: 0, url: Common.HOST + '/medical/uploadFile', successHandler: formSuccessHandler});				
+				Common.uploadFiles({id: result.id, empCode: result.empcode, fileInput: fileInput, fileIndex: 0, url: Common.HOST + '/medical/uploadFile', successHandler: function(){
+					formSuccessHandler(postData);
+				}});				
 			}
 		}
 	}
@@ -375,9 +377,15 @@ var MedicalCheckup = function(){
 		Common.loopInput(jqxFormTmp, 'dvRefundablePFLoan', Common.updateValue, config);
 	}
 	
-	var formSuccessHandler = function(){
+	var formSuccessHandler = function(postData){
 		resetForm();
-		Common.showToast({message: "The record has been submitted successfully."});
+		
+		if(postData != null && postData.submitted == 1){
+			Common.showToast({message: "Claim is submitted"});
+		}
+		else {
+			Common.showToast({message: "Claim is saved"});
+		}
 	}
 	
 	var getLoanData = function(){

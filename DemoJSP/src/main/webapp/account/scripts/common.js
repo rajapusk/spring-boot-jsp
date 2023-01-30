@@ -638,6 +638,29 @@ var CommonMethod = function(theme){
 		}
 	}
 	
+	_common.enabledQuater = function(months){
+		let found = false;
+		
+		for(let sKey in months){
+			let sMonth = months[sKey];
+			
+			if(_common.foundMonth(sMonth)){					
+				found = true;
+				
+				break;
+			}
+		}
+		
+		return found;
+	}
+	
+	_common.foundMonth = function(sMonth){
+		let today = new Date();
+		let matchMonth = today.toLocaleString('default', { month: 'short' });
+		
+		return (sMonth.toLowerCase() == matchMonth.toLowerCase());
+	}
+	
 	_common.callGET = function(sURL, handler){
 		$.ajax({
 			url: sURL, 

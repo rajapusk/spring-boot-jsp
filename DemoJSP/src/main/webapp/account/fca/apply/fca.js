@@ -182,7 +182,7 @@ var FCA = function(){
 			+ '</div>'
 		);
 		
-		$('#optQ1').jqxRadioButton({theme: theme });
+		$('#optQ1').jqxRadioButton({theme: theme});
 		$('#optQ2').jqxRadioButton({theme: theme});
 		$('#optQ3').jqxRadioButton({theme: theme});
 		$('#optQ4').jqxRadioButton({theme: theme});
@@ -216,10 +216,11 @@ var FCA = function(){
 				claimAmount += 500;
 			});
 			
-			if(entitled != null && entitled[formData.grade] != null){
+			/*if(entitled != null && entitled[formData.grade] != null){
 				formData.entitledAmount = entitled[formData.grade];
-			}
+			}*/
 			
+			formData.entitledAmount = claimAmount;
 			formData.claimAmount = (formData.entitledAmount < claimAmount ? formData.entitledAmount : claimAmount);
 			calculateAmount();
 		});
@@ -227,12 +228,27 @@ var FCA = function(){
 		var setComboSource = function(event){
 			var checked = event.args.checked; 
 			
-			if(checked){    
+			if(checked){  
 				formData.quarterType = event.currentTarget.innerText;
 				formData.claimAmount = 0;
 		    	formData.months = '';
-				$("#forMonth").jqxComboBox({source:  quarter[formData.quarterType]});
+		    	
+		    	let found = false;
+		    	let months = quarter[formData.quarterType];
+		    	
+				$("#forMonth").jqxComboBox({source:  months});
 				disableComboBox(false);
+				
+				for(let sKey in months){
+					let sMonth = months[sKey];
+					
+					if(Common.foundMonth(sMonth)){					
+						found = true;
+					} else if(found){
+						$("#forMonth").jqxComboBox('disableAt', (sKey * 1));
+					}
+				}
+				
 				calculateAmount();
 			}
 		}
@@ -313,20 +329,22 @@ var FCA = function(){
 			data: JSON.stringify(postData),
 			contentType: "application/json; charset=utf-8",
 			success: function(result){
-				uploadFile(result);
+				uploadFile(result, postData);
 			}
 		});
 	};	
 	
-	var uploadFile = function(result){
+	var uploadFile = function(result, postData){
 		if(formData.hasFile){
 			var fileInput = $('input[type=file]');
 			
 			if(fileInput != null && fileInput.length > 0){
-				Common.uploadFiles({id: result.id, empCode: result.empcode, fileInput: fileInput, fileIndex: 0, url: Common.HOST + '/fca/uploadFile', successHandler: formSuccessHandler});				
+				Common.uploadFiles({id: result.id, empCode: result.empcode, fileInput: fileInput, fileIndex: 0, url: Common.HOST + '/fca/uploadFile', successHandler: function(){
+					formSuccessHandler(postData);
+				}});				
 			}
 		}else{
-			formSuccessHandler();
+			formSuccessHandler(postData);
 		}
 	}
 	
@@ -342,9 +360,16 @@ var FCA = function(){
 	
 	var resetOption = function(disabled){
 		for(var key = 1; key<=4; key++){
-			$('#optQ' + key).jqxRadioButton({checked: false, disabled: disabled });
-		}
+			if(!disabled){
+				let months = quarter['Q' + key];
+				let found = Common.enabledQuater(months);
 				
+				$('#optQ' + key).jqxRadioButton({checked: false, disabled: !found });
+			} else {
+				$('#optQ' + key).jqxRadioButton({checked: false, disabled: disabled });
+			}
+		}
+		
 		disableComboBox(disabled);
 	}
 	
@@ -356,11 +381,18 @@ var FCA = function(){
 		resetOption(true);
 		$("#searchData").jqxInput('val', '');			
 		$("#forMonth").jqxComboBox({source: []});
+		$('#chkAceeptVFP').jqxCheckBox({ checked: false});
 	}
 	
-	var formSuccessHandler = function(){
+	var formSuccessHandler = function(postData){
 		resetForm();
-		Common.showToast({message: "The record has been submitted successfully."});
+		
+		if(postData != null && postData.submitted == 1){
+			Common.showToast({message: "Claim is submitted"});
+		}
+		else {
+			Common.showToast({message: "Claim is saved"});
+		}
 	}
 	
 	var getLoanData = function(){

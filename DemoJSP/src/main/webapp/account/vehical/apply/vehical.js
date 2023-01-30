@@ -74,6 +74,7 @@ var Vehical = function(){
 					info: '',
 					name: 'claimDate',
 					labelPosition: 'top',
+					disabled: true,
 					labelWidth: labelWidth + 'px',
 					width: controlWidth + 'px',
 					align: 'left',

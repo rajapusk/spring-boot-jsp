@@ -306,7 +306,21 @@ var Newspaper = function(){
 				formData.quarterType = event.currentTarget.innerText;
 				formData.claimAmount = 0;
 		    	formData.months = '';
-				$("#forMonth").jqxComboBox({source:  quarter[formData.quarterType]});
+		    	let found = false;
+		    	let months = quarter[formData.quarterType];
+		    	
+				$("#forMonth").jqxComboBox({source: months});
+				
+				for(let sKey in months){
+					let sMonth = months[sKey];
+					
+					if(Common.foundMonth(sMonth)){					
+						found = true;
+					} else if(found){
+						$("#forMonth").jqxComboBox('disableAt', (sKey * 1));
+					}
+				}
+				
 				disableComboBox(false);
 				calculateAmount();
 			}
@@ -396,16 +410,15 @@ var Newspaper = function(){
 		if(sType == 'SUBMIT'){
 			postData.submitted = 1;
 		}
-		
-		
-		if(formData.hasFile){
+				
+		if(formData.hasFile || (formData.grade != 'V' && formData.grade != 'VI')){
 			$.ajax({
 				type: 'post',
 				url: sURL, 
 				data: JSON.stringify(postData),
 				contentType: "application/json; charset=utf-8",
 				success: function(result){
-					uploadFile(result);
+					uploadFile(result, postData);
 				}
 			});
 		} else {
@@ -413,15 +426,17 @@ var Newspaper = function(){
 		}
 	};	
 	
-	var uploadFile = function(result){
+	var uploadFile = function(result, postData){
 		if(formData.hasFile){
 			var fileInput = $('input[type=file]');
 			
 			if(fileInput != null && fileInput.length > 0){
-				Common.uploadFiles({id: result.id, empCode: result.empcode, fileInput: fileInput, fileIndex: 0, url: Common.HOST + '/newspaper/uploadFile', successHandler: formSuccessHandler});				
+				Common.uploadFiles({id: result.id, empCode: result.empcode, fileInput: fileInput, fileIndex: 0, url: Common.HOST + '/newspaper/uploadFile', successHandler: function(){
+					formSuccessHandler(postData);
+				}});				
 			}
 		}else{
-			formSuccessHandler();
+			formSuccessHandler(postData);
 		}
 	}
 	
@@ -437,7 +452,14 @@ var Newspaper = function(){
 	
 	var resetOption = function(disabled){
 		for(var key = 1; key<=4; key++){
-			$('#optQ' + key).jqxRadioButton({checked: false, disabled: disabled });
+			if(!disabled){
+				let months = quarter['Q' + key];
+				let found = Common.enabledQuater(months);
+				
+				$('#optQ' + key).jqxRadioButton({checked: false, disabled: !found });
+			} else {
+				$('#optQ' + key).jqxRadioButton({checked: false, disabled: disabled });
+			}
 		}
 				
 		disableComboBox(disabled);
@@ -454,9 +476,15 @@ var Newspaper = function(){
 		$("#forMonth").jqxComboBox({source: []});
 	}
 	
-	var formSuccessHandler = function(){
+	var formSuccessHandler = function(postData){
 		resetForm();
-		Common.showToast({message: "The record has been submitted successfully."});
+		
+		if(postData != null && postData.submitted == 1){
+			Common.showToast({message: "Claim is submitted"});
+		}
+		else {
+			Common.showToast({message: "Claim is saved"});
+		}
 	}
 	
 	var getLoanData = function(){
@@ -492,7 +520,12 @@ var Newspaper = function(){
 			formData.entitledAmount = entitled[formData.grade];
 		}
 
-		formData.claimAmount = (formData.entitledAmount < formData.invoiceAmount ? formData.entitledAmount : formData.invoiceAmount);
+		if(formData.grade != 'V' && formData.grade != 'VI'){
+			formData.claimAmount = (formData.entitledAmount < formData.invoiceAmount ? formData.entitledAmount : formData.invoiceAmount);
+		}
+		else {
+			formData.claimAmount = (formData.invoiceAmount != null ? formData.invoiceAmount : 0);
+		}
 		
 		if(formData.claimAmount == null || formData.claimAmount == 0){
 			form.jqxForm('getComponentByName', 'saveDraft').jqxButton({disabled: true});

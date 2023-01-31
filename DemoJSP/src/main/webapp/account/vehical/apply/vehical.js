@@ -260,6 +260,8 @@ var Vehical = function(){
 		
 		$("#dvRefundablePFLoan").jqxForm('getComponentByName', 'serviceCentreName').on('change', function(event){
 			formData.serviceCentreName = event.args.value;
+			
+			enableButtonAction();
 		});
 		
 		$("#dvRefundablePFLoan").jqxForm('getComponentByName', 'invoiceAmount').on('change', function(event){
@@ -347,8 +349,7 @@ var Vehical = function(){
 		if(sType == 'SUBMIT'){
 			postData.submitted = 1;
 		}
-		
-		
+				
 		if(formData.hasFile){
 			$.ajax({
 				type: 'post',
@@ -356,7 +357,7 @@ var Vehical = function(){
 				data: JSON.stringify(postData),
 				contentType: "application/json; charset=utf-8",
 				success: function(result){
-					uploadFile(result);
+					uploadFile(result, postData);
 				}
 			});
 		} else {
@@ -364,12 +365,14 @@ var Vehical = function(){
 		}
 	};	
 	
-	var uploadFile = function(result){
+	var uploadFile = function(result, postData){
 		if(formData.hasFile){
 			var fileInput = $('input[type=file]');
 			
 			if(fileInput != null && fileInput.length > 0){
-				Common.uploadFiles({id: result.id, empCode: result.empcode, fileInput: fileInput, fileIndex: 0, url: Common.HOST + '/vehicle/uploadFile', successHandler: formSuccessHandler});				
+				Common.uploadFiles({id: result.id, empCode: result.empcode, fileInput: fileInput, fileIndex: 0, url: Common.HOST + '/vehicle/uploadFile', successHandler: function(){
+					formSuccessHandler(postData);
+				}});				
 			}
 		}else{
 			formSuccessHandler();
@@ -385,9 +388,15 @@ var Vehical = function(){
 		$("#dvRefundablePFLoan").jqxForm('getComponentByName', 'fileUpload').jqxFileUpload('cancelAll');	
 	}
 	
-	var formSuccessHandler = function(){
+	var formSuccessHandler = function(postData){
 		resetForm();
-		Common.showToast({message: "The record has been submitted successfully."});
+		
+		if(postData != null && postData.submitted == 1){
+			Common.showToast({message: "Claim is submitted"});
+		}
+		else {
+			Common.showToast({message: "Claim is saved"});
+		}
 	}
 	
 	var getLoanData = function(){
@@ -416,16 +425,21 @@ var Vehical = function(){
 		return postData;
 	}
 	
-	var calculateAmount = function(){
-		var form = $('#dvRefundablePFLoan');
-		
+	var calculateAmount = function(){		
 		if((formData.entitledAmount == null || formData.entitledAmount == 0) &&(entitled != null && entitled[formData.grade] != null)){
 			formData.entitledAmount = entitled[formData.grade];
 		}
 
 		formData.claimAmount = (formData.entitledAmount < formData.invoiceAmount ? formData.entitledAmount : formData.invoiceAmount);
 		
-		if(formData.claimAmount == null || formData.claimAmount == 0){
+		enableButtonAction();		
+		Common.loopInput(jqxFormTmp, 'dvRefundablePFLoan',  Common.updateValue, formData);
+	};
+	
+	var enableButtonAction = function(){
+		var form = $('#dvRefundablePFLoan');
+		
+		if(formData == null || formData.claimAmount == null || formData.claimAmount == 0 || formData.serviceCentreName == null || formData.serviceCentreName == ''){
 			form.jqxForm('getComponentByName', 'saveDraft').jqxButton({disabled: true});
 			form.jqxForm('getComponentByName', 'saveSubmit').jqxButton({disabled: true});
 		}
@@ -433,9 +447,7 @@ var Vehical = function(){
 			form.jqxForm('getComponentByName', 'saveDraft').jqxButton({disabled: false});
 			form.jqxForm('getComponentByName', 'saveSubmit').jqxButton({disabled: false});
 		}
-		
-		Common.loopInput(jqxFormTmp, 'dvRefundablePFLoan',  Common.updateValue, formData);
-	};
+	}
 	
 	var loadEntitled = function(){		
 		var sURL = Common.HOST + '/vehicle/getEntitle'

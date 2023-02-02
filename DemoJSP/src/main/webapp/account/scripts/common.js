@@ -24,7 +24,7 @@ var CommonMethod = function(theme){
 		     notifyConfig = {};
 		});
 	}
-	
+		
 	_common.showToast = function(config){
 		if(config != null && config.message != notifyConfig.message){
 			notifyConfig = config;
@@ -62,6 +62,10 @@ var CommonMethod = function(theme){
 				if(row.disabled == true){
 					if(row.type == 'text'){
 						input.jqxInput({disabled: true,  theme: theme});
+						
+						input.keypress(function(event) {
+						 	console.log(event);
+						});
 					}
 					else if(row.type == 'date'){
 						input.jqxDateTimeInput({disabled: true, theme: theme});
@@ -150,8 +154,85 @@ var CommonMethod = function(theme){
 		}
 	};
 	
+	var bindKeypressEvent = function(row, formId){
+		if(row != null && formId != null){
+			var input = $('#' + formId).jqxForm('getComponentByName', row.name);
+			var rootEvent = $(input[0].querySelector('input'));
+				
+			rootEvent.keypress(function(event) {
+				if(event.which == 13 && row.nextRow != null){
+					var nextInput = $('#' + formId).jqxForm('getComponentByName', row.nextRow.name);
+					
+					if(nextInput != null && nextInput.length > 0){
+						let target = null;
+						
+						if(row.nextRow.type == 'textArea'){
+							target = $(nextInput[0].querySelector('textarea'));
+						} else {
+							target = $(nextInput[0].querySelector('input'));
+						}
+						
+						if(target != null && target.length > 0){
+							target.focus();
+							target[0].setSelectionRange(0,0);
+						}
+					}
+				}
+			});
+		}
+	}
+	
+	var findNextElement = function(template, currentRow, currentIdx, formId){
+		if(template != null && currentRow != null){
+			for(var idx = (currentIdx + 1); idx < template.length; idx++){
+				var row = template[idx];
+				
+				if(row.disabled != true && (row.type == 'text' || row.type == 'textArea' ||row.type == 'number' || (row.type == 'blank' && row.name != null && row.name.indexOf('search') > -1))){
+					currentRow.nextRow = row;
+					bindKeypressEvent(currentRow, formId);
+					
+					break;
+				}
+			}
+		}
+	}
+	
 	_common.loopInput = function(template, formId, handler, config){
 		if(template != null){
+			var nextRows = [];
+			
+			_common.loopFindNextElement(template, nextRows);
+			
+			for(var sKey in nextRows){
+				var row = nextRows[sKey];
+				
+				if(row.nextRow == null){
+					if(row.disabled != true && (row.type == 'text' || row.type == 'textArea' || row.type == 'number' || (row.type == 'blank' && row.name != null && row.name.indexOf('search') > -1))){
+						findNextElement(nextRows, row, (sKey * 1), formId);
+					}
+				}
+			}
+			
+			_common.loopInputHandler(template, formId, handler, config);
+	   	}
+	};
+	
+	_common.loopFindNextElement = function(template, nextRows){
+		if(template != null){
+			for(var sKey in template){
+				var row = template[sKey];
+				
+				if(row.columns != null && row.columns.length > 0){
+					_common.loopFindNextElement(row.columns, nextRows);
+	        	} else {
+					nextRows.push(row);
+				}
+			}
+	   	}
+	};
+	
+	_common.loopInputHandler = function(template, formId, handler, config){
+		if(template != null){		
 			for(var sKey in template){
 				var row = template[sKey];
 				
@@ -161,11 +242,12 @@ var CommonMethod = function(theme){
 					}
 				}
 				else if(row.columns != null && row.columns.length > 0){
-					_common.loopInput(row.columns, formId, handler, config)
+					_common.loopInputHandler(row.columns, formId, handler, config);
 	        	}
 			}
 	   	}
 	};
+	
 	
 	_common.getRow = function(rowData){
 		var rowHTML = '<tr>\n';

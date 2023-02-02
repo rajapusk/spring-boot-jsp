@@ -13,6 +13,9 @@ var TravelList = function(){
 	var applyDistance = {'Air Ticket': true, 'Train Ticket': true,'Bus Ticket': true, 'Auto/Taxi/Metro': true,'Self Owned Car': true, 'Bank Owned Car': true};
 	var dateConfig = {formatString: "F", showTimeButton: true, formatString: 'd-MMM-yy & h:ss tt'};
 	var expense = ['Air Ticket','Train Ticket','Bus Ticket','Ticket Cancellation','Halting Allow','Lodging Expense','Own Stay arrangement','Auto/Taxi/Metro','Self Owned Car','Bank Owned Car','Parking','Toll tax','Halting allow','Incidental expense'];
+	
+	expense.sort();
+	
 	var calcField = {type: 'number', name: 'winTotalAmount', field: 'totalAmount', values: ['amountExclGST', 'cgstAmount', 'sgstAmount', 'igst']};
 	var popupConfig = [
 		{name: 'winExpenseDescription', type: 'option', bind: 'expenseDescription', label: 'Expense Description', source: expense, required: true, change: function(event){
@@ -181,10 +184,14 @@ var TravelList = function(){
         $("#btnAdd").jqxButton({ theme: theme });
         $("#winCancel").jqxButton({ theme: theme, width: 100 });
         $("#btnAdd").click(function () {
-			editRowId = null;
-            openPopup({travelStartDate: new Date(), travelEndDate: new Date()});
+			newPopup();
         });
 	};
+	
+	var newPopup = function(){
+		editRowId = null;
+        openPopup({travelStartDate: new Date(), travelEndDate: new Date()});
+	}
 	
 	var getEntitledAmount = function(configData){
 		var entitledAmount = 0;
@@ -318,7 +325,12 @@ var TravelList = function(){
 	            
 	            $("#winFileUpload").jqxFileUpload('cancelAll');
 	            $("#btnSubmit").jqxButton({ disabled: (selectedRows.length > 0 ? false : true) });
-	            $("#popupWindow").jqxWindow('hide');
+	            
+	            if(editRowId == null){
+					newPopup();
+				} else {
+					$("#popupWindow").jqxWindow('hide');
+				}
 			}
             else{
 				Common.showToast({message: "Please fill the required fields."});

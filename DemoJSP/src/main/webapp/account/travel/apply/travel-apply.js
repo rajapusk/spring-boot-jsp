@@ -77,7 +77,7 @@ var TravelApply = function(){
 					bind: 'permittedName',
 	                type: 'text',
 	                name: 'permittedName',
-	                label: 'Name',
+	                label: 'Approver Name',
 	                disabled: true,
 	                labelPosition: 'top',
 	                labelWidth: labelWidth + 'px',
@@ -152,7 +152,7 @@ var TravelApply = function(){
 		.jqxForm('getComponentByName', 'searchPanel2').append(
 			 '<div class="scTitlePanel">'
 			 	+ '<div class="scTitle">'
-			 		+ 'Employee Code'
+			 		+ 'Approver Employee Code'
 			 	+ '</div>'
 				+ '<div class="scSearchBox">'
 					+ '<div class="searchInput">'

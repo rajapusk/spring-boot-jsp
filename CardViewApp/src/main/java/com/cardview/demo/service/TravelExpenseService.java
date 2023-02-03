@@ -208,7 +208,7 @@ public class TravelExpenseService {
                 if (type == "l1") {
 
                     newEntity.setL1Approved(entity.l1Approved);
-
+                    newEntity.setL1ManagerRemarks(entity.remarks);
                     if(newEntity.getTotalAmount() >=2000)
                     {
                         newEntity.setL2Approved(entity.l1Approved);
@@ -216,17 +216,15 @@ public class TravelExpenseService {
                 } else if (type == "l2") {
                     newEntity.setL2Approved(entity.l2Approved);
                     newEntity.setHRApproved(entity.hrApproved);
+                    newEntity.setL2ManagerRemarks(entity.remarks);
                 } else {
                     newEntity.setHRApproved(entity.hrApproved);
+                    newEntity.setHrRemarks(entity.remarks);
                 }
                 repository.save(newEntity);
-
                 result.add(newEntity);
             }
-
-
         }
-
 
         return result;
     }

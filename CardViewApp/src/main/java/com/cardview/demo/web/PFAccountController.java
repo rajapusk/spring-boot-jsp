@@ -50,7 +50,7 @@ public class PFAccountController {
 	public List<PFAccountEntity> getPFAccount() {
 		try {
 			System.out.print("Entering...");
-			return paService.getAllPFAccount();
+			return paService.getAllPFAccountView();
 		} catch (Exception ex) {
 			return null;
 		}

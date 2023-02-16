@@ -5,30 +5,70 @@ import com.cardview.demo.model.BriefcaseAllowanceEntity;
 import com.cardview.demo.model.PFLoanEntity;
 import com.cardview.demo.model.PfLoanUpdateInput;
 import com.cardview.demo.model.VpfContributionEntity;
+import com.cardview.demo.outputModels.BranchOutput;
 import com.cardview.demo.repository.BriefcaseAllowanceRepository;
 import com.cardview.demo.repository.PFAccountRepository;
 import com.cardview.demo.repository.PFLoanRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import java.sql.*;
 
 @Service
 public class BriefcaseAllowanceService {
     @Autowired
     private EmailServiceImpl emailService;
-
-
     @Autowired
     BriefcaseAllowanceRepository repository;
 
     @Autowired
     PFAccountRepository accountRepository;
 
+    @Value("${spring.datasource.driver-class-name}")
+    private String driverClassName;
+
+    @Value("${spring.datasource.url}")
+    private String driverUrl;
+
+    @Value("${spring.datasource.username}")
+    private String userName;
+
+    @Value("${spring.datasource.password}")
+    private String password;
+
+
+    public boolean validateRecord(long empCode) throws ClassNotFoundException
+    {
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+            Connection dbConnection = DriverManager.getConnection(driverUrl, userName, password);
+            Statement getFromDb = dbConnection.createStatement();
+            String query = " SELECT count(id) FROM vetan10.tbl_briefcase_allowance where empcode = "+empCode+" and MONTH(created_on) = MONTH(NOW()) AND YEAR(created_on) = MONTH(NOW());";
+
+            ResultSet rs = getFromDb
+                    .executeQuery(query);
+            rs.next();
+            int count = rs.getInt(1);
+           if(count > 0)
+               return true;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+
+        }
+        return  false;
+    }
 
     public List<BriefcaseAllowanceEntity> getAllBriefcaseAllowance()
     {

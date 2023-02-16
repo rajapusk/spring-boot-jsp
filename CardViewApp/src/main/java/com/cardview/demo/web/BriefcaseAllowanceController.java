@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.persistence.EntityExistsException;
+import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,27 +36,38 @@ public class BriefcaseAllowanceController {
     
     @GetMapping("/get/{id}")
     public BriefcaseAllowanceEntity getBriefcaseAllowanceById(@PathVariable("id") Long id) {
-        try {
+        throw new EntityExistsException();
+       /* try {
+
             System.out.println("@@@ id " + id);
             return baService.getBriefcaseAllowanceById(id);
         } catch (Exception ex) {
             return null;
-        }
+        }*/
     }
 
     @RequestMapping(path = "/create", method = RequestMethod.POST)
     public BriefcaseAllowanceEntity createOrUpdateBriefcaseAllowanceContribution(@RequestBody BriefcaseAllowanceEntity loan) {
-        BriefcaseAllowanceEntity entity = baService.createOrUpdateBriefcaseAllowance(loan);
-
         try {
+        if(baService.validateRecord(loan.getEmpCode()) == false)
+        {
+            BriefcaseAllowanceEntity entity = baService.createOrUpdateBriefcaseAllowance(loan);
+
+
             PFAccountEntity account = paService.getPFAccountById(loan.getEmpCode());
             String body = account.getNAME() + " has applied the Briefcase Allowance. ";
             emailService.sendSimpleMail(_managerEmail, body, "Briefcase Allowance Application");
+            return  entity;
+        }
+        else {
+            throw new EntityExistsException();
+        }
+        }
+        catch (Exception e) {
 
-        } catch (Exception e) {
         }
 
-        return  entity;
+        return null;
     }
 
     @DeleteMapping("/delete/id")

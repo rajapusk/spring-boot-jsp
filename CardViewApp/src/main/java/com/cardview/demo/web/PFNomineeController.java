@@ -220,26 +220,36 @@ public class PFNomineeController {
     public List<PfNomineeOutput> getAllPfNominee() {
         try {
             List<PfNomineeOutput> result = new ArrayList<PfNomineeOutput>();
-            List<PFAccountEntity> listAllAccount = paService.getAllPFAccount();
             List<PFNomineeEntity> lstPFNominee = pfNomineeService.getAllPFNominee();
 
-            for (PFAccountEntity account : listAllAccount) {
-                for (PFNomineeEntity entity : lstPFNominee) {
-                    if (account.getEMPCODE() == entity.getempcode() && entity.getapproved() == 0) {
-                        PfNomineeOutput output = new PfNomineeOutput();
-                        output.id = entity.getid();
-                        output.doj = account.getDOJ();
-                        output.name  = account.getNAME();
-                        output.nameInAadhaar = account.getNameInAadhaar();
-                        output.gender = account.getGender();
-                        output.dor = account.getDOR();
-                        output.pfDoj = account.getPfDOJ();
-                        output.panNo = account.getPanNo();
-                        output.pf_nps_AcNo = account.getPf_nps();
-                        output.submitted = entity.getsubmitted();
-                        output.approved = entity.getapproved();
-                        output.hrApproved = entity.getHRApproved();
-                        result.add(output);
+            String empCodes = "";
+            for (PFNomineeEntity ba : lstPFNominee) {
+                empCodes = empCodes +  ba.getempcode() + ",";
+            }
+
+            if(lstPFNominee.size() > 0) {
+                StringBuffer sb = new StringBuffer(empCodes);
+                sb.deleteCharAt(sb.length() - 1);
+                List<PFAccountEntity> listAllAccount = paService.getAllPFAccountViewByIds(sb.toString());
+
+                for (PFAccountEntity account : listAllAccount) {
+                    for (PFNomineeEntity entity : lstPFNominee) {
+                        if (account.getEMPCODE() == entity.getempcode() && entity.getapproved() == 0) {
+                            PfNomineeOutput output = new PfNomineeOutput();
+                            output.id = entity.getid();
+                            output.doj = account.getDOJ();
+                            output.name = account.getNAME();
+                            output.nameInAadhaar = account.getNameInAadhaar();
+                            output.gender = account.getGender();
+                            output.dor = account.getDOR();
+                            output.pfDoj = account.getPfDOJ();
+                            output.panNo = account.getPanNo();
+                            output.pf_nps_AcNo = account.getPf_nps();
+                            output.submitted = entity.getsubmitted();
+                            output.approved = entity.getapproved();
+                            output.hrApproved = entity.getHRApproved();
+                            result.add(output);
+                        }
                     }
                 }
             }
@@ -254,26 +264,36 @@ public class PFNomineeController {
     public List<PfNomineeOutput> getHrAllPfNominee() {
         try {
             List<PfNomineeOutput> result = new ArrayList<PfNomineeOutput>();
-            List<PFAccountEntity> listAllAccount = paService.getAllPFAccount();
             List<PFNomineeEntity> lstPFNominee = pfNomineeService.getAllPFNominee();
 
-            for (PFAccountEntity account : listAllAccount) {
-                for (PFNomineeEntity entity : lstPFNominee) {
-                    if (account.getEMPCODE() == entity.getempcode() && entity.getapproved() == 1 &&  entity.getHRApproved() == 0) {
-                        PfNomineeOutput output = new PfNomineeOutput();
-                        output.id = entity.getid();
-                        output.doj = account.getDOJ();
-                        output.name  = account.getNAME();
-                        output.nameInAadhaar = account.getNameInAadhaar();
-                        output.gender = account.getGender();
-                        output.dor = account.getDOR();
-                        output.pfDoj = account.getPfDOJ();
-                        output.panNo = account.getPanNo();
-                        output.pf_nps_AcNo = account.getPf_nps();
-                        output.submitted = entity.getsubmitted();
-                        output.approved = entity.getapproved();
-                        output.hrApproved = entity.getHRApproved();
-                        result.add(output);
+            String empCodes = "";
+            for (PFNomineeEntity ba : lstPFNominee) {
+                empCodes = empCodes +  ba.getempcode() + ",";
+            }
+
+            if(lstPFNominee.size() > 0) {
+                StringBuffer sb = new StringBuffer(empCodes);
+                sb.deleteCharAt(sb.length() - 1);
+                List<PFAccountEntity> listAllAccount = paService.getAllPFAccountViewByIds(sb.toString());
+
+                for (PFAccountEntity account : listAllAccount) {
+                    for (PFNomineeEntity entity : lstPFNominee) {
+                        if (account.getEMPCODE() == entity.getempcode() && entity.getapproved() == 1 && entity.getHRApproved() == 0) {
+                            PfNomineeOutput output = new PfNomineeOutput();
+                            output.id = entity.getid();
+                            output.doj = account.getDOJ();
+                            output.name = account.getNAME();
+                            output.nameInAadhaar = account.getNameInAadhaar();
+                            output.gender = account.getGender();
+                            output.dor = account.getDOR();
+                            output.pfDoj = account.getPfDOJ();
+                            output.panNo = account.getPanNo();
+                            output.pf_nps_AcNo = account.getPf_nps();
+                            output.submitted = entity.getsubmitted();
+                            output.approved = entity.getapproved();
+                            output.hrApproved = entity.getHRApproved();
+                            result.add(output);
+                        }
                     }
                 }
             }

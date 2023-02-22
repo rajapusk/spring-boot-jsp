@@ -141,60 +141,70 @@ public class TravelExpenseController {
     public List<TravelExpenseOutput> l2GetAllTravelExpenseDetailEntity() {
         try {
             List<TravelExpenseOutput> result = new ArrayList<TravelExpenseOutput>();
-            List<PFAccountEntity> listAllAccount = paService.getAllPFAccount();
             List<TravelExpenseEntity> lstTravelExpenseEntity = teService.getAllTravelExpense();
             List<TravelExpenseDetailEntity> allTravelExpenseDetail = expenseDetailService.getAllTravelExpenseDetail();
 
-            for (PFAccountEntity account : listAllAccount) {
-                for (TravelExpenseEntity ba : lstTravelExpenseEntity) {
-                    if (account.getEMPCODE() == ba.getEmpCode() && ba.getL1Approved() == 1 && ba.getL2Approved() == 0) {
-                        TravelExpenseOutput output = new TravelExpenseOutput();
-                        output.id = ba.getId();
-                        output.name = account.getNAME();
-                        output.empCode = account.getEMPCODE();
-                        output.advanceAmount = ba.getAdvanceAmount();
-                        output.submitted = ba.getSubmitted();
-                        output.destinationBranchCode = ba.getDestinationBranchCode();
-                        output.originBranchCode = ba.getOriginBranchCode();
-                        output.permissionMode = ba.getPermissionMode();
-                        output.hrRemarks = ba.getHrRemarks();
-                        output.l2ManagerRemarks = ba.getL2ManagerRemarks();
-                        output.l1ManagerRemarks = ba.getL1ManagerRemarks();
-                        output.grade = account.getGRADE();
-                        output.permittedBy = ba.getPermittedBy();
-                        output.permittedName = ba.getPermittedName();
-                        output.permittedDate = ba.getPermittedDate();
-                        output.l1Approved = ba.getL1Approved();
-                        output.l2Approved = ba.getL2Approved();
-                        output.totalAmount = ba.getTotalAmount();
-                        output.travelPurpose = ba.getTravelPurpose();
+            String empCodes = "";
+            for (TravelExpenseEntity ba : lstTravelExpenseEntity) {
+                empCodes = empCodes +  ba.getEmpCode() + ",";
+            }
 
-                        for (TravelExpenseDetailEntity entity:allTravelExpenseDetail) {
-                            if(entity.getTravelExpenseId() == ba.getId()){
-                                TravelExpenseDetailOutput outputDetail = new TravelExpenseDetailOutput();
-                                outputDetail.billAvailable = entity.getBillAvailable();
-                                outputDetail.cgstAmount = entity.getCGSTAmount();
-                                outputDetail.expenseDescription = entity.getExpenseDescription();
-                                outputDetail.claimAmount = entity.getClaimAmount();
-                                outputDetail.id = entity.getId();
-                                outputDetail.destination = entity.getDestination();
-                                outputDetail.document = entity.getDocument();
-                                outputDetail.distance = entity.getDistance();
-                                outputDetail.entitledAmount = entity.getEntitledAmount();
-                                outputDetail.igstAmount = entity.getIGSTAmount();
-                                outputDetail.netAmount = entity.getNetAmount();
-                                outputDetail.noOfDays = entity.getNoOfDays();
-                                outputDetail.origin = entity.getOrigin();
-                                outputDetail.pnrNo = entity.getPNRNo();
-                                outputDetail.remarks = entity.getRemarks();
-                                outputDetail.sgstAmount = entity.getSGSTAmount();
-                                outputDetail.totalAmount = entity.getTotalAmount();
-                                outputDetail.travelEndDate = entity.getTravelEndDate();
-                                outputDetail.travelStartDate = entity.getTravelStartDate();
-                                output.travelExpenseDetailOutputs.add(outputDetail);
+            if(lstTravelExpenseEntity.size() > 0) {
+                StringBuffer sb = new StringBuffer(empCodes);
+                sb.deleteCharAt(sb.length() - 1);
+                List<PFAccountEntity> listAllAccount = paService.getAllPFAccountViewByIds(sb.toString());
+
+                for (PFAccountEntity account : listAllAccount) {
+                    for (TravelExpenseEntity ba : lstTravelExpenseEntity) {
+                        if (account.getEMPCODE() == ba.getEmpCode() && ba.getL1Approved() == 1 && ba.getL2Approved() == 0) {
+                            TravelExpenseOutput output = new TravelExpenseOutput();
+                            output.id = ba.getId();
+                            output.name = account.getNAME();
+                            output.empCode = account.getEMPCODE();
+                            output.advanceAmount = ba.getAdvanceAmount();
+                            output.submitted = ba.getSubmitted();
+                            output.destinationBranchCode = ba.getDestinationBranchCode();
+                            output.originBranchCode = ba.getOriginBranchCode();
+                            output.permissionMode = ba.getPermissionMode();
+                            output.hrRemarks = ba.getHrRemarks();
+                            output.l2ManagerRemarks = ba.getL2ManagerRemarks();
+                            output.l1ManagerRemarks = ba.getL1ManagerRemarks();
+                            output.grade = account.getGRADE();
+                            output.permittedBy = ba.getPermittedBy();
+                            output.permittedName = ba.getPermittedName();
+                            output.permittedDate = ba.getPermittedDate();
+                            output.l1Approved = ba.getL1Approved();
+                            output.l2Approved = ba.getL2Approved();
+                            output.totalAmount = ba.getTotalAmount();
+                            output.travelPurpose = ba.getTravelPurpose();
+
+                            for (TravelExpenseDetailEntity entity : allTravelExpenseDetail) {
+                                if (entity.getTravelExpenseId() == ba.getId()) {
+                                    TravelExpenseDetailOutput outputDetail = new TravelExpenseDetailOutput();
+                                    outputDetail.billAvailable = entity.getBillAvailable();
+                                    outputDetail.cgstAmount = entity.getCGSTAmount();
+                                    outputDetail.expenseDescription = entity.getExpenseDescription();
+                                    outputDetail.claimAmount = entity.getClaimAmount();
+                                    outputDetail.id = entity.getId();
+                                    outputDetail.destination = entity.getDestination();
+                                    outputDetail.document = entity.getDocument();
+                                    outputDetail.distance = entity.getDistance();
+                                    outputDetail.entitledAmount = entity.getEntitledAmount();
+                                    outputDetail.igstAmount = entity.getIGSTAmount();
+                                    outputDetail.netAmount = entity.getNetAmount();
+                                    outputDetail.noOfDays = entity.getNoOfDays();
+                                    outputDetail.origin = entity.getOrigin();
+                                    outputDetail.pnrNo = entity.getPNRNo();
+                                    outputDetail.remarks = entity.getRemarks();
+                                    outputDetail.sgstAmount = entity.getSGSTAmount();
+                                    outputDetail.totalAmount = entity.getTotalAmount();
+                                    outputDetail.travelEndDate = entity.getTravelEndDate();
+                                    outputDetail.travelStartDate = entity.getTravelStartDate();
+                                    output.travelExpenseDetailOutputs.add(outputDetail);
+                                }
                             }
+                            result.add(output);
                         }
-                        result.add(output);
                     }
                 }
             }
@@ -208,60 +218,72 @@ public class TravelExpenseController {
     public List<TravelExpenseOutput> l1GetAllTravelExpenseDetailEntity() {
         try {
             List<TravelExpenseOutput> result = new ArrayList<TravelExpenseOutput>();
-            List<PFAccountEntity> listAllAccount = paService.getAllPFAccount();
             List<TravelExpenseEntity> lstTravelExpenseEntity = teService.getAllTravelExpense();
             List<TravelExpenseDetailEntity> allTravelExpenseDetail = expenseDetailService.getAllTravelExpenseDetail();
 
-            for (PFAccountEntity account : listAllAccount) {
-                for (TravelExpenseEntity ba : lstTravelExpenseEntity) {
-                    if (account.getEMPCODE() == ba.getEmpCode() && ba.getL1Approved() == 0) {
-                        TravelExpenseOutput output = new TravelExpenseOutput();
-                        output.id = ba.getId();
-                        output.name = account.getNAME();
-                        output.empCode = account.getEMPCODE();
-                        output.advanceAmount = ba.getAdvanceAmount();
-                        output.submitted = ba.getSubmitted();
-                        output.destinationBranchCode = ba.getDestinationBranchCode();
-                        output.originBranchCode = ba.getOriginBranchCode();
-                        output.permissionMode = ba.getPermissionMode();
-                        output.hrRemarks = ba.getHrRemarks();
-                        output.l2ManagerRemarks = ba.getL2ManagerRemarks();
-                        output.l1ManagerRemarks = ba.getL1ManagerRemarks();
-                        output.grade = account.getGRADE();
-                        output.permittedBy = ba.getPermittedBy();
-                        output.permittedName = ba.getPermittedName();
-                        output.permittedDate = ba.getPermittedDate();
-                        output.l1Approved = ba.getL1Approved();
-                        output.l2Approved = ba.getL2Approved();
-                        output.totalAmount = ba.getTotalAmount();
-                        output.travelPurpose = ba.getTravelPurpose();
 
-                        for (TravelExpenseDetailEntity entity:allTravelExpenseDetail) {
-                            if(entity.getTravelExpenseId() == ba.getId()){
-                                TravelExpenseDetailOutput outputDetail = new TravelExpenseDetailOutput();
-                                outputDetail.billAvailable = entity.getBillAvailable();
-                                outputDetail.cgstAmount = entity.getCGSTAmount();
-                                outputDetail.expenseDescription = entity.getExpenseDescription();
-                                outputDetail.claimAmount = entity.getClaimAmount();
-                                outputDetail.id = entity.getId();
-                                outputDetail.destination = entity.getDestination();
-                                outputDetail.document = entity.getDocument();
-                                outputDetail.distance = entity.getDistance();
-                                outputDetail.entitledAmount = entity.getEntitledAmount();
-                                outputDetail.igstAmount = entity.getIGSTAmount();
-                                outputDetail.netAmount = entity.getNetAmount();
-                                outputDetail.noOfDays = entity.getNoOfDays();
-                                outputDetail.origin = entity.getOrigin();
-                                outputDetail.pnrNo = entity.getPNRNo();
-                                outputDetail.remarks = entity.getRemarks();
-                                outputDetail.sgstAmount = entity.getSGSTAmount();
-                                outputDetail.totalAmount = entity.getTotalAmount();
-                                outputDetail.travelEndDate = entity.getTravelEndDate();
-                                outputDetail.travelStartDate = entity.getTravelStartDate();
-                                output.travelExpenseDetailOutputs.add(outputDetail);
+
+            String empCodes = "";
+            for (TravelExpenseEntity ba : lstTravelExpenseEntity) {
+                empCodes = empCodes +  ba.getEmpCode() + ",";
+            }
+
+            if(lstTravelExpenseEntity.size() > 0) {
+                StringBuffer sb = new StringBuffer(empCodes);
+                sb.deleteCharAt(sb.length() - 1);
+                List<PFAccountEntity> listAllAccount = paService.getAllPFAccountViewByIds(sb.toString());
+
+                for (PFAccountEntity account : listAllAccount) {
+                    for (TravelExpenseEntity ba : lstTravelExpenseEntity) {
+                        if (account.getEMPCODE() == ba.getEmpCode() && ba.getL1Approved() == 0) {
+                            TravelExpenseOutput output = new TravelExpenseOutput();
+                            output.id = ba.getId();
+                            output.name = account.getNAME();
+                            output.empCode = account.getEMPCODE();
+                            output.advanceAmount = ba.getAdvanceAmount();
+                            output.submitted = ba.getSubmitted();
+                            output.destinationBranchCode = ba.getDestinationBranchCode();
+                            output.originBranchCode = ba.getOriginBranchCode();
+                            output.permissionMode = ba.getPermissionMode();
+                            output.hrRemarks = ba.getHrRemarks();
+                            output.l2ManagerRemarks = ba.getL2ManagerRemarks();
+                            output.l1ManagerRemarks = ba.getL1ManagerRemarks();
+                            output.grade = account.getGRADE();
+                            output.permittedBy = ba.getPermittedBy();
+                            output.permittedName = ba.getPermittedName();
+                            output.permittedDate = ba.getPermittedDate();
+                            output.l1Approved = ba.getL1Approved();
+                            output.l2Approved = ba.getL2Approved();
+                            output.totalAmount = ba.getTotalAmount();
+                            output.travelPurpose = ba.getTravelPurpose();
+
+                            for (TravelExpenseDetailEntity entity : allTravelExpenseDetail) {
+                                if (entity.getTravelExpenseId() == ba.getId()) {
+                                    TravelExpenseDetailOutput outputDetail = new TravelExpenseDetailOutput();
+                                    outputDetail.billAvailable = entity.getBillAvailable();
+                                    outputDetail.cgstAmount = entity.getCGSTAmount();
+                                    outputDetail.expenseDescription = entity.getExpenseDescription();
+                                    outputDetail.claimAmount = entity.getClaimAmount();
+                                    outputDetail.id = entity.getId();
+                                    outputDetail.destination = entity.getDestination();
+                                    outputDetail.document = entity.getDocument();
+                                    outputDetail.distance = entity.getDistance();
+                                    outputDetail.entitledAmount = entity.getEntitledAmount();
+                                    outputDetail.igstAmount = entity.getIGSTAmount();
+                                    outputDetail.netAmount = entity.getNetAmount();
+                                    outputDetail.noOfDays = entity.getNoOfDays();
+                                    outputDetail.origin = entity.getOrigin();
+                                    outputDetail.pnrNo = entity.getPNRNo();
+                                    outputDetail.remarks = entity.getRemarks();
+                                    outputDetail.sgstAmount = entity.getSGSTAmount();
+                                    outputDetail.totalAmount = entity.getTotalAmount();
+                                    outputDetail.travelEndDate = entity.getTravelEndDate();
+                                    outputDetail.travelStartDate = entity.getTravelStartDate();
+                                    output.travelExpenseDetailOutputs.add(outputDetail);
+                                }
                             }
+                            result.add(output);
                         }
-                        result.add(output);
                     }
                 }
             }
@@ -275,60 +297,70 @@ public class TravelExpenseController {
     public List<TravelExpenseOutput> hrGetAllTravelExpenseDetailEntity() {
         try {
             List<TravelExpenseOutput> result = new ArrayList<TravelExpenseOutput>();
-            List<PFAccountEntity> listAllAccount = paService.getAllPFAccount();
             List<TravelExpenseEntity> lstTravelExpenseEntity = teService.getAllTravelExpense();
             List<TravelExpenseDetailEntity> allTravelExpenseDetail = expenseDetailService.getAllTravelExpenseDetail();
 
-            for (PFAccountEntity account : listAllAccount) {
-                for (TravelExpenseEntity ba : lstTravelExpenseEntity) {
-                    if (account.getEMPCODE() == ba.getEmpCode() && ba.getL1Approved() == 1 && ba.getL2Approved() == 1 && ba.getHRApproved() == 0) {
-                        TravelExpenseOutput output = new TravelExpenseOutput();
-                        output.id = ba.getId();
-                        output.name = account.getNAME();
-                        output.empCode = account.getEMPCODE();
-                        output.advanceAmount = ba.getAdvanceAmount();
-                        output.submitted = ba.getSubmitted();
-                        output.destinationBranchCode = ba.getDestinationBranchCode();
-                        output.originBranchCode = ba.getOriginBranchCode();
-                        output.permissionMode = ba.getPermissionMode();
-                        output.hrRemarks = ba.getHrRemarks();
-                        output.l2ManagerRemarks = ba.getL2ManagerRemarks();
-                        output.l1ManagerRemarks = ba.getL1ManagerRemarks();
-                        output.grade = account.getGRADE();
-                        output.permittedBy = ba.getPermittedBy();
-                        output.permittedName = ba.getPermittedName();
-                        output.permittedDate = ba.getPermittedDate();
-                        output.l1Approved = ba.getL1Approved();
-                        output.l2Approved = ba.getL2Approved();
-                        output.totalAmount = ba.getTotalAmount();
-                        output.travelPurpose = ba.getTravelPurpose();
+            String empCodes = "";
+            for (TravelExpenseEntity ba : lstTravelExpenseEntity) {
+                empCodes = empCodes +  ba.getEmpCode() + ",";
+            }
 
-                        for (TravelExpenseDetailEntity entity:allTravelExpenseDetail) {
-                            if(entity.getTravelExpenseId() == ba.getId()){
-                                TravelExpenseDetailOutput outputDetail = new TravelExpenseDetailOutput();
-                                outputDetail.billAvailable = entity.getBillAvailable();
-                                outputDetail.cgstAmount = entity.getCGSTAmount();
-                                outputDetail.expenseDescription = entity.getExpenseDescription();
-                                outputDetail.claimAmount = entity.getClaimAmount();
-                                outputDetail.id = entity.getId();
-                                outputDetail.destination = entity.getDestination();
-                                outputDetail.document = entity.getDocument();
-                                outputDetail.distance = entity.getDistance();
-                                outputDetail.entitledAmount = entity.getEntitledAmount();
-                                outputDetail.igstAmount = entity.getIGSTAmount();
-                                outputDetail.netAmount = entity.getNetAmount();
-                                outputDetail.noOfDays = entity.getNoOfDays();
-                                outputDetail.origin = entity.getOrigin();
-                                outputDetail.pnrNo = entity.getPNRNo();
-                                outputDetail.remarks = entity.getRemarks();
-                                outputDetail.sgstAmount = entity.getSGSTAmount();
-                                outputDetail.totalAmount = entity.getTotalAmount();
-                                outputDetail.travelEndDate = entity.getTravelEndDate();
-                                outputDetail.travelStartDate = entity.getTravelStartDate();
-                                output.travelExpenseDetailOutputs.add(outputDetail);
+            if(lstTravelExpenseEntity.size() > 0) {
+                StringBuffer sb = new StringBuffer(empCodes);
+                sb.deleteCharAt(sb.length() - 1);
+                List<PFAccountEntity> listAllAccount = paService.getAllPFAccountViewByIds(sb.toString());
+
+                for (PFAccountEntity account : listAllAccount) {
+                    for (TravelExpenseEntity ba : lstTravelExpenseEntity) {
+                        if (account.getEMPCODE() == ba.getEmpCode() && ba.getL1Approved() == 1 && ba.getL2Approved() == 1 && ba.getHRApproved() == 0) {
+                            TravelExpenseOutput output = new TravelExpenseOutput();
+                            output.id = ba.getId();
+                            output.name = account.getNAME();
+                            output.empCode = account.getEMPCODE();
+                            output.advanceAmount = ba.getAdvanceAmount();
+                            output.submitted = ba.getSubmitted();
+                            output.destinationBranchCode = ba.getDestinationBranchCode();
+                            output.originBranchCode = ba.getOriginBranchCode();
+                            output.permissionMode = ba.getPermissionMode();
+                            output.hrRemarks = ba.getHrRemarks();
+                            output.l2ManagerRemarks = ba.getL2ManagerRemarks();
+                            output.l1ManagerRemarks = ba.getL1ManagerRemarks();
+                            output.grade = account.getGRADE();
+                            output.permittedBy = ba.getPermittedBy();
+                            output.permittedName = ba.getPermittedName();
+                            output.permittedDate = ba.getPermittedDate();
+                            output.l1Approved = ba.getL1Approved();
+                            output.l2Approved = ba.getL2Approved();
+                            output.totalAmount = ba.getTotalAmount();
+                            output.travelPurpose = ba.getTravelPurpose();
+
+                            for (TravelExpenseDetailEntity entity : allTravelExpenseDetail) {
+                                if (entity.getTravelExpenseId() == ba.getId()) {
+                                    TravelExpenseDetailOutput outputDetail = new TravelExpenseDetailOutput();
+                                    outputDetail.billAvailable = entity.getBillAvailable();
+                                    outputDetail.cgstAmount = entity.getCGSTAmount();
+                                    outputDetail.expenseDescription = entity.getExpenseDescription();
+                                    outputDetail.claimAmount = entity.getClaimAmount();
+                                    outputDetail.id = entity.getId();
+                                    outputDetail.destination = entity.getDestination();
+                                    outputDetail.document = entity.getDocument();
+                                    outputDetail.distance = entity.getDistance();
+                                    outputDetail.entitledAmount = entity.getEntitledAmount();
+                                    outputDetail.igstAmount = entity.getIGSTAmount();
+                                    outputDetail.netAmount = entity.getNetAmount();
+                                    outputDetail.noOfDays = entity.getNoOfDays();
+                                    outputDetail.origin = entity.getOrigin();
+                                    outputDetail.pnrNo = entity.getPNRNo();
+                                    outputDetail.remarks = entity.getRemarks();
+                                    outputDetail.sgstAmount = entity.getSGSTAmount();
+                                    outputDetail.totalAmount = entity.getTotalAmount();
+                                    outputDetail.travelEndDate = entity.getTravelEndDate();
+                                    outputDetail.travelStartDate = entity.getTravelStartDate();
+                                    output.travelExpenseDetailOutputs.add(outputDetail);
+                                }
                             }
+                            result.add(output);
                         }
-                        result.add(output);
                     }
                 }
             }

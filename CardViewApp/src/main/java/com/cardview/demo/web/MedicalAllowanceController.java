@@ -1,10 +1,7 @@
 package com.cardview.demo.web;
 
 import com.cardview.demo.exception.RecordNotFoundException;
-import com.cardview.demo.model.EmpDocEntity;
-import com.cardview.demo.model.MedicalAllowanceEntity;
-import com.cardview.demo.model.PFAccountEntity;
-import com.cardview.demo.model.PfLoanUpdateInput;
+import com.cardview.demo.model.*;
 import com.cardview.demo.outputModels.MedicalAllowanceOutput;
 import com.cardview.demo.service.MedicalAllowanceService;
 import com.cardview.demo.service.EmailServiceImpl;
@@ -68,30 +65,39 @@ public class MedicalAllowanceController {
     public List<MedicalAllowanceOutput> managerMedicalAllowanceGetAll() {
         try {
             List<MedicalAllowanceOutput> result = new ArrayList<MedicalAllowanceOutput>();
-            List<PFAccountEntity> listAllAccount = paService.getAllPFAccount();
             List<MedicalAllowanceEntity> lstMedicalAllowance = baService.getAllMedicalAllowance();
+            String empCodes = "";
+            for (MedicalAllowanceEntity ba : lstMedicalAllowance) {
+                empCodes = empCodes +  ba.getEmpCode() + ",";
+            }
 
-            for (PFAccountEntity account : listAllAccount) {
-                for (MedicalAllowanceEntity ba : lstMedicalAllowance) {
-                    if (account.getEMPCODE() == ba.getEmpCode() && ba.getapproved() == 0) {
-                        MedicalAllowanceOutput output = new MedicalAllowanceOutput();
-                        output.id = ba.getid();
-                        output.dob = account.getDOB();
-                        output.name = account.getNAME();
-                        output.empcode = account.getEMPCODE();
-                        output.claimAmount = ba.getClaimAmount();
-                        output.remarks = ba.getremarks();
-                        output.submitted = ba.getsubmitted();
-                        output.approved = ba.getapproved();
-                        output.hrApproved = ba.getHRApproved();
-                        output.entitledAmount = ba.getEntitledAmount();
-                        output.invoiceAmount = ba.getInvoiceAmount();
-                        output.invoiceDate = ba.getInvoiceDate();
-                        output.invoiceNo = ba.getInvoiceNo();
-                        output.hospitalName = ba.getHospitalName();
-                        output.managerRemarks = ba.getManagerRemarks();
-                        output.hrRemarks=ba.getHrRemarks();
-                        result.add(output);
+            if(lstMedicalAllowance.size() > 0) {
+                StringBuffer sb = new StringBuffer(empCodes);
+                sb.deleteCharAt(sb.length() - 1);
+                List<PFAccountEntity> listAllAccount = paService.getAllPFAccountViewByIds(sb.toString());
+
+                for (PFAccountEntity account : listAllAccount) {
+                    for (MedicalAllowanceEntity ba : lstMedicalAllowance) {
+                        if (account.getEMPCODE() == ba.getEmpCode() && ba.getapproved() == 0) {
+                            MedicalAllowanceOutput output = new MedicalAllowanceOutput();
+                            output.id = ba.getid();
+                            output.dob = account.getDOB();
+                            output.name = account.getNAME();
+                            output.empcode = account.getEMPCODE();
+                            output.claimAmount = ba.getClaimAmount();
+                            output.remarks = ba.getremarks();
+                            output.submitted = ba.getsubmitted();
+                            output.approved = ba.getapproved();
+                            output.hrApproved = ba.getHRApproved();
+                            output.entitledAmount = ba.getEntitledAmount();
+                            output.invoiceAmount = ba.getInvoiceAmount();
+                            output.invoiceDate = ba.getInvoiceDate();
+                            output.invoiceNo = ba.getInvoiceNo();
+                            output.hospitalName = ba.getHospitalName();
+                            output.managerRemarks = ba.getManagerRemarks();
+                            output.hrRemarks = ba.getHrRemarks();
+                            result.add(output);
+                        }
                     }
                 }
             }
@@ -105,31 +111,40 @@ public class MedicalAllowanceController {
     public List<MedicalAllowanceOutput> hrMedicalAllowanceGetAll() {
         try {
             List<MedicalAllowanceOutput> result = new ArrayList<MedicalAllowanceOutput>();
-            List<PFAccountEntity> listAllAccount = paService.getAllPFAccount();
             List<MedicalAllowanceEntity> lstMedicalAllowance = baService.getAllMedicalAllowance();
+            String empCodes = "";
+            for (MedicalAllowanceEntity ba : lstMedicalAllowance) {
+                empCodes = empCodes +  ba.getEmpCode() + ",";
+            }
 
-            for (PFAccountEntity account : listAllAccount) {
-                for (MedicalAllowanceEntity ba : lstMedicalAllowance) {
-                    if (account.getEMPCODE() == ba.getEmpCode() && ba.getapproved() == 1 && ba.getHRApproved() == 0) {
-                        MedicalAllowanceOutput output = new MedicalAllowanceOutput();
-                        output.id = ba.getid();
-                        output.dob = account.getDOB();
-                        output.name = account.getNAME();
-                        output.empcode = account.getEMPCODE();
-                        output.claimAmount = ba.getClaimAmount();
-                        output.remarks = ba.getremarks();
-                        output.submitted = ba.getsubmitted();
-                        output.approved = ba.getapproved();
-                        output.hrApproved = ba.getHRApproved();
-                        output.entitledAmount = ba.getEntitledAmount();
-                        output.invoiceAmount = ba.getInvoiceAmount();
-                        output.invoiceDate = ba.getInvoiceDate();
-                        output.invoiceNo = ba.getInvoiceNo();
-                        output.hospitalName = ba.getHospitalName();
-                        output.managerRemarks = ba.getManagerRemarks();
-                        output.hrRemarks=ba.getHrRemarks();
-                        output.grade = account.getGRADE();
-                        result.add(output);
+            if(lstMedicalAllowance.size() > 0) {
+                StringBuffer sb = new StringBuffer(empCodes);
+                sb.deleteCharAt(sb.length() - 1);
+                List<PFAccountEntity> listAllAccount = paService.getAllPFAccountViewByIds(sb.toString());
+
+                for (PFAccountEntity account : listAllAccount) {
+                    for (MedicalAllowanceEntity ba : lstMedicalAllowance) {
+                        if (account.getEMPCODE() == ba.getEmpCode() && ba.getapproved() == 1 && ba.getHRApproved() == 0) {
+                            MedicalAllowanceOutput output = new MedicalAllowanceOutput();
+                            output.id = ba.getid();
+                            output.dob = account.getDOB();
+                            output.name = account.getNAME();
+                            output.empcode = account.getEMPCODE();
+                            output.claimAmount = ba.getClaimAmount();
+                            output.remarks = ba.getremarks();
+                            output.submitted = ba.getsubmitted();
+                            output.approved = ba.getapproved();
+                            output.hrApproved = ba.getHRApproved();
+                            output.entitledAmount = ba.getEntitledAmount();
+                            output.invoiceAmount = ba.getInvoiceAmount();
+                            output.invoiceDate = ba.getInvoiceDate();
+                            output.invoiceNo = ba.getInvoiceNo();
+                            output.hospitalName = ba.getHospitalName();
+                            output.managerRemarks = ba.getManagerRemarks();
+                            output.hrRemarks = ba.getHrRemarks();
+                            output.grade = account.getGRADE();
+                            result.add(output);
+                        }
                     }
                 }
             }

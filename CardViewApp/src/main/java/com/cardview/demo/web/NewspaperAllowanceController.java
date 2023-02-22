@@ -1,10 +1,7 @@
 package com.cardview.demo.web;
 
 import com.cardview.demo.exception.RecordNotFoundException;
-import com.cardview.demo.model.EmpDocEntity;
-import com.cardview.demo.model.NewspaperAllowanceEntity;
-import com.cardview.demo.model.PFAccountEntity;
-import com.cardview.demo.model.PfLoanUpdateInput;
+import com.cardview.demo.model.*;
 import com.cardview.demo.outputModels.NewspaperAllowanceEntitledAmount;
 import com.cardview.demo.outputModels.NewspaperAllowanceOutput;
 import com.cardview.demo.service.NewspaperAllowanceService;
@@ -69,33 +66,42 @@ public class NewspaperAllowanceController {
     public List<NewspaperAllowanceOutput> managerNewspaperAllowanceGetAll() {
         try {
             List<NewspaperAllowanceOutput> result = new ArrayList<NewspaperAllowanceOutput>();
-            List<PFAccountEntity> listAllAccount = paService.getAllPFAccount();
             List<NewspaperAllowanceEntity> lstNewspaperAllowance = baService.getAllNewspaperAllowance();
+            String empCodes = "";
+            for (NewspaperAllowanceEntity ba : lstNewspaperAllowance) {
+                empCodes = empCodes +  ba.getEmpCode() + ",";
+            }
 
-            for (PFAccountEntity account : listAllAccount) {
-                for (NewspaperAllowanceEntity ba : lstNewspaperAllowance) {
-                    if (account.getEMPCODE() == ba.getEmpCode() && ba.getapproved() == 0) {
-                        NewspaperAllowanceOutput output = new NewspaperAllowanceOutput();
-                        output.id = ba.getid();
-                        output.doj = account.getDOJ();
-                        output.name = account.getNAME();
-                        output.empcode = account.getEMPCODE();
-                        output.claimAmount = ba.getClaimAmount();
-                        output.remarks = ba.getremarks();
-                        output.submitted = ba.getsubmitted();
-                        output.approved = ba.getapproved();
-                        output.hrApproved = ba.getHRApproved();
-                        output.entitledAmount = ba.getEntitledAmount();
-                        output.invoiceAmount = ba.getInvoiceAmount();
-                        output.invoiceDate = ba.getInvoiceDate();
-                        output.invoiceNo = ba.getInvoiceNo();
-                        output.vendorName = ba.getVendorName();
-                        output.managerRemarks = ba.getManagerRemarks();
-                        output.hrRemarks=ba.getHrRemarks();
-                        output.glcode = account.getGlcode();
-                        output.months = ba.getMonths();
-                        output.quarterType = ba.getQuarterType();
-                        result.add(output);
+            if(lstNewspaperAllowance.size() > 0) {
+                StringBuffer sb = new StringBuffer(empCodes);
+                sb.deleteCharAt(sb.length() - 1);
+                List<PFAccountEntity> listAllAccount = paService.getAllPFAccountViewByIds(sb.toString());
+
+                for (PFAccountEntity account : listAllAccount) {
+                    for (NewspaperAllowanceEntity ba : lstNewspaperAllowance) {
+                        if (account.getEMPCODE() == ba.getEmpCode() && ba.getapproved() == 0) {
+                            NewspaperAllowanceOutput output = new NewspaperAllowanceOutput();
+                            output.id = ba.getid();
+                            output.doj = account.getDOJ();
+                            output.name = account.getNAME();
+                            output.empcode = account.getEMPCODE();
+                            output.claimAmount = ba.getClaimAmount();
+                            output.remarks = ba.getremarks();
+                            output.submitted = ba.getsubmitted();
+                            output.approved = ba.getapproved();
+                            output.hrApproved = ba.getHRApproved();
+                            output.entitledAmount = ba.getEntitledAmount();
+                            output.invoiceAmount = ba.getInvoiceAmount();
+                            output.invoiceDate = ba.getInvoiceDate();
+                            output.invoiceNo = ba.getInvoiceNo();
+                            output.vendorName = ba.getVendorName();
+                            output.managerRemarks = ba.getManagerRemarks();
+                            output.hrRemarks = ba.getHrRemarks();
+                            output.glcode = account.getGlcode();
+                            output.months = ba.getMonths();
+                            output.quarterType = ba.getQuarterType();
+                            result.add(output);
+                        }
                     }
                 }
             }
@@ -109,33 +115,43 @@ public class NewspaperAllowanceController {
     public List<NewspaperAllowanceOutput> hrNewspaperAllowanceGetAll() {
         try {
             List<NewspaperAllowanceOutput> result = new ArrayList<NewspaperAllowanceOutput>();
-            List<PFAccountEntity> listAllAccount = paService.getAllPFAccount();
             List<NewspaperAllowanceEntity> lstNewspaperAllowance = baService.getAllNewspaperAllowance();
 
-            for (PFAccountEntity account : listAllAccount) {
-                for (NewspaperAllowanceEntity ba : lstNewspaperAllowance) {
-                    if (account.getEMPCODE() == ba.getEmpCode() && ba.getapproved() == 1 && ba.getHRApproved() == 0) {
-                        NewspaperAllowanceOutput output = new NewspaperAllowanceOutput();
-                        output.id = ba.getid();
-                        output.doj = account.getDOJ();
-                        output.name = account.getNAME();
-                        output.empcode = account.getEMPCODE();
-                        output.claimAmount = ba.getClaimAmount();
-                        output.remarks = ba.getremarks();
-                        output.submitted = ba.getsubmitted();
-                        output.approved = ba.getapproved();
-                        output.hrApproved = ba.getHRApproved();
-                        output.entitledAmount = ba.getEntitledAmount();
-                        output.invoiceAmount = ba.getInvoiceAmount();
-                        output.invoiceDate = ba.getInvoiceDate();
-                        output.invoiceNo = ba.getInvoiceNo();
-                        output.vendorName = ba.getVendorName();
-                        output.managerRemarks = ba.getManagerRemarks();
-                        output.hrRemarks=ba.getHrRemarks();
-                        output.glcode = account.getGlcode();
-                        output.months = ba.getMonths();
-                        output.quarterType = ba.getQuarterType();
-                        result.add(output);
+            String empCodes = "";
+            for (NewspaperAllowanceEntity ba : lstNewspaperAllowance) {
+                empCodes = empCodes +  ba.getEmpCode() + ",";
+            }
+
+            if(lstNewspaperAllowance.size() > 0) {
+                StringBuffer sb = new StringBuffer(empCodes);
+                sb.deleteCharAt(sb.length() - 1);
+                List<PFAccountEntity> listAllAccount = paService.getAllPFAccountViewByIds(sb.toString());
+
+                for (PFAccountEntity account : listAllAccount) {
+                    for (NewspaperAllowanceEntity ba : lstNewspaperAllowance) {
+                        if (account.getEMPCODE() == ba.getEmpCode() && ba.getapproved() == 1 && ba.getHRApproved() == 0) {
+                            NewspaperAllowanceOutput output = new NewspaperAllowanceOutput();
+                            output.id = ba.getid();
+                            output.doj = account.getDOJ();
+                            output.name = account.getNAME();
+                            output.empcode = account.getEMPCODE();
+                            output.claimAmount = ba.getClaimAmount();
+                            output.remarks = ba.getremarks();
+                            output.submitted = ba.getsubmitted();
+                            output.approved = ba.getapproved();
+                            output.hrApproved = ba.getHRApproved();
+                            output.entitledAmount = ba.getEntitledAmount();
+                            output.invoiceAmount = ba.getInvoiceAmount();
+                            output.invoiceDate = ba.getInvoiceDate();
+                            output.invoiceNo = ba.getInvoiceNo();
+                            output.vendorName = ba.getVendorName();
+                            output.managerRemarks = ba.getManagerRemarks();
+                            output.hrRemarks = ba.getHrRemarks();
+                            output.glcode = account.getGlcode();
+                            output.months = ba.getMonths();
+                            output.quarterType = ba.getQuarterType();
+                            result.add(output);
+                        }
                     }
                 }
             }

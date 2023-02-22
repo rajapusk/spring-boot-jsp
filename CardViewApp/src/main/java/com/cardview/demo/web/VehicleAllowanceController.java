@@ -1,10 +1,7 @@
 package com.cardview.demo.web;
 
 import com.cardview.demo.exception.RecordNotFoundException;
-import com.cardview.demo.model.VehicleAllowanceEntity;
-import com.cardview.demo.model.EmpDocEntity;
-import com.cardview.demo.model.PFAccountEntity;
-import com.cardview.demo.model.PfLoanUpdateInput;
+import com.cardview.demo.model.*;
 import com.cardview.demo.outputModels.VehicleAllowanceEntitledAmount;
 import com.cardview.demo.outputModels.VehicleAllowanceOutput;
 import com.cardview.demo.service.VehicleAllowanceService;
@@ -69,30 +66,40 @@ public class VehicleAllowanceController {
     public List<VehicleAllowanceOutput> managerVehicleAllowanceGetAll() {
         try {
             List<VehicleAllowanceOutput> result = new ArrayList<VehicleAllowanceOutput>();
-            List<PFAccountEntity> listAllAccount = paService.getAllPFAccount();
             List<VehicleAllowanceEntity> lstVehicleAllowance = baService.getAllVehicleAllowance();
 
-            for (PFAccountEntity account : listAllAccount) {
-                for (VehicleAllowanceEntity ba : lstVehicleAllowance) {
-                    if (account.getEMPCODE() == ba.getEmpCode() && ba.getapproved() == 0) {
-                        VehicleAllowanceOutput output = new VehicleAllowanceOutput();
-                        output.id = ba.getid();
-                        output.doj = account.getDOJ();
-                        output.name = account.getNAME();
-                        output.empcode = account.getEMPCODE();
-                        output.claimAmount = ba.getClaimAmount();
-                        output.remarks = ba.getremarks();
-                        output.submitted = ba.getsubmitted();
-                        output.approved = ba.getapproved();
-                        output.hrApproved = ba.getHRApproved();
-                        output.entitledAmount = ba.getEntitledAmount();
-                        output.invoiceAmount = ba.getInvoiceAmount();
-                        output.invoiceDate = ba.getInvoiceDate();
-                        output.invoiceNo = ba.getInvoiceNo();
-                        output.serviceCentreName = ba.getServiceCentreName();
-                        output.managerRemarks = ba.getManagerRemarks();
-                        output.hrRemarks=ba.getHrRemarks();
-                        result.add(output);
+            String empCodes = "";
+            for (VehicleAllowanceEntity ba : lstVehicleAllowance) {
+                empCodes = empCodes +  ba.getEmpCode() + ",";
+            }
+
+            if(lstVehicleAllowance.size() > 0) {
+                StringBuffer sb = new StringBuffer(empCodes);
+                sb.deleteCharAt(sb.length() - 1);
+                List<PFAccountEntity> listAllAccount = paService.getAllPFAccountViewByIds(sb.toString());
+
+                for (PFAccountEntity account : listAllAccount) {
+                    for (VehicleAllowanceEntity ba : lstVehicleAllowance) {
+                        if (account.getEMPCODE() == ba.getEmpCode() && ba.getapproved() == 0) {
+                            VehicleAllowanceOutput output = new VehicleAllowanceOutput();
+                            output.id = ba.getid();
+                            output.doj = account.getDOJ();
+                            output.name = account.getNAME();
+                            output.empcode = account.getEMPCODE();
+                            output.claimAmount = ba.getClaimAmount();
+                            output.remarks = ba.getremarks();
+                            output.submitted = ba.getsubmitted();
+                            output.approved = ba.getapproved();
+                            output.hrApproved = ba.getHRApproved();
+                            output.entitledAmount = ba.getEntitledAmount();
+                            output.invoiceAmount = ba.getInvoiceAmount();
+                            output.invoiceDate = ba.getInvoiceDate();
+                            output.invoiceNo = ba.getInvoiceNo();
+                            output.serviceCentreName = ba.getServiceCentreName();
+                            output.managerRemarks = ba.getManagerRemarks();
+                            output.hrRemarks = ba.getHrRemarks();
+                            result.add(output);
+                        }
                     }
                 }
             }
@@ -106,31 +113,41 @@ public class VehicleAllowanceController {
     public List<VehicleAllowanceOutput> hrVehicleAllowanceGetAll() {
         try {
             List<VehicleAllowanceOutput> result = new ArrayList<VehicleAllowanceOutput>();
-            List<PFAccountEntity> listAllAccount = paService.getAllPFAccount();
             List<VehicleAllowanceEntity> lstVehicleAllowance = baService.getAllVehicleAllowance();
 
-            for (PFAccountEntity account : listAllAccount) {
-                for (VehicleAllowanceEntity ba : lstVehicleAllowance) {
-                    if (account.getEMPCODE() == ba.getEmpCode() && ba.getapproved() == 1 && ba.getHRApproved() == 0) {
-                        VehicleAllowanceOutput output = new VehicleAllowanceOutput();
-                        output.id = ba.getid();
-                        output.doj = account.getDOJ();
-                        output.name = account.getNAME();
-                        output.empcode = account.getEMPCODE();
-                        output.claimAmount = ba.getClaimAmount();
-                        output.remarks = ba.getremarks();
-                        output.submitted = ba.getsubmitted();
-                        output.approved = ba.getapproved();
-                        output.hrApproved = ba.getHRApproved();
-                        output.entitledAmount = ba.getEntitledAmount();
-                        output.invoiceAmount = ba.getInvoiceAmount();
-                        output.invoiceDate = ba.getInvoiceDate();
-                        output.invoiceNo = ba.getInvoiceNo();
-                        output.serviceCentreName = ba.getServiceCentreName();
-                        output.managerRemarks = ba.getManagerRemarks();
-                        output.hrRemarks=ba.getHrRemarks();
+            String empCodes = "";
+            for (VehicleAllowanceEntity ba : lstVehicleAllowance) {
+                empCodes = empCodes +  ba.getEmpCode() + ",";
+            }
 
-                        result.add(output);
+            if(lstVehicleAllowance.size() > 0) {
+                StringBuffer sb = new StringBuffer(empCodes);
+                sb.deleteCharAt(sb.length() - 1);
+                List<PFAccountEntity> listAllAccount = paService.getAllPFAccountViewByIds(sb.toString());
+
+                for (PFAccountEntity account : listAllAccount) {
+                    for (VehicleAllowanceEntity ba : lstVehicleAllowance) {
+                        if (account.getEMPCODE() == ba.getEmpCode() && ba.getapproved() == 1 && ba.getHRApproved() == 0) {
+                            VehicleAllowanceOutput output = new VehicleAllowanceOutput();
+                            output.id = ba.getid();
+                            output.doj = account.getDOJ();
+                            output.name = account.getNAME();
+                            output.empcode = account.getEMPCODE();
+                            output.claimAmount = ba.getClaimAmount();
+                            output.remarks = ba.getremarks();
+                            output.submitted = ba.getsubmitted();
+                            output.approved = ba.getapproved();
+                            output.hrApproved = ba.getHRApproved();
+                            output.entitledAmount = ba.getEntitledAmount();
+                            output.invoiceAmount = ba.getInvoiceAmount();
+                            output.invoiceDate = ba.getInvoiceDate();
+                            output.invoiceNo = ba.getInvoiceNo();
+                            output.serviceCentreName = ba.getServiceCentreName();
+                            output.managerRemarks = ba.getManagerRemarks();
+                            output.hrRemarks = ba.getHrRemarks();
+
+                            result.add(output);
+                        }
                     }
                 }
             }

@@ -79,8 +79,16 @@ public class BriefcaseAllowanceController {
     public List<BriefcaseAllowanceOutput> managerBriefcaseAllowanceGetAll() {
         try {
             List<BriefcaseAllowanceOutput> result = new ArrayList<BriefcaseAllowanceOutput>();
-            List<PFAccountEntity> listAllAccount = paService.getAllPFAccount();
+
             List<BriefcaseAllowanceEntity> lstBriefcaseAllowance = baService.getAllBriefcaseAllowance();
+            String empCodes = "";
+            for (BriefcaseAllowanceEntity ba : lstBriefcaseAllowance) {
+                empCodes = empCodes +  ba.getEmpCode() + ",";
+            }
+           if(lstBriefcaseAllowance.size() > 0) {
+               StringBuffer sb = new StringBuffer(empCodes);
+               sb.deleteCharAt(sb.length() - 1);
+               List<PFAccountEntity> listAllAccount = paService.getAllPFAccountViewByIds(sb.toString());
 
             for (PFAccountEntity account : listAllAccount) {
                 for (BriefcaseAllowanceEntity ba : lstBriefcaseAllowance) {
@@ -106,6 +114,7 @@ public class BriefcaseAllowanceController {
                     }
                 }
             }
+           }
             return result;
         } catch (Exception ex) {
             return null;
@@ -116,31 +125,40 @@ public class BriefcaseAllowanceController {
     public List<BriefcaseAllowanceOutput> hrBriefcaseAllowanceGetAll() {
         try {
             List<BriefcaseAllowanceOutput> result = new ArrayList<BriefcaseAllowanceOutput>();
-            List<PFAccountEntity> listAllAccount = paService.getAllPFAccount();
-            List<BriefcaseAllowanceEntity> lstBriefcaseAllowance = baService.getAllBriefcaseAllowance();
 
-            for (PFAccountEntity account : listAllAccount) {
-                for (BriefcaseAllowanceEntity ba : lstBriefcaseAllowance) {
-                    if (account.getEMPCODE() == ba.getEmpCode() && ba.getapproved() == 1 && ba.getHRApproved() == 0) {
-                        BriefcaseAllowanceOutput output = new BriefcaseAllowanceOutput();
-                        output.id = ba.getid();
-                        output.doj = account.getDOJ();
-                        output.name = account.getNAME();
-                        output.empcode = account.getEMPCODE();
-                        output.claimAmount = ba.getClaimAmount();
-                        output.remarks = ba.getremarks();
-                        output.submitted = ba.getsubmitted();
-                        output.approved = ba.getapproved();
-                        output.hrApproved = ba.getHRApproved();
-                        output.entitledAmount = ba.getEntitledAmount();
-                        output.invoiceAmount = ba.getInvoiceAmount();
-                        output.invoiceDate = ba.getInvoiceDate();
-                        output.invoiceNo = ba.getInvoiceNo();
-                        output.vendorName = ba.getVendorName();
-                        output.managerRemarks = ba.getManagerRemarks();
-                        output.hrRemarks=ba.getHrRemarks();
-                        output.grade = account.getGRADE();
-                        result.add(output);
+            List<BriefcaseAllowanceEntity> lstBriefcaseAllowance = baService.getAllBriefcaseAllowance();
+            String empCodes = "";
+            for (BriefcaseAllowanceEntity ba : lstBriefcaseAllowance) {
+                empCodes = empCodes +  ba.getEmpCode() + ",";
+            }
+            if(lstBriefcaseAllowance.size() > 0) {
+                StringBuffer sb = new StringBuffer(empCodes);
+                sb.deleteCharAt(sb.length() - 1);
+                List<PFAccountEntity> listAllAccount = paService.getAllPFAccountViewByIds(sb.toString());
+
+                for (PFAccountEntity account : listAllAccount) {
+                    for (BriefcaseAllowanceEntity ba : lstBriefcaseAllowance) {
+                        if (account.getEMPCODE() == ba.getEmpCode() && ba.getapproved() == 1 && ba.getHRApproved() == 0) {
+                            BriefcaseAllowanceOutput output = new BriefcaseAllowanceOutput();
+                            output.id = ba.getid();
+                            output.doj = account.getDOJ();
+                            output.name = account.getNAME();
+                            output.empcode = account.getEMPCODE();
+                            output.claimAmount = ba.getClaimAmount();
+                            output.remarks = ba.getremarks();
+                            output.submitted = ba.getsubmitted();
+                            output.approved = ba.getapproved();
+                            output.hrApproved = ba.getHRApproved();
+                            output.entitledAmount = ba.getEntitledAmount();
+                            output.invoiceAmount = ba.getInvoiceAmount();
+                            output.invoiceDate = ba.getInvoiceDate();
+                            output.invoiceNo = ba.getInvoiceNo();
+                            output.vendorName = ba.getVendorName();
+                            output.managerRemarks = ba.getManagerRemarks();
+                            output.hrRemarks = ba.getHrRemarks();
+                            output.grade = account.getGRADE();
+                            result.add(output);
+                        }
                     }
                 }
             }

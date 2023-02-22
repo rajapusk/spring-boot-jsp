@@ -11,11 +11,7 @@ import java.util.Optional;
 import javax.websocket.server.PathParam;
 
 import com.cardview.demo.exception.RecordNotFoundException;
-import com.cardview.demo.model.EmpDocEntity;
-import com.cardview.demo.model.EmployeeEntity;
-import com.cardview.demo.model.PFAccountEntity;
-import com.cardview.demo.model.PFLoanEntity;
-import com.cardview.demo.model.PfLoanUpdateInput;
+import com.cardview.demo.model.*;
 import com.cardview.demo.outputModels.PfLoanOutput;
 import com.cardview.demo.service.EmailServiceImpl;
 import com.cardview.demo.service.EmployeeService;
@@ -55,12 +51,12 @@ public class PFLoanController {
 	@Autowired
 	private EmailServiceImpl emailService;
 
-	/**
+	/*
 	 * This method is used to fetch all employees from the database and set the
 	 * values into the model attribute which will be used by html template to
 	 * populate data.
 	 *
-	 * @param model This attribute is used to set values which will be used in the
+	 * param model This attribute is used to set values which will be used in the
 	 *              html template to populate data
 	 * @return String This returns the name of the html page to be displayed.
 	 */
@@ -113,41 +109,52 @@ public class PFLoanController {
 	public List<PfLoanOutput> getPFAccount(@PathVariable("type") byte type) {
 		try {
 			List<PfLoanOutput> result = new ArrayList<PfLoanOutput>();
-			List<PFAccountEntity> listAllAccount = paService.getAllPFAccount();
 			List<PFLoanEntity> lstPFAccount = pfService.getAllPFLoan();
 
-			for (PFAccountEntity account : listAllAccount) {
-				for (PFLoanEntity loan : lstPFAccount) {
-					if (account.getEMPCODE() == loan.getempcode() && type == loan.getType() && loan.getapproved() == 0) {
-						PfLoanOutput output = new PfLoanOutput();
-						output.id = loan.getid();
-						output.advanceType = loan.getadvanceType();
-						output.monthlySalary = account.getMONTHLY_SALARY();
-						output.pfBalance = account.getPF_BALANCE();
-						output.prevNetSalary = account.getPrevNetSalary();
-						output.rateOfInterest = account.getRATEOFINTEREST();
-						output.presentExperience = account.getPRESENT_EXPERIENCE();
-						output.band = account.getBAND();
-						output.branch = account.getBRANCH();
-						output.designation = account.getDESIGNATION();
-						output.doj = account.getDOJ();
-						output.dor = account.getDOR();
-						output.name = account.getNAME();
-						output.empcode = account.getEMPCODE();
-						output.serviceLeft = account.getSERVICE_LEFT();
-						output.interest = account.getInterest();
-						output.role = account.getROLE();
-						output.netSalaryPercentage = account.getNetSalPer();
-						output.docPath = (loan.getfileName() != null ? docURL + loan.getfileName() : null);
-						output.noOfEMI = loan.getnoOfEMI();
-						output.requiredAmount = loan.getrequiredAmount();
-						output.emiAmount = loan.getemiAmount();
-						output.newNetSalary = loan.getnewNetSalary();
-						output.newNetSalaryPercentage = loan.getnewNetSalaryPer();
-						output.remarks = loan.getremarks();
-						output.submitted = loan.getsubmitted();
-						output.approved = loan.getapproved();
-						result.add(output);
+
+			String empCodes = "";
+			for (PFLoanEntity ba : lstPFAccount) {
+				empCodes = empCodes +  ba.getempcode() + ",";
+			}
+
+			if(lstPFAccount.size() > 0) {
+				StringBuffer sb = new StringBuffer(empCodes);
+				sb.deleteCharAt(sb.length() - 1);
+				List<PFAccountEntity> listAllAccount = paService.getAllPFAccountViewByIds(sb.toString());
+
+				for (PFAccountEntity account : listAllAccount) {
+					for (PFLoanEntity loan : lstPFAccount) {
+						if (account.getEMPCODE() == loan.getempcode() && type == loan.getType() && loan.getapproved() == 0) {
+							PfLoanOutput output = new PfLoanOutput();
+							output.id = loan.getid();
+							output.advanceType = loan.getadvanceType();
+							output.monthlySalary = account.getMONTHLY_SALARY();
+							output.pfBalance = account.getPF_BALANCE();
+							output.prevNetSalary = account.getPrevNetSalary();
+							output.rateOfInterest = account.getRATEOFINTEREST();
+							output.presentExperience = account.getPRESENT_EXPERIENCE();
+							output.band = account.getBAND();
+							output.branch = account.getBRANCH();
+							output.designation = account.getDESIGNATION();
+							output.doj = account.getDOJ();
+							output.dor = account.getDOR();
+							output.name = account.getNAME();
+							output.empcode = account.getEMPCODE();
+							output.serviceLeft = account.getSERVICE_LEFT();
+							output.interest = account.getInterest();
+							output.role = account.getROLE();
+							output.netSalaryPercentage = account.getNetSalPer();
+							output.docPath = (loan.getfileName() != null ? docURL + loan.getfileName() : null);
+							output.noOfEMI = loan.getnoOfEMI();
+							output.requiredAmount = loan.getrequiredAmount();
+							output.emiAmount = loan.getemiAmount();
+							output.newNetSalary = loan.getnewNetSalary();
+							output.newNetSalaryPercentage = loan.getnewNetSalaryPer();
+							output.remarks = loan.getremarks();
+							output.submitted = loan.getsubmitted();
+							output.approved = loan.getapproved();
+							result.add(output);
+						}
 					}
 				}
 			}

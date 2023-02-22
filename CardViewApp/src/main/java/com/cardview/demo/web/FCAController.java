@@ -3,6 +3,7 @@ package com.cardview.demo.web;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.cardview.demo.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,10 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.cardview.demo.exception.RecordNotFoundException;
-import com.cardview.demo.model.EmpDocEntity;
-import com.cardview.demo.model.FcaEntity;
-import com.cardview.demo.model.PFAccountEntity;
-import com.cardview.demo.model.PfLoanUpdateInput;
 import com.cardview.demo.outputModels.FcaOutput;
 import com.cardview.demo.service.EmailServiceImpl;
 import com.cardview.demo.service.FcaService;
@@ -75,10 +72,19 @@ public class FCAController {
     public List<FcaOutput> managerFcaGetAll() {
         try {
             List<FcaOutput> result = new ArrayList<FcaOutput>();
-            List<PFAccountEntity> listAllAccount = paService.getAllPFAccount();
             List<FcaEntity> lstBriefcaseAllowance = fcaService.getAllFCA();
 
-            for (PFAccountEntity account : listAllAccount) {
+            String empCodes = "";
+            for (FcaEntity ba : lstBriefcaseAllowance) {
+                empCodes = empCodes +  ba.getEmpCode() + ",";
+            }
+
+            if(lstBriefcaseAllowance.size() > 0) {
+                StringBuffer sb = new StringBuffer(empCodes);
+                sb.deleteCharAt(sb.length() - 1);
+                List<PFAccountEntity> listAllAccount = paService.getAllPFAccountViewByIds(sb.toString());
+
+                for (PFAccountEntity account : listAllAccount) {
                 for (FcaEntity ba : lstBriefcaseAllowance) {
                     if (account.getEMPCODE() == ba.getEmpCode() && ba.getapproved() == 0) {
                         FcaOutput output = new FcaOutput();
@@ -100,6 +106,7 @@ public class FCAController {
                     }
                 }
             }
+            }
             return result;
         } catch (Exception ex) {
             return null;
@@ -110,29 +117,39 @@ public class FCAController {
     public List<FcaOutput> hrFcaGetAll() {
         try {
             List<FcaOutput> result = new ArrayList<FcaOutput>();
-            List<PFAccountEntity> listAllAccount = paService.getAllPFAccount();
             List<FcaEntity> lstBriefcaseAllowance = fcaService.getAllFCA();
 
-            for (PFAccountEntity account : listAllAccount) {
-                for (FcaEntity ba : lstBriefcaseAllowance) {
-                    if (account.getEMPCODE() == ba.getEmpCode() && ba.getapproved() == 1 && ba.getHRApproved() == 0) {
-                        FcaOutput output = new FcaOutput();
-                        output.id = ba.getid();
-                        output.doj = account.getDOJ();
-                        output.name = account.getNAME();
-                        output.empcode = account.getEMPCODE();
-                        output.claimAmount = ba.getClaimAmount();
-                        output.remarks = ba.getremarks();
-                        output.submitted = ba.getsubmitted();
-                        output.approved = ba.getapproved();
-                        output.hrApproved = ba.getHRApproved();
-                        output.entitledAmount = ba.getEntitledAmount();
-                        output.months = ba.getMonths();
-                        output.quarterType = ba.getQuarterType();
-                        output.managerRemarks = ba.getManagerRemarks();
-                        output.hrRemarks=ba.getHrRemarks();
-                        output.grade = account.getGRADE();
-                        result.add(output);
+            String empCodes = "";
+            for (FcaEntity ba : lstBriefcaseAllowance) {
+                empCodes = empCodes +  ba.getEmpCode() + ",";
+            }
+
+            if(lstBriefcaseAllowance.size() > 0) {
+                StringBuffer sb = new StringBuffer(empCodes);
+                sb.deleteCharAt(sb.length() - 1);
+                List<PFAccountEntity> listAllAccount = paService.getAllPFAccountViewByIds(sb.toString());
+
+                for (PFAccountEntity account : listAllAccount) {
+                    for (FcaEntity ba : lstBriefcaseAllowance) {
+                        if (account.getEMPCODE() == ba.getEmpCode() && ba.getapproved() == 1 && ba.getHRApproved() == 0) {
+                            FcaOutput output = new FcaOutput();
+                            output.id = ba.getid();
+                            output.doj = account.getDOJ();
+                            output.name = account.getNAME();
+                            output.empcode = account.getEMPCODE();
+                            output.claimAmount = ba.getClaimAmount();
+                            output.remarks = ba.getremarks();
+                            output.submitted = ba.getsubmitted();
+                            output.approved = ba.getapproved();
+                            output.hrApproved = ba.getHRApproved();
+                            output.entitledAmount = ba.getEntitledAmount();
+                            output.months = ba.getMonths();
+                            output.quarterType = ba.getQuarterType();
+                            output.managerRemarks = ba.getManagerRemarks();
+                            output.hrRemarks = ba.getHrRemarks();
+                            output.grade = account.getGRADE();
+                            result.add(output);
+                        }
                     }
                 }
             }

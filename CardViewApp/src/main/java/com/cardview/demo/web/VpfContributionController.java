@@ -1,10 +1,7 @@
 package com.cardview.demo.web;
 
 import com.cardview.demo.exception.RecordNotFoundException;
-import com.cardview.demo.model.PFAccountEntity;
-import com.cardview.demo.model.PFLoanEntity;
-import com.cardview.demo.model.PfLoanUpdateInput;
-import com.cardview.demo.model.VpfContributionEntity;
+import com.cardview.demo.model.*;
 import com.cardview.demo.outputModels.VpfContributionOutput;
 import com.cardview.demo.service.EmailServiceImpl;
 import com.cardview.demo.service.PFAccountService;
@@ -62,33 +59,43 @@ public class VpfContributionController {
     public List<VpfContributionOutput> getVPFManagerGetAll() {
         try {
             List<VpfContributionOutput> result = new ArrayList<VpfContributionOutput>();
-            List<PFAccountEntity> listAllAccount = paService.getAllPFAccount();
             List<VpfContributionEntity> lstVPFAccount = vpfService.getAllVpf();
 
-            for (PFAccountEntity account : listAllAccount) {
-                for (VpfContributionEntity loan : lstVPFAccount) {
-                    if (account.getEMPCODE() == loan.getempcode() && loan.getapproved() == 0) {
-                        VpfContributionOutput output = new VpfContributionOutput();
-                        output.id = loan.getid();
-                        output.presentVPF = account.getPresentVPF();
-                        output.monthlySalary = account.getMONTHLY_SALARY();
-                        output.revisedVPF = loan.getRevisedVPF();
-                        output.prevNetSalary = account.getPrevNetSalary();
-                        output.band = account.getBAND();
-                        output.designation = account.getDESIGNATION();
-                        output.doj = account.getDOJ();
-                        output.name = account.getNAME();
-                        output.empcode = account.getEMPCODE();
-                        output.netSalaryPercentage = account.getNetSalPer();
-                        output.newNetSalary = loan.getnewNetSalary();
-                        output.newNetSalaryPercentage = loan.getnewNetSalaryPer();
-                        output.remarks = loan.getremarks();
-                        output.submitted = loan.getsubmitted();
-                        output.approved = loan.getapproved();
-                        output.hrApproved = loan.getHRApproved();
-                        output.location = account.getLocation();
-                        output.worksiteCode = account.getWorksiteCode();
-                        result.add(output);
+            String empCodes = "";
+            for (VpfContributionEntity ba : lstVPFAccount) {
+                empCodes = empCodes +  ba.getempcode() + ",";
+            }
+
+            if(lstVPFAccount.size() > 0) {
+                StringBuffer sb = new StringBuffer(empCodes);
+                sb.deleteCharAt(sb.length() - 1);
+                List<PFAccountEntity> listAllAccount = paService.getAllPFAccountViewByIds(sb.toString());
+
+                for (PFAccountEntity account : listAllAccount) {
+                    for (VpfContributionEntity loan : lstVPFAccount) {
+                        if (account.getEMPCODE() == loan.getempcode() && loan.getapproved() == 0) {
+                            VpfContributionOutput output = new VpfContributionOutput();
+                            output.id = loan.getid();
+                            output.presentVPF = account.getPresentVPF();
+                            output.monthlySalary = account.getMONTHLY_SALARY();
+                            output.revisedVPF = loan.getRevisedVPF();
+                            output.prevNetSalary = account.getPrevNetSalary();
+                            output.band = account.getBAND();
+                            output.designation = account.getDESIGNATION();
+                            output.doj = account.getDOJ();
+                            output.name = account.getNAME();
+                            output.empcode = account.getEMPCODE();
+                            output.netSalaryPercentage = account.getNetSalPer();
+                            output.newNetSalary = loan.getnewNetSalary();
+                            output.newNetSalaryPercentage = loan.getnewNetSalaryPer();
+                            output.remarks = loan.getremarks();
+                            output.submitted = loan.getsubmitted();
+                            output.approved = loan.getapproved();
+                            output.hrApproved = loan.getHRApproved();
+                            output.location = account.getLocation();
+                            output.worksiteCode = account.getWorksiteCode();
+                            result.add(output);
+                        }
                     }
                 }
             }
@@ -103,33 +110,43 @@ public class VpfContributionController {
     public List<VpfContributionOutput> getVPFHrGetAll() {
         try {
             List<VpfContributionOutput> result = new ArrayList<VpfContributionOutput>();
-            List<PFAccountEntity> listAllAccount = paService.getAllPFAccount();
             List<VpfContributionEntity> lstVPFAccount = vpfService.getAllVpf();
 
-            for (PFAccountEntity account : listAllAccount) {
-                for (VpfContributionEntity loan : lstVPFAccount) {
-                    if (account.getEMPCODE() == loan.getempcode() && loan.getapproved() == 1 && loan.getHRApproved() == 0) {
-                        VpfContributionOutput output = new VpfContributionOutput();
-                        output.id = loan.getid();
-                        output.presentVPF = loan.getPresentVPF();
-                        output.monthlySalary = account.getMONTHLY_SALARY();
-                        output.revisedVPF = loan.getRevisedVPF();
-                        output.prevNetSalary = account.getPrevNetSalary();
-                        output.band = account.getBAND();
-                        output.designation = account.getDESIGNATION();
-                        output.doj = account.getDOJ();
-                        output.name = account.getNAME();
-                        output.empcode = account.getEMPCODE();
-                        output.netSalaryPercentage = account.getNetSalPer();
-                        output.newNetSalary = loan.getnewNetSalary();
-                        output.newNetSalaryPercentage = loan.getnewNetSalaryPer();
-                        output.remarks = loan.getremarks();
-                        output.submitted = loan.getsubmitted();
-                        output.approved = loan.getapproved();
-                        output.hrApproved = loan.getHRApproved();
-                        output.location = account.getLocation();
-                        output.worksiteCode = account.getWorksiteCode();
-                        result.add(output);
+            String empCodes = "";
+            for (VpfContributionEntity ba : lstVPFAccount) {
+                empCodes = empCodes +  ba.getempcode() + ",";
+            }
+
+            if(lstVPFAccount.size() > 0) {
+                StringBuffer sb = new StringBuffer(empCodes);
+                sb.deleteCharAt(sb.length() - 1);
+                List<PFAccountEntity> listAllAccount = paService.getAllPFAccountViewByIds(sb.toString());
+
+                for (PFAccountEntity account : listAllAccount) {
+                    for (VpfContributionEntity loan : lstVPFAccount) {
+                        if (account.getEMPCODE() == loan.getempcode() && loan.getapproved() == 1 && loan.getHRApproved() == 0) {
+                            VpfContributionOutput output = new VpfContributionOutput();
+                            output.id = loan.getid();
+                            output.presentVPF = loan.getPresentVPF();
+                            output.monthlySalary = account.getMONTHLY_SALARY();
+                            output.revisedVPF = loan.getRevisedVPF();
+                            output.prevNetSalary = account.getPrevNetSalary();
+                            output.band = account.getBAND();
+                            output.designation = account.getDESIGNATION();
+                            output.doj = account.getDOJ();
+                            output.name = account.getNAME();
+                            output.empcode = account.getEMPCODE();
+                            output.netSalaryPercentage = account.getNetSalPer();
+                            output.newNetSalary = loan.getnewNetSalary();
+                            output.newNetSalaryPercentage = loan.getnewNetSalaryPer();
+                            output.remarks = loan.getremarks();
+                            output.submitted = loan.getsubmitted();
+                            output.approved = loan.getapproved();
+                            output.hrApproved = loan.getHRApproved();
+                            output.location = account.getLocation();
+                            output.worksiteCode = account.getWorksiteCode();
+                            result.add(output);
+                        }
                     }
                 }
             }

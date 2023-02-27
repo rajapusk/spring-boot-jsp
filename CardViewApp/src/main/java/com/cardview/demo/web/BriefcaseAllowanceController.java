@@ -36,14 +36,14 @@ public class BriefcaseAllowanceController {
     
     @GetMapping("/get/{id}")
     public BriefcaseAllowanceEntity getBriefcaseAllowanceById(@PathVariable("id") Long id) {
-        throw new EntityExistsException();
-       /* try {
+
+        try {
 
             System.out.println("@@@ id " + id);
             return baService.getBriefcaseAllowanceById(id);
         } catch (Exception ex) {
             return null;
-        }*/
+        }
     }
 
     @RequestMapping(path = "/create", method = RequestMethod.POST)

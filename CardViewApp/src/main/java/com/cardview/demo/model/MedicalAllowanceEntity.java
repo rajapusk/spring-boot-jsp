@@ -13,6 +13,10 @@ public class MedicalAllowanceEntity {
         return this.id;
     }
 
+    public void SetIdValue(Long idValue)
+    {
+        this.id= idValue;
+    }
     @Column(name="HOSPITALNAME")
     private String hospitalName;
     public String getHospitalName()

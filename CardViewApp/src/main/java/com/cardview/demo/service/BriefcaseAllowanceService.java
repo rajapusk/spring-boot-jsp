@@ -28,8 +28,6 @@ import java.sql.*;
 @Service
 public class BriefcaseAllowanceService {
     @Autowired
-    private EmailServiceImpl emailService;
-    @Autowired
     BriefcaseAllowanceRepository repository;
 
     @Autowired
@@ -150,6 +148,7 @@ public class BriefcaseAllowanceService {
 
     public List<BriefcaseAllowanceEntity> updateBriefcaseAllowance(PfLoanUpdateInput[] entityArray, boolean isManager) {
         List<BriefcaseAllowanceEntity> result = new ArrayList<BriefcaseAllowanceEntity>();
+        long millis=System.currentTimeMillis();
         for(PfLoanUpdateInput entity : entityArray) {
             Optional<BriefcaseAllowanceEntity> employee = repository.findById(entity.id);
             if (employee.isPresent()) {
@@ -158,9 +157,11 @@ public class BriefcaseAllowanceService {
                 if (isManager == true) {
                     newEntity.setapproved(entity.approved);
                     newEntity.setManagerRemarks(entity.remarks);
+                    newEntity.setUpdatedOn(new java.sql.Date(millis));
                 } else {
                     newEntity.setHRApproved(entity.hrApproved);
                     newEntity.setHrRemarkss(entity.remarks);
+                    newEntity.setUpdatedOn(new java.sql.Date(millis));
                 }
 
                 repository.save(newEntity);
@@ -169,5 +170,53 @@ public class BriefcaseAllowanceService {
         }
 
         return result;
+    }
+
+    public List<BriefcaseAllowanceEntity> getUnApproveEntity() throws ClassNotFoundException, SQLException {
+        List<BriefcaseAllowanceEntity> emplicList = new ArrayList<BriefcaseAllowanceEntity>();
+        Class.forName("com.mysql.jdbc.Driver");
+        Connection dbConnection = DriverManager.getConnection(driverUrl, userName, password);
+        Statement getFromDb = dbConnection.createStatement();
+
+        ResultSet rs = getFromDb
+                .executeQuery("select id, approved, claimamount, claimdate, document, empcode, entitledamount, hrapproved, hr_remarks, invoiceamount, invoicedate, invoiceno, managerremarks, remarks, submitted, vendorname, created_on, updated_on, hrremarks   FROM tbl_briefcase_allowance where submitted = 1 and approved = 0");
+        while (rs.next()) {
+
+            BriefcaseAllowanceEntity newEntity = new BriefcaseAllowanceEntity();
+            newEntity.setHRApproved(rs.getByte("hrapproved"));
+            newEntity.SetIdValue(rs.getLong("id"));
+            newEntity.setUpdatedOn(rs.getDate("updated_on"));
+            newEntity.setCreatedOn(rs.getDate("created_on"));
+            newEntity.setapproved(rs.getByte("approved"));
+            newEntity.setEmpCode(rs.getLong("empcode"));
+
+            emplicList.add(newEntity);
+        }
+
+        return emplicList;
+    }
+
+    public List<BriefcaseAllowanceEntity> getHrUnApproveEntity() throws ClassNotFoundException, SQLException {
+        List<BriefcaseAllowanceEntity> emplicList = new ArrayList<BriefcaseAllowanceEntity>();
+        Class.forName("com.mysql.jdbc.Driver");
+        Connection dbConnection = DriverManager.getConnection(driverUrl, userName, password);
+        Statement getFromDb = dbConnection.createStatement();
+
+        ResultSet rs = getFromDb
+                .executeQuery("select id, approved, claimamount, claimdate, document, empcode, entitledamount, hrapproved, hr_remarks, invoiceamount, invoicedate, invoiceno, managerremarks, remarks, submitted, vendorname, created_on, updated_on, hrremarks   FROM tbl_briefcase_allowance where submitted = 1 and approved = 1 and hrapproved = 0 ");
+        while (rs.next()) {
+
+            BriefcaseAllowanceEntity newEntity = new BriefcaseAllowanceEntity();
+            newEntity.setHRApproved(rs.getByte("hrapproved"));
+            newEntity.SetIdValue(rs.getLong("id"));
+            newEntity.setUpdatedOn(rs.getDate("updated_on"));
+            newEntity.setCreatedOn(rs.getDate("created_on"));
+            newEntity.setapproved(rs.getByte("approved"));
+            newEntity.setEmpCode(rs.getLong("empcode"));
+
+            emplicList.add(newEntity);
+        }
+
+        return emplicList;
     }
 }

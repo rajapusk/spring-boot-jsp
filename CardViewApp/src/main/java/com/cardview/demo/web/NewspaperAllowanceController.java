@@ -25,7 +25,7 @@ public class NewspaperAllowanceController {
     @Autowired
     PFAccountService paService;
     @Autowired
-    NewspaperAllowanceService baService;
+    NewspaperAllowanceService naService;
     @Autowired
     private EmailServiceImpl emailService;
 
@@ -36,7 +36,7 @@ public class NewspaperAllowanceController {
     public NewspaperAllowanceEntity getNewspaperAllowanceById(@PathVariable("id") Long id) {
         try {
             System.out.println("@@@ id " + id);
-            return baService.getNewspaperAllowanceById(id);
+            return naService.getNewspaperAllowanceById(id);
         } catch (Exception ex) {
             return null;
         }
@@ -44,7 +44,7 @@ public class NewspaperAllowanceController {
 
     @RequestMapping(path = "/create", method = RequestMethod.POST)
     public NewspaperAllowanceEntity createOrUpdateNewspaperAllowanceContribution(@RequestBody NewspaperAllowanceEntity loan) {
-        NewspaperAllowanceEntity entity = baService.createOrUpdateNewspaperAllowance(loan);
+        NewspaperAllowanceEntity entity = naService.createOrUpdateNewspaperAllowance(loan);
 
         try {
             PFAccountEntity account = paService.getPFAccountById(loan.getEmpCode());
@@ -59,14 +59,14 @@ public class NewspaperAllowanceController {
 
     @DeleteMapping("/delete/id")
     public boolean deleteNewspaperAllowanceById(@PathVariable("id") long id) throws RecordNotFoundException {
-        return baService.deleteNewspaperAllowanceById(id);
+        return naService.deleteNewspaperAllowanceById(id);
     }
 
     @GetMapping("/manager")
     public List<NewspaperAllowanceOutput> managerNewspaperAllowanceGetAll() {
         try {
             List<NewspaperAllowanceOutput> result = new ArrayList<NewspaperAllowanceOutput>();
-            List<NewspaperAllowanceEntity> lstNewspaperAllowance = baService.getAllNewspaperAllowance();
+            List<NewspaperAllowanceEntity> lstNewspaperAllowance = naService.getAllNewspaperAllowance();
             String empCodes = "";
             for (NewspaperAllowanceEntity ba : lstNewspaperAllowance) {
                 empCodes = empCodes +  ba.getEmpCode() + ",";
@@ -115,7 +115,7 @@ public class NewspaperAllowanceController {
     public List<NewspaperAllowanceOutput> hrNewspaperAllowanceGetAll() {
         try {
             List<NewspaperAllowanceOutput> result = new ArrayList<NewspaperAllowanceOutput>();
-            List<NewspaperAllowanceEntity> lstNewspaperAllowance = baService.getAllNewspaperAllowance();
+            List<NewspaperAllowanceEntity> lstNewspaperAllowance = naService.getAllNewspaperAllowance();
 
             String empCodes = "";
             for (NewspaperAllowanceEntity ba : lstNewspaperAllowance) {
@@ -172,7 +172,7 @@ public class NewspaperAllowanceController {
 
     @RequestMapping(path = "/manager/update", method = RequestMethod.PUT)
     public boolean UpdateNewspaperAllowance(@RequestBody PfLoanUpdateInput[] loan) throws RecordNotFoundException {
-        List<NewspaperAllowanceEntity> lstVPF = baService.updateNewspaperAllowance(loan, true);
+        List<NewspaperAllowanceEntity> lstVPF = naService.updateNewspaperAllowance(loan, true);
 
         for (NewspaperAllowanceEntity entity : lstVPF) {
             PFAccountEntity account = paService.getPFAccountById(entity.getEmpCode());
@@ -193,7 +193,7 @@ public class NewspaperAllowanceController {
 
     @RequestMapping(path = "/hr/update", method = RequestMethod.PUT)
     public boolean UpdateHrNewspaperAllowance(@RequestBody PfLoanUpdateInput[] loan) throws RecordNotFoundException {
-        List<NewspaperAllowanceEntity> lstVPF = baService.updateNewspaperAllowance(loan, false);
+        List<NewspaperAllowanceEntity> lstVPF = naService.updateNewspaperAllowance(loan, false);
 
         for (NewspaperAllowanceEntity entity : lstVPF) {
             PFAccountEntity account = paService.getPFAccountById(entity.getEmpCode());
@@ -226,4 +226,6 @@ public class NewspaperAllowanceController {
 
 		return null;
 	}
+
+    
 }

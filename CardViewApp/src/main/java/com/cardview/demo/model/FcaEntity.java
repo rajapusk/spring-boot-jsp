@@ -14,6 +14,11 @@ public class FcaEntity {
         return this.id;
     }
 
+
+    public void SetIdValue(Long idValue)
+    {
+        this.id= idValue;
+    }
     @Column(name="QuarterType")
     private String quarterType;
     public String getQuarterType()

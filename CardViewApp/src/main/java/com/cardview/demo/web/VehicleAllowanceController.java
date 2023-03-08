@@ -25,7 +25,7 @@ public class VehicleAllowanceController {
     @Autowired
     PFAccountService paService;
     @Autowired
-    VehicleAllowanceService baService;
+    VehicleAllowanceService vaService;
     @Autowired
     private EmailServiceImpl emailService;
 
@@ -36,7 +36,7 @@ public class VehicleAllowanceController {
     public VehicleAllowanceEntity getVehicleAllowanceById(@PathVariable("id") Long id) {
         try {
             System.out.println("@@@ id " + id);
-            return baService.getVehicleAllowanceById(id);
+            return vaService.getVehicleAllowanceById(id);
         } catch (Exception ex) {
             return null;
         }
@@ -44,7 +44,7 @@ public class VehicleAllowanceController {
 
     @RequestMapping(path = "/create", method = RequestMethod.POST)
     public VehicleAllowanceEntity createOrUpdateVehicleAllowanceContribution(@RequestBody VehicleAllowanceEntity loan) {
-        VehicleAllowanceEntity entity = baService.createOrUpdateVehicleAllowance(loan);
+        VehicleAllowanceEntity entity = vaService.createOrUpdateVehicleAllowance(loan);
 
         try {
             PFAccountEntity account = paService.getPFAccountById(loan.getEmpCode());
@@ -59,14 +59,14 @@ public class VehicleAllowanceController {
 
     @DeleteMapping("/delete/id")
     public boolean deleteVehicleAllowanceById(@PathVariable("id") long id) throws RecordNotFoundException {
-        return baService.deleteVehicleAllowanceById(id);
+        return vaService.deleteVehicleAllowanceById(id);
     }
 
     @GetMapping("/manager")
     public List<VehicleAllowanceOutput> managerVehicleAllowanceGetAll() {
         try {
             List<VehicleAllowanceOutput> result = new ArrayList<VehicleAllowanceOutput>();
-            List<VehicleAllowanceEntity> lstVehicleAllowance = baService.getAllVehicleAllowance();
+            List<VehicleAllowanceEntity> lstVehicleAllowance = vaService.getAllVehicleAllowance();
 
             String empCodes = "";
             for (VehicleAllowanceEntity ba : lstVehicleAllowance) {
@@ -113,7 +113,7 @@ public class VehicleAllowanceController {
     public List<VehicleAllowanceOutput> hrVehicleAllowanceGetAll() {
         try {
             List<VehicleAllowanceOutput> result = new ArrayList<VehicleAllowanceOutput>();
-            List<VehicleAllowanceEntity> lstVehicleAllowance = baService.getAllVehicleAllowance();
+            List<VehicleAllowanceEntity> lstVehicleAllowance = vaService.getAllVehicleAllowance();
 
             String empCodes = "";
             for (VehicleAllowanceEntity ba : lstVehicleAllowance) {
@@ -168,7 +168,7 @@ public class VehicleAllowanceController {
 
     @RequestMapping(path = "/manager/update", method = RequestMethod.PUT)
     public boolean UpdateVehicleAllowance(@RequestBody PfLoanUpdateInput[] loan) throws RecordNotFoundException {
-        List<VehicleAllowanceEntity> lstVPF = baService.updateVehicleAllowance(loan, true);
+        List<VehicleAllowanceEntity> lstVPF = vaService.updateVehicleAllowance(loan, true);
 
         for (VehicleAllowanceEntity entity : lstVPF) {
             PFAccountEntity account = paService.getPFAccountById(entity.getEmpCode());
@@ -189,7 +189,7 @@ public class VehicleAllowanceController {
 
     @RequestMapping(path = "/hr/update", method = RequestMethod.PUT)
     public boolean UpdateHrVehicleAllowance(@RequestBody PfLoanUpdateInput[] loan) throws RecordNotFoundException {
-        List<VehicleAllowanceEntity> lstVPF = baService.updateVehicleAllowance(loan, false);
+        List<VehicleAllowanceEntity> lstVPF = vaService.updateVehicleAllowance(loan, false);
 
         for (VehicleAllowanceEntity entity : lstVPF) {
             PFAccountEntity account = paService.getPFAccountById(entity.getEmpCode());
@@ -222,4 +222,6 @@ public class VehicleAllowanceController {
 
    		return null;
    	}
+
+
 }

@@ -13,6 +13,11 @@ public class BriefcaseAllowanceEntity {
         return this.id;
     }
 
+    public void SetIdValue(Long idValue)
+    {
+        this.id= idValue;
+    }
+
     @Column(name="VENDORNAME")
     private String vendorName;
     public String getVendorName()

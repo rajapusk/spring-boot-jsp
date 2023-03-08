@@ -4,6 +4,7 @@ import com.cardview.demo.exception.RecordNotFoundException;
 import com.cardview.demo.model.PFNomineeEntity;
 import com.cardview.demo.model.PfLoanUpdateInput;
 import com.cardview.demo.model.TravelExpenseEntity;
+import com.cardview.demo.model.VehicleAllowanceEntity;
 import com.cardview.demo.outputModels.*;
 import com.cardview.demo.repository.TravelExpenseDetailRepository;
 import com.cardview.demo.repository.TravelExpenseRepository;
@@ -200,6 +201,7 @@ public class TravelExpenseService {
 
     public List<TravelExpenseEntity> updateTravelExpenseEntity(PfLoanUpdateInput[] entityArray, String type) {
         List<TravelExpenseEntity> result = new ArrayList<TravelExpenseEntity>();
+        long millis=System.currentTimeMillis();
         for (PfLoanUpdateInput entity : entityArray) {
             Optional<TravelExpenseEntity> employee = repository.findById(entity.id);
             if (employee.isPresent()) {
@@ -217,10 +219,13 @@ public class TravelExpenseService {
                     newEntity.setL2Approved(entity.l2Approved);
                     newEntity.setHRApproved(entity.hrApproved);
                     newEntity.setL2ManagerRemarks(entity.remarks);
-                } else {
+                } else
+                {
                     newEntity.setHRApproved(entity.hrApproved);
                     newEntity.setHrRemarks(entity.remarks);
                 }
+
+                newEntity.setUpdatedOn(new java.sql.Date(millis));
                 repository.save(newEntity);
                 result.add(newEntity);
             }
@@ -228,6 +233,85 @@ public class TravelExpenseService {
 
         return result;
     }
+
+    public List<TravelExpenseEntity> getL1UnApproveEntity() throws ClassNotFoundException, SQLException {
+        List<TravelExpenseEntity> emplicList = new ArrayList<TravelExpenseEntity>();
+        Class.forName("com.mysql.jdbc.Driver");
+        Connection dbConnection = DriverManager.getConnection(driverUrl, userName, password);
+        Statement getFromDb = dbConnection.createStatement();
+
+        ResultSet rs = getFromDb
+                .executeQuery("select id, emp_Code, hrapproved, created_on, updated_on, l1approved, l2approved,total_Amount   FROM tbl_travel_expense where submitted = 1 and l1approved = 0 ");
+        while (rs.next()) {
+
+            TravelExpenseEntity newEntity = new TravelExpenseEntity();
+            newEntity.setHRApproved(rs.getByte("hrapproved"));
+            newEntity.SetIdValue(rs.getLong("id"));
+            newEntity.setUpdatedOn(rs.getDate("updated_on"));
+            newEntity.setCreatedOn(rs.getDate("created_on"));
+            newEntity.setL1Approved(rs.getByte("l1approved"));
+            newEntity.setL2Approved(rs.getByte("l2approved"));
+            newEntity.setTotalAmount(rs.getDouble("total_Amount"));
+            newEntity.setEmpCode(rs.getLong("emp_code"));
+
+            emplicList.add(newEntity);
+        }
+
+        return emplicList;
+    }
+
+    public List<TravelExpenseEntity> getL2UnApproveEntity() throws ClassNotFoundException, SQLException {
+        List<TravelExpenseEntity> emplicList = new ArrayList<TravelExpenseEntity>();
+        Class.forName("com.mysql.jdbc.Driver");
+        Connection dbConnection = DriverManager.getConnection(driverUrl, userName, password);
+        Statement getFromDb = dbConnection.createStatement();
+
+        ResultSet rs = getFromDb
+                .executeQuery("select id, emp_Code, hrapproved, created_on, updated_on, l1approved, l2approved, total_Amount   FROM tbl_travel_expense where submitted = 1 and l1approved = 1 and l2approved = 0 ");
+        while (rs.next()) {
+
+            TravelExpenseEntity newEntity = new TravelExpenseEntity();
+            newEntity.setHRApproved(rs.getByte("hrapproved"));
+            newEntity.SetIdValue(rs.getLong("id"));
+            newEntity.setUpdatedOn(rs.getDate("updated_on"));
+            newEntity.setCreatedOn(rs.getDate("created_on"));
+            newEntity.setL1Approved(rs.getByte("l1approved"));
+            newEntity.setL2Approved(rs.getByte("l2approved"));
+            newEntity.setTotalAmount(rs.getDouble("total_Amount"));
+            newEntity.setEmpCode(rs.getLong("emp_code"));
+
+            emplicList.add(newEntity);
+        }
+
+        return emplicList;
+    }
+
+    public List<TravelExpenseEntity> getHrUnApproveEntity() throws ClassNotFoundException, SQLException {
+        List<TravelExpenseEntity> emplicList = new ArrayList<TravelExpenseEntity>();
+        Class.forName("com.mysql.jdbc.Driver");
+        Connection dbConnection = DriverManager.getConnection(driverUrl, userName, password);
+        Statement getFromDb = dbConnection.createStatement();
+
+        ResultSet rs = getFromDb
+                .executeQuery("select id, emp_Code, hrapproved, created_on, updated_on, l1approved, l2approved, total_Amount   FROM tbl_travel_expense where submitted = 1 and l1approved = 1 and  l2approved = 1 and hrapproved = 0 ");
+        while (rs.next()) {
+
+            TravelExpenseEntity newEntity = new TravelExpenseEntity();
+            newEntity.setHRApproved(rs.getByte("hrapproved"));
+            newEntity.SetIdValue(rs.getLong("id"));
+            newEntity.setUpdatedOn(rs.getDate("updated_on"));
+            newEntity.setCreatedOn(rs.getDate("created_on"));
+            newEntity.setL1Approved(rs.getByte("l1approved"));
+            newEntity.setL2Approved(rs.getByte("l2approved"));
+            newEntity.setTotalAmount(rs.getDouble("total_Amount"));
+            newEntity.setEmpCode(rs.getLong("emp_code"));
+
+            emplicList.add(newEntity);
+        }
+
+        return emplicList;
+    }
+
 
 }
 

@@ -56,8 +56,6 @@ public class TravelExpenseDetailService {
 
     public TravelExpenseDetailEntity createOrUpdateTravelExpenseDetailEntity(TravelExpenseDetailEntity entity)
     {
-
-
         if(entity.getId()  == null)
         {
             entity = repository.save(entity);
@@ -104,10 +102,12 @@ public class TravelExpenseDetailService {
 
     public List<TravelExpenseDetailEntity> updateTravelExpenseDetailEntity(PfLoanUpdateInput[] entityArray, boolean isManager) {
         List<TravelExpenseDetailEntity> result = new ArrayList<TravelExpenseDetailEntity>();
+        long millis=System.currentTimeMillis();
         for(PfLoanUpdateInput entity : entityArray) {
             Optional<TravelExpenseDetailEntity> employee = repository.findById(entity.id);
             if (employee.isPresent()) {
                 TravelExpenseDetailEntity newEntity = employee.get();
+                newEntity.setUpdatedOn(new java.sql.Date(millis));
                 repository.save(newEntity);
 
                 result.add(newEntity);

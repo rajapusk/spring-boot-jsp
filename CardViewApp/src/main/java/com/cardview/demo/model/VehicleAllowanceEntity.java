@@ -13,6 +13,11 @@ public class VehicleAllowanceEntity {
         return this.id;
     }
 
+    public void SetIdValue(Long idValue)
+    {
+        this.id= idValue;
+    }
+
     @Column(name="SERVICECENTRENAME")
     private String serviceCentreName;
     public String getServiceCentreName()

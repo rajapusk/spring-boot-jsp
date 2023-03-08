@@ -14,6 +14,11 @@ public class TravelExpenseEntity {
         return this.id;
     }
 
+    public void SetIdValue(Long idValue)
+    {
+        this.id= idValue;
+    }
+
     @Column(name = "EmpCode")
     private long empCode;
 

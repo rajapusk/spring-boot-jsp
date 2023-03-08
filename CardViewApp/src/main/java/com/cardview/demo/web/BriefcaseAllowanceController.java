@@ -16,7 +16,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -24,6 +28,7 @@ import java.util.List;
 public class BriefcaseAllowanceController {
 
     @Value("${manager.mail}") private String _managerEmail;
+    @Value("${hr.mail}") private String _hrEmail;
     @Autowired
     PFAccountService paService;
     @Autowired
@@ -233,4 +238,5 @@ public class BriefcaseAllowanceController {
 
    		return null;
    	}
+
 }

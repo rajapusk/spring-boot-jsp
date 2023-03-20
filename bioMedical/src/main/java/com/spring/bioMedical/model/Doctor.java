@@ -49,7 +49,9 @@ public class Doctor {
 @Column(name = "create_date_time")
 	private String    createDateTime;
 @Column(name = "delete_flag")
-	private String    deleteFlag;
+	private   String  deleteFlag;
+@Column(name = "fee")
+	private double    fee;
 public int getId() {
 	return id;
 }
@@ -163,6 +165,12 @@ public String getDeleteFlag() {
 }
 public void setDeleteFlag(String deleteFlag) {
 	this.deleteFlag = deleteFlag;
+}
+public double getFee() {
+	return fee;
+}
+public void setFee(double value) {
+	this.fee = value;
 }
 @Override
 public String toString() {

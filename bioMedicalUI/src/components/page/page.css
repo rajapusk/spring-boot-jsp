@@ -1,0 +1,21 @@
+.scPgButtonBox{
+    height: 46px;
+    width: 100%;
+    justify-content: flex-end !important;
+}
+
+.scPgButtons{
+    margin: 0px 15px;
+}
+
+.scPgGridBox{
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: 46px;
+}
+
+.scTitleAlign{
+    justify-content: flex-start !important;
+}

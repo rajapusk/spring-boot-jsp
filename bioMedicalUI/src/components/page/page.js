@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import JqxButton from 'jqwidgets-scripts/jqwidgets-react-tsx/jqxbuttons';
 import JqxWindow from 'jqwidgets-scripts/jqwidgets-react-tsx/jqxwindow';
-import JqxGrid,  { IGridProps, jqx }  from 'jqwidgets-scripts/jqwidgets-react-tsx/jqxgrid';
+import JqxGrid,  { jqx }  from 'jqwidgets-scripts/jqwidgets-react-tsx/jqxgrid';
 
 import { FaDesktop } from "react-icons/fa";
 

@@ -10,6 +10,7 @@ export class App extends Component {
     constructor(props:any) {
 		super(props);
         Common.setValue(Common.WATCH.THEME, 'material');
+        document.title = 'Bio Medical';
     }
 	
     render() {

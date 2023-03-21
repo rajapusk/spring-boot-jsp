@@ -2,6 +2,9 @@ package com.spring.bioMedical.model;
 
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 @Entity
 @Table(schema= "his", name = "patient_master")
 public class PatientEntity {
@@ -60,6 +63,9 @@ public class PatientEntity {
     public void setMotherName(String value) {
         this.motherName = value;
     }
+    
+    @JsonProperty("dob")
+    @JsonFormat(pattern="yyyy-MM-dd")
     @Column(name = "dob")
     private java.sql.Date dob;
 
@@ -80,6 +86,9 @@ public class PatientEntity {
     public void setEmailId(String value) {
         this.emailId = value;
     }
+    
+    @JsonProperty("dateOfOpVisit")
+    @JsonFormat(pattern="yyyy-MM-dd")
     @Column(name = "dateOfOpVisit")
     private java.sql.Date dateOfOpVisit;
 
@@ -90,6 +99,9 @@ public class PatientEntity {
     public void setDateOfOpVisit(java.sql.Date value) {
         this.dateOfOpVisit = value;
     }
+    
+    @JsonProperty("timeOfOpVisit")
+    @JsonFormat(pattern="HH:mm:ss.SSS")
     @Column(name = "timeOfOpVisit")
     private java.sql.Time timeOfOpVisit;
 

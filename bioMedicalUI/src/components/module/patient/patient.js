@@ -86,13 +86,13 @@ export class Patient extends Component {
       controlWidth:this.controlWidth,
       rows:[
         {bind: 'mrNo', label: 'MR No', disabled: true},
-        {bind: 'dateOfOpVisit', label: 'Date of OP Visit', type: 'datetime'},
-        {bind: 'timeOfOpVisit', label: 'Time of OP visit', type: 'datetime'},
+        {bind: 'motherName', label: 'Mother Name'},
+        {bind: 'dateOfOpVisit', label: 'Date of OP Visit', type: 'date', format: Common.FORMAT.DATE, dispFormat: Common.FORMAT.DISP_DATE},
+        {bind: 'timeOfOpVisit', label: 'Time of OP visit', type: 'time', format: Common.FORMAT.TIME, dispFormat: Common.FORMAT.DISP_TIME},
         {bind: 'firstName', label: 'First Name'},
         {bind: 'lastName', label: 'Last Name'},
-        {bind: 'motherName', label: 'Mother Name'},
-        {bind: 'dob', label: 'DOB', type: 'datetime'},
-        {bind: 'age', label: 'Age'},
+        {bind: 'dob', label: 'DOB', type: 'datetime', format: Common.FORMAT.DATE, dispFormat: Common.FORMAT.DISP_DATE},
+        {bind: 'age', label: 'Age', disabled: true},
         {bind: 'mobileNumber', label: 'Mobile Number'},
         {bind: 'emailId', label: 'Email ID'}
       ]
@@ -118,13 +118,6 @@ export class Patient extends Component {
     Common.loopInput(this.patientTemp, this.patientRef.current, Common.updateValue, {});
     Common.loopInput(this.addressTemp, this.addressRef.current, Common.updateValue, {});
     this.recordRef.current.setVal(null);
-  }
-
-  componentDidMount(){
-    Common.loopInput(this.patientTemp, this.patientRef.current, Common.updateDisable, {});
-    Common.loopInput(this.addressTemp, this.addressRef.current, Common.updateDisable, {});
-    
-    this.pageRef.current.setRows([{mrNo: '10000000', firstName: 'firstName 1', address:[{'hNo': '11222'}], nextOfKin: [{name: 'test'}, {relation: 'r2'}]}]);
   }
 
   close(){
@@ -170,8 +163,12 @@ export class Patient extends Component {
       Common.loopInput(this.addressTemp, this.addressRef.current, Common.getValue, patientDetail.address);
       patientDetail.nextOfKin = this.recordRef.current.val();
 
-      console.log(patientDetail);
-      this.close();      
+      Common.POST('/api/patient/create', patientDetail, (data)=>{
+        console.log(data);
+        //this.close();  
+      }, (error) =>{
+        console.log(error);
+      });
     }
     else {
       this.tabRef.current.select(++index);
@@ -184,6 +181,24 @@ export class Patient extends Component {
 
       this.forceUpdate();
     }
+  }
+
+  onLoad(){
+    Common.GET('/api/patient', (data) => {
+      if(data == null){
+        data = [];
+      }
+
+      this.pageRef.current.setRows(data);
+    }, (error)=> {
+      console.log(error);
+    })
+  }
+
+  componentDidMount(){
+    Common.loopInput(this.patientTemp, this.patientRef.current, Common.updateDisable, {});
+    Common.loopInput(this.addressTemp, this.addressRef.current, Common.updateDisable, {});
+    this.onLoad();
   }
 
   render() {

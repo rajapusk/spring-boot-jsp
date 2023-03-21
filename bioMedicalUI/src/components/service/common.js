@@ -1,7 +1,17 @@
+import { jqx }  from 'jqwidgets-scripts/jqwidgets-react-tsx/jqxgrid';
+
 function CommonService() { 
-    var theme = '';  
-	this.collection = {};
-	
+    var theme = '';
+	this.collection = {};	
+	this.HOST = 'http://localhost:' + 9092;
+	this.FORMAT = {
+		DATE: 'yyyy-MM-dd',
+		DATETIME: 'yyyy-MM-ddTHH:mm:ss',
+		TIME: 'HH:mm:ss',
+		DISP_DATE: 'dd/MM/yyyy',
+		DISP_DATETIME: 'dd/MM/yyyy hh:mm tt',
+		DISP_TIME: 'hh:mm tt',
+	};
 	this.WATCH = {
 		HTTP_CALL: 'HTTP_CALL',
         THEME: 'THEME'
@@ -104,11 +114,19 @@ function CommonService() {
 					input.jqxDropDownList({width: row.width});
 				} 
 
+				if(row.type === 'date' || row.type == 'datetime' || row.type == 'time'){
+					input.jqxDateTimeInput({formatString: row.dispFormat});
+
+					input.change((event)=>{
+						row.value = event.args.date;
+					})
+				}
+
 				if(row.disabled === true){
 					if(row.type === 'text'){
 						input.jqxInput({disabled: true,  theme: theme});						
 					}
-					else if(row.type === 'date' || row.type == 'datetime'){
+					else if(row.type === 'date' || row.type == 'datetime' || row.type == 'time'){
 						input.jqxDateTimeInput({disabled: true, theme: theme});
 					}else if(row.type === 'number'){
 						input.jqxNumberInput({disabled: true, theme: theme});
@@ -138,7 +156,7 @@ function CommonService() {
                 if(row.type == 'text'){
 					input.jqxInput({disabled: disabled});						
 				}
-				else if(row.type == 'date' || row.type == 'datetime'){
+				else if(row.type == 'date' || row.type == 'datetime' || row.type == 'time'){
 					input.jqxDateTimeInput({disabled: disabled});
 				}else if(row.type == 'number'){
 					input.jqxNumberInput({disabled: disabled});
@@ -162,13 +180,13 @@ function CommonService() {
 				else if(row.type == 'number'){
 					config[row.bind] = 0;
 				}
-				else if(row.type == 'date'){
+				else if(row.type == 'date' || row.type == 'datetime' || row.type == 'time'){
 					config[row.bind] = new Date();
 				}
 			}
 					
 			if(input != null && config[row.bind] != null){
-				if(row.type == 'date'){
+				if(row.type == 'date' || row.type == 'datetime' || row.type == 'time'){
 					input.val(config[row.bind]);
 				}
 				else{					
@@ -197,12 +215,23 @@ function CommonService() {
 				}
 				else if(row.type == 'number'){
 					config[row.bind] = 0;
-				}
-				else if(row.type == 'date'){
-					config[row.bind] = new Date();
 				} else if(row.type == 'option'){
 					config[row.bind] = null;
 				} 
+			}
+
+			if(row.type == 'date' || row.type == 'datetime' || row.type == 'time'){
+				var formatText = (row.format != null ? row.format : Common.FORMAT.DATETIME);
+
+				if(config.dateModel == null){
+					config.dateModel = {key: []};
+				}
+								
+				config.dateModel.key.push(row.bind);
+				config.dateModel[row.bind] = {};
+				config.dateModel[row.bind]['format'] = dateFormat(row.value, formatText);
+				config.dateModel[row.bind]['date']  = row.value;
+				config.dateModel[row.bind]['value'] = config[row.bind];
 			}
 		}
 	};
@@ -240,6 +269,8 @@ function CommonService() {
 					label: elm.label,
 					disabled: (elm.disabled != null ? elm.disabled : false),
 					labelPosition: 'top',
+					dispFormat: elm.dispFormat,
+					format: elm.format,
 					labelWidth: config.labelWidth + 'px',
 					width: config.controlWidth + 'px',
 					align: 'left',
@@ -284,6 +315,100 @@ function CommonService() {
 		}
 
 		return template;
+	}
+
+	var bindDateModel = function(model){
+		if(model){
+			for(var sKey in model){
+				let item = model[sKey];
+				
+				if(sKey == 'dateModel'){
+					model.dateModel.key.forEach((element) => {
+						model[element] = model.dateModel[element]['format'];
+					})
+
+					delete model.dateModel;
+				} else if(item.dateModel != null){
+					item.dateModel.key.forEach((element) => {
+						item[element] = item.dateModel[element]['format'];
+					})
+
+					delete item.dateModel;
+				} else if(typeof item == "object"){
+					bindDateModel(item);
+				}
+			}
+		}
+	}
+
+	this.POST = function(url, postData, successHandler, errorHandler)
+	{
+		try{
+			bindDateModel(postData);
+
+			let config = {
+				"method": "POST",
+				"body": JSON.stringify(postData),
+				"headers": { 
+					crossDomain: true,
+					'Content-Type': "application/json"
+				}
+			};
+
+			this.setValue(this.WATCH.HTTP_CALL, true);
+			fetch(this.HOST + url, config)
+			.then(res => res.json())
+			.then(
+				(result) => {
+					if(successHandler != null){
+						successHandler(result);
+					}
+				},
+				(error) => {
+					if(errorHandler != null){
+						errorHandler(error);
+					}
+				}
+			)
+		}
+		catch(e){
+			console.error(e)
+			this.setValue(this.WATCH.HTTP_CALL, false);
+		}
+    };
+
+	this.GET = function(url, successHandler, errorHandler)
+	{
+		let config = {
+			"method": "GET",
+			"headers": { 
+				crossDomain: true,
+				'Content-Type': "application/json"
+			}
+		};
+
+		fetch(this.HOST + url, config)
+		.then(res => res.json())
+		.then(
+			(result) => {
+				if(successHandler != null){
+					successHandler(result);
+				}
+			},
+			(error) => {
+				if(errorHandler != null){
+					errorHandler(error);
+				}
+			}
+		)
+    };
+
+	var dateFormat = function(val, formatText){		
+		if(val != null && val != ''){
+			return jqx.dataFormat.formatdate(val, formatText);
+		}
+		
+		return '';
 	}
 
 	var applyIcon = function(row, input){

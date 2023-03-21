@@ -72,7 +72,7 @@ public class PatientController {
         return entity;
     }
 
-    @DeleteMapping("/delete/id")
+    @DeleteMapping("/delete/{id}")
     public boolean DetetePatient(@PathVariable("id") long id) {
         return patientService.deletePatientById(id);
     }
@@ -99,7 +99,7 @@ public class PatientController {
         return patientOutputList;
     }
 
-    @GetMapping("/id")
+    @GetMapping("/{id}")
     public patientOutput getAllPatientOutput(@PathVariable("id") long id) {
         PatientEntity patient = patientService.getPatientById(id);
 
@@ -142,7 +142,7 @@ public class PatientController {
                     output.nextOfKin.add(kin);
                 }
             }
-            
+
             return output;
         }
         return null;

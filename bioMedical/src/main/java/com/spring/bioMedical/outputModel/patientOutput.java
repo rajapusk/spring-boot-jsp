@@ -12,6 +12,6 @@ public class patientOutput {
     public java.sql.Date dob;
     public String motherName;
     public String emailId;
-    public addressoutput address;
+    public AddressOutput address;
     public ArrayList<NextOfKin> nextOfKin;
 }

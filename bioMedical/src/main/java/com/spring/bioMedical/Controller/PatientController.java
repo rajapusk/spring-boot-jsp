@@ -1,24 +1,19 @@
 package com.spring.bioMedical.Controller;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.spring.bioMedical.model.NextOfKinEntity;
 import com.spring.bioMedical.model.PatientAddressEntity;
 import com.spring.bioMedical.model.PatientEntity;
 import com.spring.bioMedical.outputModel.NextOfKin;
-import com.spring.bioMedical.outputModel.addressoutput;
+import com.spring.bioMedical.outputModel.AddressOutput;
 import com.spring.bioMedical.outputModel.patientOutput;
 import com.spring.bioMedical.service.AddressService;
 import com.spring.bioMedical.service.NextOfKinService;
 import com.spring.bioMedical.service.PatientService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.persistence.Column;
 
 @RestController
 @RequestMapping("/api/patient")
@@ -56,6 +51,7 @@ public class PatientController {
         addressEntity.setPinCode(input.address.pinCode);
         addressEntity.setColony(input.address.colony);
         addressEntity.setStreet(input.address.street);
+        addressEntity.setId(input.address.id);
         addressService.createOrUpdateAddress(addressEntity);
 
         for (NextOfKin item :
@@ -65,7 +61,8 @@ public class PatientController {
             nextOfKinEntity.setName(item.name);
             nextOfKinEntity.setRelation(item.relation);
             nextOfKinEntity.setMobileNumber(item.mobile);
-            nextOfKinEntity.setPatientId(patient.getId());
+            nextOfKinEntity.setId(item.id);
+            nextOfKinEntity.setPatientId(entity.getId());
             nextOfKinService.createOrUpdateNextOfKin(nextOfKinEntity);
         }
 
@@ -121,7 +118,7 @@ public class PatientController {
 
             for (PatientAddressEntity patientAddress : patientAddressEntityList) {
                 if (patientAddress.getPatientId() == patient.getId()) {
-                    output.address = new addressoutput();
+                    output.address = new AddressOutput();
                     output.address.building = patientAddress.getBuilding();
                     output.address.city = patientAddress.getCity();
                     output.address.colony = patientAddress.getColony();
@@ -130,6 +127,7 @@ public class PatientController {
                     output.address.district = patientAddress.getDistrict();
                     output.address.hNo = patientAddress.getHouseNo();
                     output.address.street = patientAddress.getStreet();
+                    output.address.id   = patientAddress.getId();
                     break;
                 }
             }
@@ -141,6 +139,7 @@ public class PatientController {
                     kin.mobile = nextOfKinEntity.getMobileNumber();
                     kin.name = nextOfKinEntity.getName();
                     kin.relation = nextOfKinEntity.getRelation();
+                    kin.id = nextOfKinEntity.getId();
                     output.nextOfKin.add(kin);
                 }
             }

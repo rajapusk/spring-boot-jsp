@@ -1,6 +1,7 @@
 package com.spring.bioMedical.outputModel;
 
-public class addressoutput {
+public class AddressOutput {
+    public long id;
     public String hNo;
     public String building;
     public String street;

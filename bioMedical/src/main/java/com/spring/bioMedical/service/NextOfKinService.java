@@ -2,6 +2,7 @@ package com.spring.bioMedical.service;
 
 import com.spring.bioMedical.model.NextOfKinEntity;
 import com.spring.bioMedical.model.PatientAddressEntity;
+import com.spring.bioMedical.model.PatientEntity;
 import com.spring.bioMedical.repository.AddressRepository;
 import com.spring.bioMedical.repository.NextOfKinRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,4 +60,10 @@ public class NextOfKinService {
             return new ArrayList<NextOfKinEntity>();
         }
     }
+
+    public List<NextOfKinEntity> getAllByPatientId(long id) {
+        return repository.findAllByPatientId(id);
+    }
+
+
 }

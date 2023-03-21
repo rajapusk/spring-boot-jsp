@@ -63,4 +63,8 @@ public class AddressService {
             return new ArrayList<PatientAddressEntity>();
         }
     }
+
+    public List<PatientAddressEntity> getAllByPatientId(long id) {
+      return  repository.findAllByPatientId(id);
+    }
 }

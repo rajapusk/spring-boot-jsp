@@ -6,6 +6,8 @@ import java.util.Map;
 
 import javax.validation.Valid;
 
+import com.spring.bioMedical.model.ServiceEntity;
+import com.spring.bioMedical.repository.ServiceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -28,10 +30,19 @@ public class HospitalDoctorsController {
 	@Autowired
 	private DoctorRepository doctorRepository;
 
+	@Autowired
+	private ServiceRepository serviceRepository;
+
 	@GetMapping("/doctors")
 	public List<Doctor> getAllDoctors() {
 		//return doctorRepository.findAll();
 		return doctorRepository.findAllByDeleteFlag("N");
+	}
+
+	@GetMapping("/service")
+	public List<ServiceEntity> getAllService() {
+		//return doctorRepository.findAll();
+		return serviceRepository.findAll();
 	}
 
 	@GetMapping("/doctors/{id}")

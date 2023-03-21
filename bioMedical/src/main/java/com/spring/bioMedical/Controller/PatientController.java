@@ -83,17 +83,19 @@ public class PatientController {
         List<patientOutput> patientOutputList = new ArrayList<>();
 
         for (PatientEntity patient : lstPatient) {
-            patientOutput output = new patientOutput();
-            output.dob = patient.getDob();
-            output.firstName = patient.getFirstName();
-            output.lastName = patient.getLastName();
-            output.emailId = patient.getEmailId();
-            output.dateOfOpVisit = patient.getDateOfOpVisit();
-            output.mobileNumber = patient.getMobileNumber();
-            output.motherName = patient.getMotherName();
-            output.mrNo = patient.getId();
-            output.timeOfOpVisit = patient.getTimeOfOpVisit();
-            patientOutputList.add(output);
+            if(patient.getIsDeleted() == false) {
+                patientOutput output = new patientOutput();
+                output.dob = patient.getDob();
+                output.firstName = patient.getFirstName();
+                output.lastName = patient.getLastName();
+                output.emailId = patient.getEmailId();
+                output.dateOfOpVisit = patient.getDateOfOpVisit();
+                output.mobileNumber = patient.getMobileNumber();
+                output.motherName = patient.getMotherName();
+                output.mrNo = patient.getId();
+                output.timeOfOpVisit = patient.getTimeOfOpVisit();
+                patientOutputList.add(output);
+            }
         }
 
         return patientOutputList;

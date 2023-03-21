@@ -6,6 +6,7 @@ import com.spring.bioMedical.model.NextOfKinEntity;
 import com.spring.bioMedical.model.PatientAddressEntity;
 import com.spring.bioMedical.model.PatientEntity;
 import com.spring.bioMedical.outputModel.NextOfKin;
+import com.spring.bioMedical.outputModel.addressoutput;
 import com.spring.bioMedical.outputModel.patientOutput;
 import com.spring.bioMedical.service.AddressService;
 import com.spring.bioMedical.service.NextOfKinService;
@@ -21,8 +22,7 @@ import javax.persistence.Column;
 
 @RestController
 @RequestMapping("/api/patient")
-public class PatientController
-{
+public class PatientController {
     @Autowired
     PatientService patientService;
     @Autowired
@@ -58,17 +58,18 @@ public class PatientController
         addressEntity.setStreet(input.address.street);
         addressService.createOrUpdateAddress(addressEntity);
 
-        for (NextOfKin item:
-             input.nextOfKin) {
+        for (NextOfKin item :
+                input.nextOfKin) {
 
             NextOfKinEntity nextOfKinEntity = new NextOfKinEntity();
             nextOfKinEntity.setName(item.name);
             nextOfKinEntity.setRelation(item.relation);
             nextOfKinEntity.setMobileNumber(item.mobile);
+            nextOfKinEntity.setPatientId(patient.getId());
             nextOfKinService.createOrUpdateNextOfKin(nextOfKinEntity);
         }
 
-        return  entity;
+        return entity;
     }
 
     @DeleteMapping("/delete/id")
@@ -77,9 +78,8 @@ public class PatientController
     }
 
     @GetMapping()
-    public List<patientOutput> getAllPatientOutput()
-    {
-        List<PatientEntity> lstPatient =  patientService.getAllPatient();
+    public List<patientOutput> getAllPatientOutput() {
+        List<PatientEntity> lstPatient = patientService.getAllPatient();
         List<patientOutput> patientOutputList = new ArrayList<>();
 
         for (PatientEntity patient : lstPatient) {
@@ -97,5 +97,54 @@ public class PatientController
         }
 
         return patientOutputList;
+    }
+
+    @GetMapping("/id")
+    public patientOutput getAllPatientOutput(@PathVariable("id") long id) {
+        PatientEntity patient = patientService.getPatientById(id);
+
+        if (patient != null) {
+            patientOutput output = new patientOutput();
+            output.dob = patient.getDob();
+            output.firstName = patient.getFirstName();
+            output.lastName = patient.getLastName();
+            output.emailId = patient.getEmailId();
+            output.dateOfOpVisit = patient.getDateOfOpVisit();
+            output.mobileNumber = patient.getMobileNumber();
+            output.motherName = patient.getMotherName();
+            output.mrNo = patient.getId();
+            output.timeOfOpVisit = patient.getTimeOfOpVisit();
+            List<PatientAddressEntity> patientAddressEntityList = addressService.getAllAddress();
+            List<NextOfKinEntity> allNextOfKin = nextOfKinService.getAllNextOfKin();
+
+            for (PatientAddressEntity patientAddress : patientAddressEntityList) {
+                if (patientAddress.getPatientId() == patient.getId()) {
+                    output.address = new addressoutput();
+                    output.address.building = patientAddress.getBuilding();
+                    output.address.city = patientAddress.getCity();
+                    output.address.colony = patientAddress.getColony();
+                    output.address.pinCode = patientAddress.getPinCode();
+                    output.address.state = patientAddress.getState();
+                    output.address.district = patientAddress.getDistrict();
+                    output.address.hNo = patientAddress.getHouseNo();
+                    output.address.street = patientAddress.getStreet();
+                    break;
+                }
+            }
+            output.nextOfKin = new ArrayList<>();
+            for (NextOfKinEntity nextOfKinEntity :
+                    allNextOfKin) {
+                if (nextOfKinEntity.getPatientId() == patient.getId()) {
+                    NextOfKin kin = new NextOfKin();
+                    kin.mobile = nextOfKinEntity.getMobileNumber();
+                    kin.name = nextOfKinEntity.getName();
+                    kin.relation = nextOfKinEntity.getRelation();
+                    output.nextOfKin.add(kin);
+                }
+            }
+            
+            return output;
+        }
+        return null;
     }
 }

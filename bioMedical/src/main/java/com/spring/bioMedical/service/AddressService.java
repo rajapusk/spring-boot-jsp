@@ -7,6 +7,8 @@ import com.spring.bioMedical.repository.PatientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -48,6 +50,17 @@ public class AddressService {
 
                 return entity;
             }
+        }
+    }
+
+    public List<PatientAddressEntity> getAllAddress()
+    {
+        List<PatientAddressEntity> result = (List<PatientAddressEntity>) repository.findAll();
+
+        if(result.size() > 0) {
+            return result;
+        } else {
+            return new ArrayList<PatientAddressEntity>();
         }
     }
 }

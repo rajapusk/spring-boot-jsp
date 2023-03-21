@@ -18,6 +18,17 @@ public class NextOfKinEntity {
         this.id = id;
     }
 
+    @Column(name = "patientId")
+    private Long patientId;
+
+    public Long getPatientId() {
+        return this.patientId;
+    }
+
+    public void setPatientId(Long value) {
+        this.patientId = value;
+    }
+
     @Column(name = "name")
     private String name;
 

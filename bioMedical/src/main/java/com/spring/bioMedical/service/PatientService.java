@@ -82,4 +82,14 @@ public class PatientService {
         }
     }
 
+    public PatientEntity getPatientById(long id) {
+        Optional<PatientEntity> patient = repository.findById(id);
+
+        if (patient.isPresent()) {
+           return patient.get();
+        }
+
+        return null;
+    }
+
 }

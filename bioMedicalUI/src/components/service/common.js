@@ -2,8 +2,7 @@ import { jqx }  from 'jqwidgets-scripts/jqwidgets-react-tsx/jqxgrid';
 
 function CommonService() { 
     var theme = '';
-	this.collection = {};	
-	this.HOST = 'http://localhost:' + 9092;
+	this.collection = {};		
 	this.FORMAT = {
 		DATE: 'yyyy-MM-dd',
 		DATETIME: 'yyyy-MM-ddTHH:mm:ss',
@@ -84,7 +83,8 @@ function CommonService() {
     this.loopInput = function(template, form, handler, config){
 		if(template != null){
 			var nextRows = [];
-			
+			let changeModel = [];
+
 			loopFindNextElement(template, nextRows);
 			
 			for(var sKey in nextRows){
@@ -96,10 +96,42 @@ function CommonService() {
 					}
 				}
 			}
-			
-			loopInputHandler(template, form, handler, config);
+						
+			loopInputHandler(template, form, handler, config, changeModel);
+			fireChange(changeModel);
 	   	}
 	};
+
+	this.fieldUpdate = function(template, form, config, fieldId){
+		let newObj = Object.keys(config);
+
+		if(template != null && newObj.length > 0){
+			let changeModel = [];
+			var row = this.getFormRow(template, fieldId);
+
+			this.updateValue(form, row, config, changeModel);
+			fireChange(changeModel);
+	   	}
+	};
+
+	this.dateDiff = function(fromDate, toDate){
+		var tempDate = fromDate;
+		
+		if(toDate.getTime() < fromDate.getTime()){
+			fromDate = toDate;
+			toDate = tempDate;
+		}
+		
+	    var month_diff = toDate.getTime() - fromDate.getTime();
+	    var age_dt = new Date(month_diff); 
+	    var year = age_dt.getUTCFullYear();
+	    var month = age_dt.getUTCMonth();    
+	    var days = age_dt.getUTCDay();
+	    var age = Math.abs(year - 1970);  
+	    var totalDays = (month_diff / (1000 * 3600 * 24));
+	    
+	    return {year: age, month: month, days: days, totalDays: Math.floor(totalDays)};
+	}
 
     this.updateDisable = function(form, row, config){
 		if(row.name != null && form != null){
@@ -117,9 +149,17 @@ function CommonService() {
 				if(row.type === 'date' || row.type == 'datetime' || row.type == 'time'){
 					input.jqxDateTimeInput({formatString: row.dispFormat});
 
-					input.change((event)=>{
-						row.value = event.args.date;
-					})
+					if(row.bindEvent != true){
+						row.bindEvent = true;
+
+						input.change((event)=>{
+							row.value = event.args.date;
+	
+							if(row.change != null){
+								row.change(row.value);
+							}
+						})
+					};					
 				}
 
 				if(row.disabled === true){
@@ -168,7 +208,7 @@ function CommonService() {
 		}
 	};
 
-    this.updateValue = function(form, row, config){
+    this.updateValue = function(form, row, config, changeModel){
 		if(row.name != null && row.bind != null){
 			var input =form.getComponentByName(row.name);
 	        
@@ -187,14 +227,52 @@ function CommonService() {
 					
 			if(input != null && config[row.bind] != null){
 				if(row.type == 'date' || row.type == 'datetime' || row.type == 'time'){
-					input.val(config[row.bind]);
+					var time = config[row.bind];
+					var timeVal = null;
+
+					if(typeof time == 'string'){
+						if(time.includes(':')){
+							if(time.includes('-')){
+								var dateTime = time.split('-');
+	
+								if(dateTime.length > 2){
+									let splitDate = dateTime[2].split('T');
+									let splitTime = splitDate[1].split(':');
+									timeVal = new Date(dateTime[0], dateTime[1], splitDate[0], splitTime[0], (splitTime.length > 1 ? splitTime[1] : 0), (splitTime.length > 2 ? splitTime[2] : 0));
+								}
+							} else {
+								let splitTime = time.split(':');
+								var today = new Date();
+	
+								if(splitTime.length > 0){
+									timeVal = new Date(today.getFullYear(), today.getMonth(), today.getDay(), splitTime[0], (splitTime.length > 1 ? splitTime[1] : 0), (splitTime.length > 2 ? splitTime[2] : 0));
+								}
+							}
+						} else{
+							timeVal = new Date(config[row.bind]);
+						}
+					} else {
+						timeVal = time;	
+					}
+
+					if(timeVal != null){
+						input.val(timeVal);
+
+						if(row.change != null){
+							changeModel.push({row: row, value: timeVal});
+						}
+					}
 				}
 				else{					
 					input.val(config[row.bind]);
 					
-					if(row.format){
-						formatter(input, row, config[row.bind]);
+					if(row.change != null){
+						changeModel.push({row: row, value: config[row.bind]});					
 					}
+
+					/*if(row.format){
+						formatter(input, row, config[row.bind]);
+					}*/
 				}
 			}
 		}
@@ -234,25 +312,7 @@ function CommonService() {
 				config.dateModel[row.bind]['value'] = config[row.bind];
 			}
 		}
-	};
-
-	this.getIcon = function(icon){
-		let iconHTML = '<div class="scCenterXY scFullHeight">';
-
-		if(icon === 'pen'){
-			iconHTML += penIcon();
-		} else if(icon === 'eye'){
-			iconHTML += eyeIcon();
-		} else if(icon === 'remove'){
-			iconHTML += deleteIcon();
-		} else {
-			iconHTML += bufferIcon();
-		}
-
-		iconHTML += '</div>';
-
-		return iconHTML;
-	}
+	};	
 
 	this.getColTemplate = function(config){
 		var template = [];
@@ -271,6 +331,8 @@ function CommonService() {
 					labelPosition: 'top',
 					dispFormat: elm.dispFormat,
 					format: elm.format,
+					change: elm.change,
+					init: elm.init,
 					labelWidth: config.labelWidth + 'px',
 					width: config.controlWidth + 'px',
 					align: 'left',
@@ -317,91 +379,86 @@ function CommonService() {
 		return template;
 	}
 
-	var bindDateModel = function(model){
-		if(model){
-			for(var sKey in model){
-				let item = model[sKey];
-				
-				if(sKey == 'dateModel'){
-					model.dateModel.key.forEach((element) => {
-						model[element] = model.dateModel[element]['format'];
-					})
+	this.clone = function(json_data){
+		let result = Array.from(json_data);
 
-					delete model.dateModel;
-				} else if(item.dateModel != null){
-					item.dateModel.key.forEach((element) => {
-						item[element] = item.dateModel[element]['format'];
-					})
+		if(result.length > 0){
+			return result;
+		} else {
+			return JSON.parse(JSON.stringify(json_data));
+		}
+	}
 
-					delete item.dateModel;
-				} else if(typeof item == "object"){
-					bindDateModel(item);
+	this.mapValue = function(from, to, fromTo){
+		if(to != null && from != null){
+			if(fromTo){
+				for(let sKey in to){
+					let item = to[sKey];
+
+					if(typeof item == 'object'){
+						this.mapValue(from[sKey], item, fromTo);
+					} else {
+						if(from[sKey] != null){
+							to[sKey] = from[sKey];
+						}
+					}
+				}
+			} else {
+				for(let sKey in from){
+					let item = from[sKey];
+
+					if(typeof item == 'object'){
+						if(to[sKey] == null){
+							to[sKey] = {};
+						}
+
+						this.mapValue(item, to[sKey], fromTo);
+					} else {
+						if(from[sKey] != null){
+							to[sKey] = from[sKey];
+						}
+					}
 				}
 			}
 		}
 	}
 
-	this.POST = function(url, postData, successHandler, errorHandler)
-	{
-		try{
-			bindDateModel(postData);
+	this.getFormRow = function(template, fieldId){
+		var foundRow = null;
 
-			let config = {
-				"method": "POST",
-				"body": JSON.stringify(postData),
-				"headers": { 
-					crossDomain: true,
-					'Content-Type': "application/json"
-				}
-			};
-
-			this.setValue(this.WATCH.HTTP_CALL, true);
-			fetch(this.HOST + url, config)
-			.then(res => res.json())
-			.then(
-				(result) => {
-					if(successHandler != null){
-						successHandler(result);
+		if(template != null){
+			for(var sKey in template){
+				var row = template[sKey];
+				
+				if(foundRow == null){
+					if(row.bind != null){
+						if(row.bind == fieldId){
+							foundRow = row;
+						}
 					}
-				},
-				(error) => {
-					if(errorHandler != null){
-						errorHandler(error);
+					else if(row.columns != null && row.columns.length > 0){
+						foundRow = this.getFormRow(row.columns, fieldId);
 					}
 				}
-			)
-		}
-		catch(e){
-			console.error(e)
-			this.setValue(this.WATCH.HTTP_CALL, false);
-		}
-    };
-
-	this.GET = function(url, successHandler, errorHandler)
-	{
-		let config = {
-			"method": "GET",
-			"headers": { 
-				crossDomain: true,
-				'Content-Type': "application/json"
 			}
-		};
+	   	}
 
-		fetch(this.HOST + url, config)
-		.then(res => res.json())
-		.then(
-			(result) => {
-				if(successHandler != null){
-					successHandler(result);
-				}
-			},
-			(error) => {
-				if(errorHandler != null){
-					errorHandler(error);
-				}
-			}
-		)
-    };
+		return foundRow;
+	};
+
+	var fireChange = function(changeModel){
+		if(changeModel != null && changeModel.length > 0){	
+			setTimeout(function(){
+				changeModel.forEach((element) => {
+					if(element.row != null){
+						if(element.row.change != null){
+							element.row.change(element.value);
+						}
+					}
+				})
+			}, 0);
+		}
+	}
 
 	var dateFormat = function(val, formatText){		
 		if(val != null && val != ''){
@@ -450,18 +507,18 @@ function CommonService() {
 	   	}
 	};
 	
-	var loopInputHandler = function(template, formId, handler, config){
-		if(template != null){		
+	var loopInputHandler = function(template, formId, handler, config, changeModel){
+		if(template != null){
 			for(var sKey in template){
 				var row = template[sKey];
 				
 				if(row.bind != null){
 					if(handler != null){
-						handler(formId, row, config);
+						handler(formId, row, config, changeModel);
 					}
 				}
 				else if(row.columns != null && row.columns.length > 0){
-					loopInputHandler(row.columns, formId, handler, config);
+					loopInputHandler(row.columns, formId, handler, config, changeModel);
 	        	}
 			}
 	   	}
@@ -508,30 +565,6 @@ function CommonService() {
 				}
 			});*/
 		}
-	}
-
-	var eyeIcon = function(){
-		return '<svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">'
-				+'<path d="M288 144a110.94 110.94 0 0 0-31.24 5 55.4 55.4 0 0 1 7.24 27 56 56 0 0 1-56 56 55.4 55.4 0 0 1-27-7.24A111.71 111.71 0 1 0 288 144zm284.52 97.4C518.29 135.59 410.93 64 288 64S57.68 135.64 3.48 241.41a32.35 32.35 0 0 0 0 29.19C57.71 376.41 165.07 448 288 448s230.32-71.64 284.52-177.41a32.35 32.35 0 0 0 0-29.19zM288 400c-98.65 0-189.09-55-237.93-144C98.91 167 189.34 112 288 112s189.09 55 237.93 144C477.1 345 386.66 400 288 400z"></path>'
-			+'</svg>';
-	}
-
-	var penIcon = function(){
-		return '<svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">'
-				+'<path d="M290.74 93.24l128.02 128.02-277.99 277.99-114.14 12.6C11.35 513.54-1.56 500.62.14 485.34l12.7-114.22 277.9-277.88zm207.2-19.06l-60.11-60.11c-18.75-18.75-49.16-18.75-67.91 0l-56.55 56.55 128.02 128.02 56.55-56.55c18.75-18.76 18.75-49.16 0-67.91z"></path>'
-			+'</svg>';
-	}
-
-	var deleteIcon = function(){
-		return '<svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">'
-				+'<path d="M32 464a48 48 0 0 0 48 48h288a48 48 0 0 0 48-48V128H32zm272-256a16 16 0 0 1 32 0v224a16 16 0 0 1-32 0zm-96 0a16 16 0 0 1 32 0v224a16 16 0 0 1-32 0zm-96 0a16 16 0 0 1 32 0v224a16 16 0 0 1-32 0zM432 32H312l-9.4-18.7A24 24 0 0 0 281.1 0H166.8a23.72 23.72 0 0 0-21.4 13.3L136 32H16A16 16 0 0 0 0 48v32a16 16 0 0 0 16 16h416a16 16 0 0 0 16-16V48a16 16 0 0 0-16-16z"></path>'
-			+'</svg>';
-	}
-
-	var bufferIcon = function(){
-		return '<svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">'
-				+'<path d="M427.84 380.67l-196.5 97.82a18.6 18.6 0 0 1-14.67 0L20.16 380.67c-4-2-4-5.28 0-7.29L67.22 350a18.65 18.65 0 0 1 14.69 0l134.76 67a18.51 18.51 0 0 0 14.67 0l134.76-67a18.62 18.62 0 0 1 14.68 0l47.06 23.43c4.05 1.96 4.05 5.24 0 7.24zm0-136.53l-47.06-23.43a18.62 18.62 0 0 0-14.68 0l-134.76 67.08a18.68 18.68 0 0 1-14.67 0L81.91 220.71a18.65 18.65 0 0 0-14.69 0l-47.06 23.43c-4 2-4 5.29 0 7.31l196.51 97.8a18.6 18.6 0 0 0 14.67 0l196.5-97.8c4.05-2.02 4.05-5.3 0-7.31zM20.16 130.42l196.5 90.29a20.08 20.08 0 0 0 14.67 0l196.51-90.29c4-1.86 4-4.89 0-6.74L231.33 33.4a19.88 19.88 0 0 0-14.67 0l-196.5 90.28c-4.05 1.85-4.05 4.88 0 6.74z"></path>'
-			+'</svg>';
 	}
 };
 

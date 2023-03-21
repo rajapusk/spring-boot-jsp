@@ -6,8 +6,10 @@ import JqxForm from 'jqwidgets-scripts/jqwidgets-react-tsx/jqxform';
 
 import { FaDesktop } from "react-icons/fa";
 
+import HttpAJAX from '../../service/httpAJAX.js';
 import Common from '../../service/common.js';
 import '../../page/page.css';
+import './appointment.css';
 
 export class Appointment extends Component {
     visibile = false;
@@ -15,7 +17,7 @@ export class Appointment extends Component {
     formWidth = 600;
     labelWidth = 180;
     controlWidth = (this.formWidth / 2) - 54;
-
+    
     constructor(props){
         super(props);
 
@@ -50,7 +52,7 @@ export class Appointment extends Component {
             labelWidth:this.labelWidth,
             controlWidth:this.controlWidth,
             rows:[
-              {bind: 'consultationDoctor', label: 'Consultation-Doctor'},
+              {bind: 'consultationDoctor', label: 'Consultation-Doctor', type: 'option',component: 'jqxDropDownList', init: this.convertCombo},
               {bind: 'diagnostics', label: 'Diagnostics'},
               {bind: 'services', label: 'Services'},
               {bind: 'totalAmount', label: 'Total Amount'},
@@ -63,6 +65,10 @@ export class Appointment extends Component {
         this.tabsOnSelected = this.tabsOnSelected.bind(this);
         this.submit = this.submit.bind(this);
         this.open = this.open.bind(this);
+        this.onWindowInit = this.onWindowInit.bind(this);
+        this.refreshForm = this.refreshForm.bind(this);
+        this.onLoad = this.onLoad.bind(this);
+        this.convertCombo = this.convertCombo.bind(this);
         Common.subscribe(Common.WATCH.THEME, this.themeChange);
     }
 
@@ -75,6 +81,15 @@ export class Appointment extends Component {
             this.selectedTab = this.tabRef.current.val();
 
             this.forceUpdate();
+            this.refreshForm();
+        }
+    }
+
+    refreshForm(){
+        if(this.selectedTab == 0){
+            this.appointmentRef.current.refresh();
+        } else {
+            this.paymentRef.current.refresh();
         }
     }
 
@@ -108,23 +123,57 @@ export class Appointment extends Component {
         this.forceUpdate();
     }
 
+    onWindowInit(){
+        this.tabRef.current.setOptions({reorder: true});
+        this.window.current.focus();
+    }
+
+    convertCombo(event){
+        if(this.options != null){
+            event.jqxDropDownList({checkboxes: true, enableSelection: true, source: this.options, width: 256});
+        }
+    }
+
+    onLoad(){
+        HttpAJAX.GET('/api/v1/doctors', (data) => {
+            let row = Common.getFormRow(this.paymentTemp, 'consultationDoctor');
+
+            if(row != null && data != null){
+                let source = [];
+
+                data.forEach((element) => {
+                    source.push({value: element.name, key: element.id, fee: element.fee});
+                });
+
+                row.options = source;
+            }
+        }, (error)=> {
+          console.log(error);
+        })
+    }
+
     componentDidMount(){
         this.open(false);
+        this.onLoad();
+        this.refreshForm();
     }
 
     render() {
         return(
-            <div style={{height: 'auto'}}>
+            <div className='scAppointment' style={{height: 'auto'}}>
                 <JqxWindow ref={this.window}
                     width={this.formWidth}
                     height={450}
                     theme={this.theme}
+                    isModal={true}
                     autoOpen={false}
+                    resizable={false}
                     minWidth={200} maxWidth={1200}
                     minHeight={200} maxHeight={600}
+                    initContent={this.onWindowInit}
                     showCollapseButton={true}
                 >
-                    <div className='scCenterXY scTitleAlign'>
+                    <div style={{minHeight: 24}} className='scCenterXY scTitleAlign'>
                         <span className='scCenterXY'>
                             <FaDesktop color='red' /><span style={{padding: '0px 5px'}}>Appointment</span>
                         </span>

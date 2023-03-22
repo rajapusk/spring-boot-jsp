@@ -113,6 +113,24 @@ table{
   right: 0;
 }
 
+.scSVGIcon{
+  cursor: pointer;
+  transition: all 0.5s ease;
+  opacity: 0.4;
+}
+
+.scSVGIcon:hover{
+  opacity: 1;
+}
+
+.scThemeBlue{
+  fill: #187596;
+}
+
+.scThemeRed{
+  fill: rgb(210, 1, 1);
+}
+
 .scFooterContent{
   padding: 0px 25px;
 }
@@ -144,4 +162,8 @@ table{
   border-color: #d5d5d5 !important;
   width: 100% !important;
   height: 30px !important;
+}
+
+.jqx-fill-state-disabled{
+  opacity: 1;
 }

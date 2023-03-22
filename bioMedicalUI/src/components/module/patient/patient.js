@@ -149,53 +149,62 @@ export class Patient extends Component {
 
     if(cellField === IconSVG.ICON.PEN || cellField === IconSVG.ICON.EYE){      
       this.editRow = Common.clone(event.args.row.bounddata);
-
-      if(cellField == IconSVG.ICON.EYE){
-        Common.loopInput(this.patientTemp, this.patientRef.current, Common.viewMode, {viewMode: true});
-        Common.loopInput(this.addressTemp, this.addressRef.current, Common.viewMode, {viewMode: true});
-        this.recordRef.current.onViewModel(true);
-      } else {
-        Common.loopInput(this.patientTemp, this.patientRef.current, Common.viewMode, {viewMode: false});
-        Common.loopInput(this.addressTemp, this.addressRef.current, Common.viewMode, {viewMode: false});
-        this.recordRef.current.onViewModel(false);
-      }
-
-      Common.loopInput(this.patientTemp, this.patientRef.current, Common.updateValue, this.editRow);
-      this.recordRef.current.setVal(this.editRow.nextOfKin);
-
-      if(this.editRow.address != null && this.editRow.address.length > 0){
-        Common.loopInput(this.addressTemp, this.addressRef.current, Common.updateValue, this.editRow.address[0]);
-      }
-      
-      this.pageRef.current.open(true);
-      this.tabRef.current.select(0);
+      this.getPatientDetail(this.editRow.mrNo, cellField);
     } else if(cellField === IconSVG.ICON.BUFFER){
       this.appointmentRef.current.open(true);
     } else if(cellField === IconSVG.ICON.REMOVE){
-      this.appointmentRef.current.open(true);
+      if(event.args.row.bounddata != null){
+        this.removeRecord(event.args.row.bounddata.mrNo);
+      }
     }
   }
   
+  getPatientDetail(patientId, cellField){
+    HttpAJAX.GET('/api/patient/' + patientId, (data) => {
+      if(data != null){
+        this.editRow = data;
+        
+        if(cellField == IconSVG.ICON.EYE){
+            Common.loopInput(this.patientTemp, this.patientRef.current, Common.viewMode, {viewMode: true});
+            Common.loopInput(this.addressTemp, this.addressRef.current, Common.viewMode, {viewMode: true});
+            this.recordRef.current.onViewModel(true);
+          } else {
+            Common.loopInput(this.patientTemp, this.patientRef.current, Common.viewMode, {viewMode: false});
+            Common.loopInput(this.addressTemp, this.addressRef.current, Common.viewMode, {viewMode: false});
+            this.recordRef.current.onViewModel(false);
+          }
+          
+          Common.loopInput(this.patientTemp, this.patientRef.current, Common.updateValue, data);
+          this.recordRef.current.setVal(data.nextOfKin);
+          
+          if(data.address != null){
+            Common.loopInput(this.addressTemp, this.addressRef.current, Common.updateValue, data.address);
+          }
+          
+          this.pageRef.current.open(true);
+          this.tabRef.current.select(0);
+      }
+    })
+  };
+
   submit(){
     var index = this.tabRef.current.val();
 
     if(index === 2){
-      let patientDetail = {address: {}, nextOfKin: []};
+      let patientDetail =this.editRow;
+
+      if(patientDetail == null){
+        patientDetail ={address: {}, nextOfKin: []};
+      }
+
       Common.loopInput(this.patientTemp, this.patientRef.current, Common.getValue, patientDetail);
       Common.loopInput(this.addressTemp, this.addressRef.current, Common.getValue, patientDetail.address);
       patientDetail.nextOfKin = this.recordRef.current.val();
 
-      if(this.editRow != null){
-        //Common.mapValue(patientDetail, this.editRow, true);
-        patientDetail.mrNo = this.editRow.mrNo;
-      }
-
       HttpAJAX.POST('/api/patient/create', patientDetail, (data)=>{
         this.onLoad();
         this.close();  
-      }, (error) =>{
-        console.log(error);
-      });
+      }, {message: 'The patient detail has been updated successfully.'});
     }
     else {
       this.tabRef.current.select(++index);
@@ -210,6 +219,12 @@ export class Patient extends Component {
     }
   }
 
+  removeRecord(patientId){
+    HttpAJAX.DELETE('/api/patient/delete/' + patientId, (data) => {
+      console.log(data)
+    }, {message: 'The patient detail has been removed successfully.'});
+  }
+
   onLoad(){
     HttpAJAX.GET('/api/patient', (data) => {
       if(data == null){
@@ -217,8 +232,6 @@ export class Patient extends Component {
       }
 
       this.pageRef.current.setRows(data);
-    }, (error)=> {
-      console.log(error);
     })
   }
 

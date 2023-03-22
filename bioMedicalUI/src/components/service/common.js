@@ -13,7 +13,8 @@ function CommonService() {
 	};
 	this.WATCH = {
 		HTTP_CALL: 'HTTP_CALL',
-        THEME: 'THEME'
+        THEME: 'THEME',
+        NOTIFICATION: 'NOTIFICATION',
 	};
 	
     this.getValue = function(keyfield) {
@@ -22,13 +23,11 @@ function CommonService() {
 	
 	this.getObj = function(keyfield, newState)
 	{
-		var find = this.collection[keyfield];
-		
-		if(find == null){
+		if(this.collection[keyfield] == null){
             this.collection[keyfield] = {value: newState, subscribers: []};
         }
 		
-		return find;
+		return this.collection[keyfield];
 	};
 
     this.setValue = function (keyfield, newState) { 
@@ -350,6 +349,8 @@ function CommonService() {
 					}
 					
 					col.options = elm.options;
+				} else if(elm.template != null){
+					col.template = elm.template;
 				}
 
 				count++;
@@ -377,6 +378,21 @@ function CommonService() {
 		}
 
 		return template;
+	}
+
+	this.defaultInit = function(event, row){
+		let disabled = (row.disabled != null ? row.disabled : false);
+
+		if(row.type == 'text'){
+			event.jqxInput({disabled: disabled, theme: theme});						
+		}
+		else if(row.type == 'date' || row.type == 'datetime' || row.type == 'time'){
+			event.jqxDateTimeInput({disabled: disabled, theme: theme});
+		}else if(row.type == 'number'){
+			event.jqxNumberInput({disabled: disabled, theme: theme});
+		} else if(row.type === 'option'){
+			event.jqxDropDownList({disabled: disabled, theme: theme});
+		}
 	}
 
 	this.clone = function(json_data){

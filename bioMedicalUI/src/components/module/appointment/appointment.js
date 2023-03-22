@@ -3,6 +3,7 @@ import JqxButton from 'jqwidgets-scripts/jqwidgets-react-tsx/jqxbuttons';
 import JqxWindow from 'jqwidgets-scripts/jqwidgets-react-tsx/jqxwindow';
 import JqxTabs  from 'jqwidgets-scripts/jqwidgets-react-tsx/jqxtabs';
 import JqxForm from 'jqwidgets-scripts/jqwidgets-react-tsx/jqxform';
+import JqxComboBox from 'jqwidgets-scripts/jqwidgets-react-tsx/jqxcombobox';
 
 import { FaDesktop } from "react-icons/fa";
 
@@ -14,7 +15,7 @@ import './appointment.css';
 export class Appointment extends Component {
     visibile = false;
     selectedTab = 0;
-    formWidth = 600;
+    formWidth = 800;
     labelWidth = 180;
     controlWidth = (this.formWidth / 2) - 54;
     
@@ -52,10 +53,19 @@ export class Appointment extends Component {
             labelWidth:this.labelWidth,
             controlWidth:this.controlWidth,
             rows:[
-              {bind: 'consultationDoctor', label: 'Consultation-Doctor', type: 'option',component: 'jqxDropDownList', init: this.convertCombo},
-              {bind: 'diagnostics', label: 'Diagnostics'},
-              {bind: 'services', label: 'Services'},
-              {bind: 'totalAmount', label: 'Total Amount'},
+              {bind: 'consultationDoctor', label: 'Consultation-Doctor', type: 'option',component: 'jqxDropDownList', init: this.makeMultiSelectCombo, change: (value)=>{
+                this.amountUpdate(value, 'consultAmount');
+              }},
+              {bind: 'consultAmount', label: 'Amount', disabled: true},
+              {bind: 'diagnostics', label: 'Diagnostics', type: 'option',component: 'jqxDropDownList', init: this.makeMultiSelectCombo, change: (value)=>{
+                this.amountUpdate(value, 'diagAmount');
+              }},
+              {bind: 'diagAmount', label: 'Amount', disabled: true},
+              {bind: 'services', label: 'Services', type: 'option',component: 'jqxDropDownList', init: this.makeMultiSelectCombo, change: (value)=>{
+                this.amountUpdate(value, 'serviceAmount');
+              }},
+              {bind: 'serviceAmount', label: 'Amount', disabled: true},
+              {bind: 'totalAmount', label: 'Total Amount', disabled: true},
               {bind: 'amountPaid', label: 'Amount Paid'},
               {bind: 'upiCard', label: 'If UPI/Card details'},
             ]
@@ -68,7 +78,8 @@ export class Appointment extends Component {
         this.onWindowInit = this.onWindowInit.bind(this);
         this.refreshForm = this.refreshForm.bind(this);
         this.onLoad = this.onLoad.bind(this);
-        this.convertCombo = this.convertCombo.bind(this);
+        this.amountUpdate = this.amountUpdate.bind(this);
+        this.makeMultiSelectCombo = this.makeMultiSelectCombo.bind(this);
         Common.subscribe(Common.WATCH.THEME, this.themeChange);
     }
 
@@ -85,11 +96,26 @@ export class Appointment extends Component {
         }
     }
 
+    amountUpdate(value, fieldId){       
+        if(value != null){
+            var config = {};
+            config[fieldId] = 0;
+
+            value.forEach((element)=>{
+                config[fieldId] += (element.fee * 1);
+            })
+
+            Common.fieldUpdate(this.paymentTemp, this.paymentRef.current, config, fieldId);
+        }
+    }
+
     refreshForm(){
         if(this.selectedTab == 0){
-            this.appointmentRef.current.refresh();
+            this.appointmentRef.current.refresh();      
+            Common.loopInput(this.appointmentTemp, this.appointmentRef.current, Common.updateDisable, {});      
         } else {
             this.paymentRef.current.refresh();
+            Common.loopInput(this.paymentTemp, this.paymentRef.current, Common.updateDisable, {});
         }
     }
 
@@ -128,10 +154,29 @@ export class Appointment extends Component {
         this.window.current.focus();
     }
 
-    convertCombo(event){
-        if(this.options != null){
-            event.jqxDropDownList({checkboxes: true, enableSelection: true, source: this.options, width: 256});
-        }
+    makeMultiSelectCombo(event){
+        event.jqxDropDownList({checkboxes: true, enableSelection: true, source: this.options, width: 354});
+        event.jqxDropDownList().select((data)=>{
+            if(this.value == null){
+                this.value = [];
+            }
+            if(this.selectedIndex == null){
+                this.selectedIndex = [];
+            }
+            if(data.args.item.checked){
+                this.value.push(data.args.item.originalItem);
+                this.selectedIndex.push(data.args.item.index);
+            } else{
+                this.value = this.value.filter((ele)=>{
+                    return (ele.key != data.args.item.originalItem.key);
+                })
+                this.selectedIndex = this.selectedIndex.filter((ele)=>{
+                    return (ele != data.args.item.index);
+                })
+            }
+            
+            this.change(this.value);
+        });
     }
 
     onLoad(){
@@ -147,8 +192,20 @@ export class Appointment extends Component {
 
                 row.options = source;
             }
-        }, (error)=> {
-          console.log(error);
+        })
+
+        HttpAJAX.GET('/api/v1/service', (data) => {
+            let row = Common.getFormRow(this.paymentTemp, 'services');
+
+            if(row != null && data != null){
+                let source = [];
+
+                data.forEach((element) => {
+                    source.push({value: element.service_Category, key: element.ips_ID, fee: element.service_AMOUNT});
+                });
+
+                row.options = source;
+            }
         })
     }
 
@@ -163,7 +220,7 @@ export class Appointment extends Component {
             <div className='scAppointment' style={{height: 'auto'}}>
                 <JqxWindow ref={this.window}
                     width={this.formWidth}
-                    height={450}
+                    height={520}
                     theme={this.theme}
                     isModal={true}
                     autoOpen={false}

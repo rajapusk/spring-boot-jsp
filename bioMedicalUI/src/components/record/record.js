@@ -126,6 +126,7 @@ export class Record extends Component {
                 })
 
                 if(data != null){
+                    data.id = elements.id;
                     result.push(Object.assign({}, data));
                 }
             })
@@ -145,6 +146,7 @@ export class Record extends Component {
                     col.value = (element[col.bind] != null ? element[col.bind] : '');
                 });
 
+                model.id = element.id;
                 this.rows.push(model);
             });
         }

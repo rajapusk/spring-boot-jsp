@@ -3,7 +3,7 @@ import Common from '../service/common.js';
 function HttpAJAXService(){
     var HOST = 'http://localhost:' + 9092;
 
-    this.POST = function(url, postData, successHandler, errorHandler)
+    this.POST = function(url, postData, successHandler, toast)
 	{
 		try{
 			bindDateModel(postData);
@@ -17,25 +17,7 @@ function HttpAJAXService(){
 				}
 			};
 
-			Common.setValue(Common.WATCH.HTTP_CALL, true);
-			fetch(HOST + url, config)
-			.then(res => res.json())
-			.then(
-				(result) => {
-                    Common.setValue(Common.WATCH.HTTP_CALL, false);
-
-					if(successHandler != null){
-						successHandler(result);
-					}
-				},
-				(error) => {
-                    Common.setValue(Common.WATCH.HTTP_CALL, false);
-
-					if(errorHandler != null){
-						errorHandler(error);
-					}
-				}
-			)
+			makeAJAX(config, url, successHandler, {message: (toast != null && toast.message ? toast.message : 'The record updated successfully.'), type: "success"});
 		}
 		catch(e){
 			console.error(e)
@@ -43,22 +25,55 @@ function HttpAJAXService(){
 		}
     };
 
-	this.GET = function(url, successHandler, errorHandler)
+	this.GET = function(url, successHandler)
 	{
-		let config = {
-			"method": "GET",
-			"headers": { 
-				crossDomain: true,
-				'Content-Type': "application/json"
-			}
-		};
+		try{
+			let config = {
+				"method": "GET",
+				"headers": { 
+					crossDomain: true,
+					'Content-Type': "application/json"
+				}
+			};
 
-        Common.setValue(Common.WATCH.HTTP_CALL, true);
+			makeAJAX(config, url, successHandler);
+		}
+		catch(e){
+			console.error(e)
+			Common.setValue(Common.WATCH.HTTP_CALL, false);
+		}
+    };
+
+	this.DELETE = function(url, successHandler, toast)
+	{
+		try{
+			let config = {
+				"method": "DELETE",
+				"headers": { 
+					crossDomain: true,
+					'Content-Type': "application/json"
+				}
+			};
+
+			makeAJAX(config, url, successHandler, {message: (toast != null && toast.message ? toast.message : 'The record deleted successfully.'), type: "success"});
+		}
+		catch(e){
+			console.error(e)
+			Common.setValue(Common.WATCH.HTTP_CALL, false);
+		}
+    };
+
+	var makeAJAX = function(config, url, successHandler, toast){
+		Common.setValue(Common.WATCH.HTTP_CALL, true);
 		fetch(HOST + url, config)
 		.then(res => res.json())
 		.then(
 			(result) => {
                 Common.setValue(Common.WATCH.HTTP_CALL, false);
+
+				if(toast!= null){
+					Common.setValue(Common.WATCH.NOTIFICATION, toast);
+				}
 
 				if(successHandler != null){
 					successHandler(result);
@@ -66,33 +81,32 @@ function HttpAJAXService(){
 			},
 			(error) => {
                 Common.setValue(Common.WATCH.HTTP_CALL, false);
-                
-				if(errorHandler != null){
-					errorHandler(error);
-				}
+                console.log(error)
 			}
 		)
-    };
+	}
 
     var bindDateModel = function(model){
 		if(model){
 			for(var sKey in model){
 				let item = model[sKey];
 				
-				if(sKey == 'dateModel'){
-					model.dateModel.key.forEach((element) => {
-						model[element] = model.dateModel[element]['format'];
-					})
-
-					delete model.dateModel;
-				} else if(item.dateModel != null){
-					item.dateModel.key.forEach((element) => {
-						item[element] = item.dateModel[element]['format'];
-					})
-
-					delete item.dateModel;
-				} else if(typeof item == "object"){
-					bindDateModel(item);
+				if(item != null){
+					if(sKey == 'dateModel'){
+						model.dateModel.key.forEach((element) => {
+							model[element] = model.dateModel[element]['format'];
+						})
+	
+						delete model.dateModel;
+					} else if(item.dateModel != null){
+						item.dateModel.key.forEach((element) => {
+							item[element] = item.dateModel[element]['format'];
+						})
+	
+						delete item.dateModel;
+					} else if(typeof item == "object"){
+						bindDateModel(item);
+					}
 				}
 			}
 		}

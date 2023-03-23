@@ -1,12 +1,10 @@
 package com.spring.bioMedical.Controller;
 
-import com.spring.bioMedical.model.NextOfKinEntity;
-import com.spring.bioMedical.model.PatientAddressEntity;
-import com.spring.bioMedical.model.PatientEntity;
-import com.spring.bioMedical.outputModel.NextOfKin;
-import com.spring.bioMedical.outputModel.AddressOutput;
-import com.spring.bioMedical.outputModel.patientOutput;
+import com.spring.bioMedical.entity.AppointmentEntity;
+import com.spring.bioMedical.model.*;
+import com.spring.bioMedical.outputModel.*;
 import com.spring.bioMedical.service.AddressService;
+import com.spring.bioMedical.service.AppointmentService;
 import com.spring.bioMedical.service.NextOfKinService;
 import com.spring.bioMedical.service.PatientService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,8 +23,11 @@ public class PatientController {
     @Autowired
     NextOfKinService nextOfKinService;
 
+    @Autowired
+    AppointmentService appointmentService;
+
     @RequestMapping(path = "/create", method = RequestMethod.POST)
-    public PatientEntity CreateOrUpdatePatient(@RequestBody patientOutput input) {
+    public PatientEntity CreateOrUpdatePatient(@RequestBody PatientOutput input) {
 
         PatientEntity patient = new PatientEntity();
         patient.setEmailId(input.emailId);
@@ -54,8 +55,7 @@ public class PatientController {
         addressEntity.setId(input.address.id);
         addressService.createOrUpdateAddress(addressEntity);
 
-        for (NextOfKin item :
-                input.nextOfKin) {
+        for (NextOfKin item : input.nextOfKin) {
 
             NextOfKinEntity nextOfKinEntity = new NextOfKinEntity();
             nextOfKinEntity.setName(item.name);
@@ -75,13 +75,13 @@ public class PatientController {
     }
 
     @GetMapping()
-    public List<patientOutput> getAllPatientOutput() {
+    public List<PatientOutput> getAllPatientOutput() {
         List<PatientEntity> lstPatient = patientService.getAllPatient();
-        List<patientOutput> patientOutputList = new ArrayList<>();
+        List<PatientOutput> patientOutputList = new ArrayList<>();
 
         for (PatientEntity patient : lstPatient) {
-            if(patient.getIsDeleted() == false) {
-                patientOutput output = new patientOutput();
+            if (patient.getIsDeleted() == false) {
+                PatientOutput output = new PatientOutput();
                 output.dob = patient.getDob();
                 output.firstName = patient.getFirstName();
                 output.lastName = patient.getLastName();
@@ -99,11 +99,11 @@ public class PatientController {
     }
 
     @GetMapping("/{id}")
-    public patientOutput getAllPatientOutput(@PathVariable("id") long id) {
+    public PatientOutput getAllPatientOutput(@PathVariable("id") long id) {
         PatientEntity patient = patientService.getPatientById(id);
 
         if (patient != null) {
-            patientOutput output = new patientOutput();
+            PatientOutput output = new PatientOutput();
             output.dob = patient.getDob();
             output.firstName = patient.getFirstName();
             output.lastName = patient.getLastName();
@@ -127,13 +127,12 @@ public class PatientController {
                     output.address.district = patientAddress.getDistrict();
                     output.address.hNo = patientAddress.getHouseNo();
                     output.address.street = patientAddress.getStreet();
-                    output.address.id   = patientAddress.getId();
+                    output.address.id = patientAddress.getId();
                     break;
                 }
             }
             output.nextOfKin = new ArrayList<>();
-            for (NextOfKinEntity nextOfKinEntity :
-                    allNextOfKin) {
+            for (NextOfKinEntity nextOfKinEntity : allNextOfKin) {
                 if (nextOfKinEntity.getPatientId() == patient.getId()) {
                     NextOfKin kin = new NextOfKin();
                     kin.mobile = nextOfKinEntity.getMobileNumber();
@@ -147,5 +146,53 @@ public class PatientController {
             return output;
         }
         return null;
+    }
+
+    @RequestMapping(path = "/appointment/book", method = RequestMethod.POST)
+    public AppointmentEntity BookAppointment(@RequestBody AppointmentOutput input) {
+
+        AppointmentEntity appointment = new AppointmentEntity();
+        appointment.setPatientId(input.patientId);
+        appointment.setPatientType(input.patientType);
+        appointment.setAmountPaid(input.amountPaid);
+        appointment.setDepartment(input.department);
+        appointment.setPayeeType(input.payeeType);
+        appointment.setReferral(input.referral);
+        appointment.setTotalAmount(input.totalAmount);
+        appointment.setUpiCard(input.upiCard);
+        appointment.setVisitType(input.visitType);
+        appointment.setIsDeleted(false);
+
+        AppointmentEntity entity = appointmentService.createOrUpdateAppointment(appointment);
+
+        for (ConsultationDoctorOutput doctor : input.consultationDoctor) {
+            AppointmentDoctorEntity addressEntity = new AppointmentDoctorEntity();
+            addressEntity.setPatientId(entity.getPatientId());
+            addressEntity.setAppointmentId(entity.getId());
+            addressEntity.setFee(doctor.fee);
+            addressEntity.setDoctorId(doctor.id);
+            appointmentService.createOrUpdateAppointmentDoctor(addressEntity);
+        }
+
+        for (ServiceOutput doctor : input.services) {
+            AppointmentServiceEntity serviceEntity = new AppointmentServiceEntity();
+            serviceEntity.setPatientId(entity.getPatientId());
+            serviceEntity.setAppointmentId(entity.getId());
+            serviceEntity.setFee(doctor.fee);
+            serviceEntity.setServiceId(doctor.id);
+            appointmentService.createOrUpdateAppointmentServcie(serviceEntity);
+        }
+
+        for (DiagnosticOutput service : input.diagnostics) {
+            AppointmentDiagnosticEntity diagnostic = new AppointmentDiagnosticEntity();
+            diagnostic.setPatientId(entity.getPatientId());
+            diagnostic.setAppointmentId(entity.getId());
+            diagnostic.setFee(service.fee);
+            diagnostic.setDiagnosticId(service.id);
+            appointmentService.createOrUpdateAppointmentDiagnostic(diagnostic);
+        }
+
+
+        return entity;
     }
 }

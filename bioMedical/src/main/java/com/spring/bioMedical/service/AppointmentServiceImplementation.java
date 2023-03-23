@@ -2,6 +2,7 @@ package com.spring.bioMedical.service;
 
 import java.util.List;
 
+import com.spring.bioMedical.entity.AppointmentEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,14 +29,13 @@ public class AppointmentServiceImplementation  {
 	}
 	
 	
-	public void save(Appointment app)
+	public void save(AppointmentEntity app)
 	{
-		
 		appointmentRepository.save(app);
 	}
 	
 	
-	public List<Appointment> findAll() {
+	public List<AppointmentEntity> findAll() {
 		return appointmentRepository.findAll();
 	}
 

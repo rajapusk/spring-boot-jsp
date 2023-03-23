@@ -2,7 +2,7 @@ package com.spring.bioMedical.outputModel;
 
 import java.util.ArrayList;
 
-public class patientOutput {
+public class PatientOutput {
     public long mrNo;
     public java.sql.Date dateOfOpVisit;
     public java.sql.Time timeOfOpVisit;

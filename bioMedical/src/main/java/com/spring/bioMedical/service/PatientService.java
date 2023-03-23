@@ -1,7 +1,6 @@
 package com.spring.bioMedical.service;
 
 import com.spring.bioMedical.model.PatientEntity;
-import com.spring.bioMedical.outputModel.patientOutput;
 import com.spring.bioMedical.repository.PatientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

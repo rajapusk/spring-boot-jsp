@@ -17,7 +17,7 @@ function CommonService() {
         NOTIFICATION: 'NOTIFICATION',
 	};
 	
-    this.getValue = function(keyfield) {
+    this.getWatchValue = function(keyfield) {
         return (this.collection[keyfield] != null ? this.collection[keyfield].value : null);
     };
 	
@@ -256,6 +256,7 @@ function CommonService() {
 
 					if(timeVal != null){
 						input.val(timeVal);
+						row.inputValue = timeVal;
 
 						if(row.change != null){
 							changeModel.push({row: row, value: timeVal});
@@ -264,7 +265,8 @@ function CommonService() {
 				}
 				else{					
 					input.val(config[row.bind]);
-					
+					row.inputValue = config[row.bind];
+
 					if(row.change != null){
 						changeModel.push({row: row, value: config[row.bind]});					
 					}
@@ -309,6 +311,8 @@ function CommonService() {
 				config.dateModel[row.bind]['format'] = dateFormat(row.value, formatText);
 				config.dateModel[row.bind]['date']  = row.value;
 				config.dateModel[row.bind]['value'] = config[row.bind];
+			} else if(row.value != null){
+				config[row.bind] = row.value;
 			}
 		}
 	};	

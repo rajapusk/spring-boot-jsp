@@ -56,15 +56,21 @@ export class Appointment extends Component {
               {bind: 'consultationDoctor', label: 'Consultation-Doctor', type: 'option',component: 'jqxDropDownList', init: this.makeMultiSelectCombo, change: (value)=>{
                 this.amountUpdate(value, 'consultAmount');
               }},
-              {bind: 'consultAmount', label: 'Amount', disabled: true},
+              {bind: 'consultAmount', label: 'Amount', disabled: true, change: (value)=>{
+                this.totalAmountUpdate(['consultAmount', 'diagAmount', 'serviceAmount'], 'totalAmount');
+              }},
               {bind: 'diagnostics', label: 'Diagnostics', type: 'option',component: 'jqxDropDownList', init: this.makeMultiSelectCombo, change: (value)=>{
                 this.amountUpdate(value, 'diagAmount');
               }},
-              {bind: 'diagAmount', label: 'Amount', disabled: true},
+              {bind: 'diagAmount', label: 'Amount', disabled: true, change: (value)=>{
+                this.totalAmountUpdate(['consultAmount', 'diagAmount', 'serviceAmount'], 'totalAmount');
+              }},
               {bind: 'services', label: 'Services', type: 'option',component: 'jqxDropDownList', init: this.makeMultiSelectCombo, change: (value)=>{
                 this.amountUpdate(value, 'serviceAmount');
               }},
-              {bind: 'serviceAmount', label: 'Amount', disabled: true},
+              {bind: 'serviceAmount', label: 'Amount', disabled: true, change: (value)=>{
+                this.totalAmountUpdate(['consultAmount', 'diagAmount', 'serviceAmount'], 'totalAmount');
+              }},
               {bind: 'totalAmount', label: 'Total Amount', disabled: true},
               {bind: 'amountPaid', label: 'Amount Paid'},
               {bind: 'upiCard', label: 'If UPI/Card details'},
@@ -79,6 +85,7 @@ export class Appointment extends Component {
         this.refreshForm = this.refreshForm.bind(this);
         this.onLoad = this.onLoad.bind(this);
         this.amountUpdate = this.amountUpdate.bind(this);
+        this.totalAmountUpdate = this.totalAmountUpdate.bind(this);
         this.makeMultiSelectCombo = this.makeMultiSelectCombo.bind(this);
         Common.subscribe(Common.WATCH.THEME, this.themeChange);
     }
@@ -109,6 +116,20 @@ export class Appointment extends Component {
         }
     }
 
+    totalAmountUpdate(fields, fieldId){       
+        if(fields != null){
+            var config = {};
+            config[fieldId] = 0;
+
+            fields.forEach((element)=>{
+                let row = Common.getFormRow(this.paymentTemp, element);
+                config[fieldId] += (row.inputValue != null ? (row.inputValue) * 1: 0);
+            });
+
+            Common.fieldUpdate(this.paymentTemp, this.paymentRef.current, config, fieldId);
+        }
+    }
+
     refreshForm(){
         if(this.selectedTab == 0){
             this.appointmentRef.current.refresh();      
@@ -123,13 +144,13 @@ export class Appointment extends Component {
         var index = this.tabRef.current.val();
     
         if(index === 1){
-          var appointmentDetail = {payment: {}};
+          var appointmentDetail = {};
 
           Common.loopInput(this.appointmentTemp, this.appointmentRef.current, Common.getValue, appointmentDetail);
-          Common.loopInput(this.paymentTemp, this.paymentRef.current, Common.getValue, appointmentDetail.payment);
+          Common.loopInput(this.paymentTemp, this.paymentRef.current, Common.getValue, appointmentDetail);
          
           console.log(appointmentDetail);
-          this.open(false);      
+          //this.open(false);      
         }
         else {
           this.tabRef.current.select(++index);
@@ -168,7 +189,7 @@ export class Appointment extends Component {
                 this.selectedIndex.push(data.args.item.index);
             } else{
                 this.value = this.value.filter((ele)=>{
-                    return (ele.key != data.args.item.originalItem.key);
+                    return (ele.id != data.args.item.originalItem.id);
                 })
                 this.selectedIndex = this.selectedIndex.filter((ele)=>{
                     return (ele != data.args.item.index);
@@ -177,6 +198,14 @@ export class Appointment extends Component {
             
             this.change(this.value);
         });
+
+        if(this.selectedIndex != null && this.selectedIndex.length > 0){
+            this.selectedIndex.forEach((element) =>{
+                event.jqxDropDownList('checkIndex', element)
+            })
+        }
+
+        return event;
     }
 
     onLoad(){
@@ -187,7 +216,7 @@ export class Appointment extends Component {
                 let source = [];
 
                 data.forEach((element) => {
-                    source.push({value: element.name, key: element.id, fee: element.fee});
+                    source.push({value: element.name, id: element.id, fee: element.fee});
                 });
 
                 row.options = source;
@@ -196,15 +225,22 @@ export class Appointment extends Component {
 
         HttpAJAX.GET('/api/v1/service', (data) => {
             let row = Common.getFormRow(this.paymentTemp, 'services');
+            let diaRow = Common.getFormRow(this.paymentTemp, 'diagnostics');
+            let source = [];
 
-            if(row != null && data != null){
-                let source = [];
-
+            if(data != null){
                 data.forEach((element) => {
-                    source.push({value: element.service_Category, key: element.ips_ID, fee: element.service_AMOUNT});
+                    source.push({value: element.service_Category, id: element.ips_ID, fee: element.service_AMOUNT});
                 });
+            }
 
+            if(row != null){
                 row.options = source;
+            }
+
+            if(row != null){
+                row.options = source;
+                diaRow.options = Common.clone(source);
             }
         })
     }

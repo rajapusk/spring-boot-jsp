@@ -149,7 +149,10 @@ export class Appointment extends Component {
           Common.loopInput(this.appointmentTemp, this.appointmentRef.current, Common.getValue, appointmentDetail);
           Common.loopInput(this.paymentTemp, this.paymentRef.current, Common.getValue, appointmentDetail);
          
-          console.log(appointmentDetail);
+          HttpAJAX.POST('/api/patient/appointment/book', appointmentDetail, (data)=>{
+            console.log(data, appointmentDetail);
+            this.close();  
+          }, {message: 'The patient detail has been updated successfully.'});
           //this.open(false);      
         }
         else {

@@ -29,13 +29,13 @@ public class AppointmentServiceImplementation  {
 	}
 	
 	
-	public void save(AppointmentEntity app)
+	public void save(Appointment app)
 	{
 		appointmentRepository.save(app);
 	}
 	
 	
-	public List<AppointmentEntity> findAll() {
+	public List<Appointment> findAll() {
 		return appointmentRepository.findAll();
 	}
 

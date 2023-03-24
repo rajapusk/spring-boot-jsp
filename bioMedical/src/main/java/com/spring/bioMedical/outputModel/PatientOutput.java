@@ -14,4 +14,5 @@ public class PatientOutput {
     public String emailId;
     public AddressOutput address;
     public ArrayList<NextOfKin> nextOfKin;
+    public int age;
 }

@@ -27,10 +27,10 @@ public class DiagnosticEntity {
 
     @Column(name = "diagnosticName")
     private String diagnosticName;
-    public String getDiagnostic() {
+    public String getDiagnosticName() {
         return this.diagnosticName;
     }
-    public void setDiagnostic(String value) {
+    public void setDiagnosticName(String value) {
         this.diagnosticName = value;
     }
 }

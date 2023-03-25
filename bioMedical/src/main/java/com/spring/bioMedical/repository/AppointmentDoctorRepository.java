@@ -15,5 +15,4 @@ import java.util.List;
 @Repository
 public interface AppointmentDoctorRepository extends JpaRepository<AppointmentDoctorEntity, Long> {
 
-	
 }

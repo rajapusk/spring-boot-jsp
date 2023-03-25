@@ -3,9 +3,8 @@ package com.spring.bioMedical.model;
 import javax.persistence.*;
 
 @Entity
-@Table(schema= "his", name = "services_master")
-public class ServiceEntity {
-
+@Table(schema= "his", name = "diagnostic_master")
+public class DiagnosticEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -26,13 +25,12 @@ public class ServiceEntity {
         this.fee = value;
     }
 
-    @Column(name = "serviceName")
-    private String serviceName;
-    public String getServiceName() {
-        return this.serviceName;
+    @Column(name = "diagnosticName")
+    private String diagnosticName;
+    public String getDiagnostic() {
+        return this.diagnosticName;
     }
-    public void setServiceName(String value) {
-        this.serviceName = value;
+    public void setDiagnostic(String value) {
+        this.diagnosticName = value;
     }
-
 }

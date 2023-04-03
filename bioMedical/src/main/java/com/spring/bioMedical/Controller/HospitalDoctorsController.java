@@ -6,7 +6,9 @@ import java.util.Map;
 
 import javax.validation.Valid;
 
+import com.spring.bioMedical.model.DiagnosticEntity;
 import com.spring.bioMedical.model.ServiceEntity;
+import com.spring.bioMedical.repository.DiagnosticRepository;
 import com.spring.bioMedical.repository.ServiceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -32,17 +34,22 @@ public class HospitalDoctorsController {
 
 	@Autowired
 	private ServiceRepository serviceRepository;
+	@Autowired
+	private DiagnosticRepository diagnosticRepository;
 
 	@GetMapping("/doctors")
 	public List<Doctor> getAllDoctors() {
-		//return doctorRepository.findAll();
 		return doctorRepository.findAllByDeleteFlag("N");
 	}
 
 	@GetMapping("/service")
 	public List<ServiceEntity> getAllService() {
-		//return doctorRepository.findAll();
 		return serviceRepository.findAll();
+	}
+
+	@GetMapping("/diagnostic")
+	public List<DiagnosticEntity> getAllDiagnostic() {
+		return diagnosticRepository.findAll();
 	}
 
 	@GetMapping("/doctors/{id}")

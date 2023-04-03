@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -88,6 +90,7 @@ public class PatientController {
             if (patient.getIsDeleted() == false) {
                 PatientOutput output = new PatientOutput();
                 output.dob = patient.getDob();
+                output.age =calculateAge(output.dob);
                 output.firstName = patient.getFirstName();
                 output.lastName = patient.getLastName();
                 output.emailId = patient.getEmailId();
@@ -101,6 +104,22 @@ public class PatientController {
         }
 
         return patientOutputList;
+    }
+
+    private static int calculateAge(java.sql.Date dob)
+    {
+//creating an instance of the LocalDate class and invoking the now() method
+//now() method obtains the current date from the system clock in the default time zone
+        LocalDate curDate = LocalDate.now();
+//calculates the amount of time between two dates and returns the years
+        if ((dob != null) && (curDate != null))
+        {
+            return Period.between(dob.toLocalDate(), curDate).getYears();
+        }
+        else
+        {
+            return 0;
+        }
     }
 
     @GetMapping("/{id}")

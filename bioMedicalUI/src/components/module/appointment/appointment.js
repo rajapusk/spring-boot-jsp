@@ -226,14 +226,27 @@ export class Appointment extends Component {
             }
         })
 
+        HttpAJAX.GET('/api/v1/diagnostic', (data) => {
+            let row = Common.getFormRow(this.paymentTemp, 'diagnostics');
+
+            if(row != null && data != null){
+                let source = [];
+
+                data.forEach((element) => {
+                    source.push({value: element.diagnosticName, id: element.id, fee: element.fee});
+                });
+
+                row.options = source;
+            }
+        })
+
         HttpAJAX.GET('/api/v1/service', (data) => {
             let row = Common.getFormRow(this.paymentTemp, 'services');
-            let diaRow = Common.getFormRow(this.paymentTemp, 'diagnostics');
             let source = [];
 
             if(data != null){
                 data.forEach((element) => {
-                    source.push({value: element.service_Category, id: element.ips_ID, fee: element.service_AMOUNT});
+                    source.push({value: element.serviceName, id: element.id, fee: element.fee});
                 });
             }
 
@@ -243,7 +256,6 @@ export class Appointment extends Component {
 
             if(row != null){
                 row.options = source;
-                diaRow.options = Common.clone(source);
             }
         })
     }

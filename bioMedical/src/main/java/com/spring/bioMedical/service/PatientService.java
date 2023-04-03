@@ -33,16 +33,17 @@ public class PatientService {
             if(patient.isPresent())
             {
                 PatientEntity newEntity = patient.get();
-                entity.setUpdatedOn(new java.sql.Date(millis));
-                entity.setEmailId(entity.getEmailId());
-                entity.setDateOfOpVisit(entity.getDateOfOpVisit());
-                entity.setDob(entity.getDob());
-                entity.setFirstName(entity.getFirstName());
-                entity.setLastName(entity.getLastName());
-                entity.setMobileNumber(entity.getMobileNumber());
-                entity.setMotherName(entity.getMotherName());
-                entity.setTimeOfOpVisit(entity.getTimeOfOpVisit());
-                entity.setIsDeleted(false);
+                newEntity.setUpdatedOn(new java.sql.Date(millis));
+                newEntity.setEmailId(entity.getEmailId());
+                newEntity.setDateOfOpVisit(entity.getDateOfOpVisit());
+                newEntity.setDob(entity.getDob());
+                newEntity.setFirstName(entity.getFirstName());
+                newEntity.setLastName(entity.getLastName());
+                newEntity.setMobileNumber(entity.getMobileNumber());
+                newEntity.setMotherName(entity.getMotherName());
+                newEntity.setTimeOfOpVisit(entity.getTimeOfOpVisit());
+                newEntity.setIsDeleted(false);
+                newEntity.setUpdatedOn(new java.sql.Date(millis));
                 newEntity = repository.save(newEntity);
 
                 return newEntity;

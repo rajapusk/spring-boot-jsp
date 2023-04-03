@@ -13,7 +13,7 @@ import java.util.Optional;
 @Service
 public class AppointmentService {
     @Autowired
-    AppointmentRepository repository;
+    AppointmentRepositoryNew repository;
 
     @Autowired
     AppointmentDoctorRepository appointmentDoctorRepository;

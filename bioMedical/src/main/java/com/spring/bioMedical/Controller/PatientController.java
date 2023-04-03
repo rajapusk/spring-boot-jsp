@@ -5,10 +5,12 @@ import com.spring.bioMedical.model.*;
 import com.spring.bioMedical.outputModel.*;
 import com.spring.bioMedical.service.AddressService;
 import com.spring.bioMedical.service.AppointmentService;
+import com.spring.bioMedical.service.DocumentService;
 import com.spring.bioMedical.service.NextOfKinService;
 import com.spring.bioMedical.service.PatientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +27,9 @@ public class PatientController {
 
     @Autowired
     AppointmentService appointmentService;
+    
+    @Autowired
+    DocumentService docService;
 
     @RequestMapping(path = "/create", method = RequestMethod.POST)
     public PatientEntity CreateOrUpdatePatient(@RequestBody PatientOutput input) {
@@ -195,4 +200,19 @@ public class PatientController {
 
         return entity;
     }
+    
+    @RequestMapping(path = "/uploadFile", method = RequestMethod.POST)
+	public DocumentEntity uploadFile(@RequestParam("document") MultipartFile file, String pageId) {
+		try {
+			if (pageId != null) {
+				if (!file.isEmpty()) {
+					return FileUploadHelper.uploadFile(file, pageId, "patient", docService);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
 }

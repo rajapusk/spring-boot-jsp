@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import JqxTabs  from 'jqwidgets-scripts/jqwidgets-react-tsx/jqxtabs';
 import JqxButton from 'jqwidgets-scripts/jqwidgets-react-tsx/jqxbuttons';
 import JqxForm from 'jqwidgets-scripts/jqwidgets-react-tsx/jqxform';
+import JqxFileUpload from 'jqwidgets-scripts/jqwidgets-react-tsx/jqxfileupload';
 
 import Appointment from '../appointment/appointment.js';
 import Common from '../../service/common.js';
@@ -61,7 +62,7 @@ export class Patient extends Component {
     this.window = {
       title: 'Add new patient',
       width: this.formWidth,
-      height: 520,
+      height: 680,
       content: null
     }
 
@@ -94,11 +95,11 @@ export class Patient extends Component {
       rows:[
         {bind: 'mrNo', label: 'MR No', disabled: true},
         {bind: 'motherName', label: 'Mother Name'},
-        {bind: 'dateOfOpVisit', label: 'Date of OP Visit', type: 'date', format: Common.FORMAT.DATE, dispFormat: Common.FORMAT.DISP_DATE},
-        {bind: 'timeOfOpVisit', label: 'Time of OP visit', type: 'time', format: Common.FORMAT.TIME, dispFormat: Common.FORMAT.DISP_TIME},
+        {bind: 'dateOfOpVisit', label: 'Date of OP Visit', type: 'date', format: Common.FORMAT.DATE, dispFormat: Common.FORMAT.DISP_DATE, minDate: new Date()},
+        {bind: 'timeOfOpVisit', label: 'Time of OP visit', type: 'time', format: Common.FORMAT.TIME, dispFormat: Common.FORMAT.DISP_TIME, minDate: new Date()},
         {bind: 'firstName', label: 'First Name'},
         {bind: 'lastName', label: 'Last Name'},
-        {bind: 'dob', label: 'DOB', type: 'date', format: Common.FORMAT.DATE, dispFormat: Common.FORMAT.DISP_DATE, change: (value)=> {
+        {bind: 'dob', label: 'DOB', type: 'date', format: Common.FORMAT.DATE, dispFormat: Common.FORMAT.DISP_DATE, maxDate: new Date(), change: (value)=> {
           this.fieldDOBUpdate(value)
         }},
         {bind: 'age', label: 'Age', disabled: true},
@@ -112,6 +113,7 @@ export class Patient extends Component {
     this.tabsOnSelected = this.tabsOnSelected.bind(this);
     this.fieldDOBUpdate = this.fieldDOBUpdate.bind(this);
     this.onWindowInit = this.onWindowInit.bind(this);
+    this.uploadFile = this.uploadFile.bind(this);
     Common.subscribe(Common.WATCH.THEME, this.themeChange);
   }
   
@@ -191,25 +193,40 @@ export class Patient extends Component {
     var index = this.tabRef.current.val();
 
     if(index === 2){
-      let patientDetail =this.editRow;
+      var fileInput = document.querySelectorAll('input[type=file]');
 
-      if(patientDetail == null){
-        patientDetail ={address: {}, nextOfKin: []};
+      if(fileInput != null && fileInput.length > 0){
+        let patientDetail =this.editRow;
+
+        if(patientDetail == null){
+          patientDetail ={address: {}, nextOfKin: []};
+        }
+  
+        Common.loopInput(this.patientTemp, this.patientRef.current, Common.getValue, patientDetail);
+        Common.loopInput(this.addressTemp, this.addressRef.current, Common.getValue, patientDetail.address);
+        patientDetail.nextOfKin = this.recordRef.current.val();
+  
+        HttpAJAX.POST('/api/patient/create', patientDetail, (data)=>{
+          this.uploadFile(data, fileInput);
+        }, {message: 'The patient detail has been updated successfully.'});
       }
+      else {
 
-      Common.loopInput(this.patientTemp, this.patientRef.current, Common.getValue, patientDetail);
-      Common.loopInput(this.addressTemp, this.addressRef.current, Common.getValue, patientDetail.address);
-      patientDetail.nextOfKin = this.recordRef.current.val();
-
-      HttpAJAX.POST('/api/patient/create', patientDetail, (data)=>{
-        this.onLoad();
-        this.close();  
-      }, {message: 'The patient detail has been updated successfully.'});
+      }
     }
     else {
       this.tabRef.current.select(++index);
     }
   }
+
+  uploadFile = function(result, fileInput){
+    if(fileInput != null && fileInput.length > 0){
+      Common.uploadFiles({id: result.id, empCode: result.empcode, fileInput: fileInput, fileIndex: 0, url: '/api/patient/uploadFile', successHandler: ()=>{
+        this.onLoad();
+        this.close();  
+      }});				
+    }
+	}
 
   tabsOnSelected(event) {
     if(event.type === 'selected'){
@@ -253,8 +270,9 @@ export class Patient extends Component {
           <li>Address details</li>
           <li>Next of Kin</li>
         </ul>
-        <div>
+        <div>          
           <JqxForm ref={this.patientRef} width={'100%'} height={"100%"} theme={this.theme} template={this.patientTemp}/>        
+          <JqxFileUpload style={{ float: 'left', margin: '5px' }} width={'100%'} fileInputName={'fileToUpload'} />
         </div>
         <div>
           <JqxForm ref={this.addressRef} width={'100%'} height={"100%"} theme={this.theme} template={this.addressTemp}/>

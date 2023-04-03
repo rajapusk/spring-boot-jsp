@@ -5,3 +5,7 @@
 .scPatient .scRecordContainer{
     height: 350px !important;
 }
+
+.scPatient .jqx-file-upload-buttons-container{
+    display: none !important;
+}

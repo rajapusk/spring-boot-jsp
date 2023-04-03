@@ -1,4 +1,5 @@
 import { jqx }  from 'jqwidgets-scripts/jqwidgets-react-tsx/jqxgrid';
+import HttpAJAX from './httpAJAX.js';
 
 function CommonService() { 
     var theme = '';
@@ -146,7 +147,7 @@ function CommonService() {
 				} 
 
 				if(row.type === 'date' || row.type == 'datetime' || row.type == 'time'){
-					input.jqxDateTimeInput({formatString: row.dispFormat});
+					input.jqxDateTimeInput({formatString: row.dispFormat, min: row.minDate, max: row.maxDate});
 
 					if(row.bindEvent != true){
 						row.bindEvent = true;
@@ -335,6 +336,8 @@ function CommonService() {
 					dispFormat: elm.dispFormat,
 					format: elm.format,
 					change: elm.change,
+					minDate: elm.minDate,
+					maxDate: elm.maxDate,
 					init: elm.init,
 					labelWidth: config.labelWidth + 'px',
 					width: config.controlWidth + 'px',
@@ -464,6 +467,35 @@ function CommonService() {
 	   	}
 
 		return foundRow;
+	};
+
+	this.uploadFiles = function(config){	
+		if(config != null){
+			if(config.fileInput != null && config.fileInput.length > 0 && config.fileIndex < config.fileInput.length){
+				var file = config.fileInput[config.fileIndex].files;
+				
+				if(file != null && file.length > 0){
+					var fileData = new FormData();
+					fileData.append("document", file[0]);
+					fileData.append("pageId", config.id);
+					fileData.append("empCode", config.empCode);
+				
+					HttpAJAX.UPLOAD(config.url, fileData, (result) =>{
+						config.fileIndex++;
+							
+						this.uploadFiles(config);
+					});
+				} else {
+					config.fileIndex++;
+							
+					this.uploadFiles(config);
+				}
+			}else{
+				if(config.successHandler != null){
+					config.successHandler();
+				}
+			}
+		}
 	};
 
 	var fireChange = function(changeModel){

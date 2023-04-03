@@ -3,7 +3,23 @@ import Common from '../service/common.js';
 function HttpAJAXService(){
     var HOST = 'http://localhost:' + 9092;
 
-    this.POST = function(url, postData, successHandler, toast)
+    this.UPLOAD = function(url, fileData, successHandler, toast)
+	{
+		try{
+			let config = {
+				method: "POST",
+				body: fileData
+			};
+
+			makeAJAX(config, url, successHandler, {message: (toast != null && toast.message ? toast.message : 'The record updated successfully.'), type: "success"});
+		}
+		catch(e){
+			console.error(e)
+			Common.setValue(Common.WATCH.HTTP_CALL, false);
+		}
+    };
+
+	this.POST = function(url, postData, successHandler, toast)
 	{
 		try{
 			bindDateModel(postData);

@@ -2,23 +2,53 @@ import React, { Component } from 'react';
 import JqxInput from 'jqwidgets-scripts/jqwidgets-react-tsx/jqxinput';
 import JqxNumberInput from 'jqwidgets-scripts/jqwidgets-react-tsx/jqxnumberinput';
 import JqxButton from 'jqwidgets-scripts/jqwidgets-react-tsx/jqxbuttons';
+import JqxDropDownList from 'jqwidgets-scripts/jqwidgets-react-tsx/jqxdropdownlist';
 import { FaPlus, FaMinus } from "react-icons/fa";
 import Common from '../service/common.js';
 import './record.css';
 
-function Item({ col, viewModel, theme, onChange }) {
+function Item({ col, row, viewModel, theme, onChange }) {
+    let disabledField = (viewModel ? viewModel : col.disabled ? true : false);
+    let html = <div></div>;
+
+    col.row = row;
+    col.componentRef = React.createRef();
+
     if(col.type == null || col.type === 'text'){
-        return <div className='scCenterXY scRecordItem'>
+        html = <div className='scCenterXY scRecordItem'>
                     <div className='scColLabel'>
-                        <div className='scLabel'>{col.label}</div>
+                        <div className='scLabel'>{col.label}
+                            <span className='scRed'>
+                                <sup>{
+                                    col.required ? ' *': ''
+                                }</sup>
+                            </span>
+                        </div>
                     </div>
-                    <JqxInput disabled={viewModel} width={'100%'} value={col.value} onChange={onChange}/>
+                    <JqxInput ref={col.componentRef} name={col.bind} disabled={disabledField} width={'100%'} value={col.value} onChange={onChange}/>
                 </div>
     } else if(col.type === 'number'){
-        return <JqxNumberInput width={'100%'} disabled={viewModel} value={col.value} placeHolder={col.label}  onChange={onChange} inputMode={'simple'}/>
-    } else {
-        return <div></div>
+        html = <JqxNumberInput ref={col.componentRef} width={'100%'} disabled={disabledField} value={col.value} placeHolder={col.label}  onChange={onChange} inputMode={'simple'}/>
+    } else if(col.type === 'option'){
+        html = <div className='scCenterXY scRecordItem'>
+            <div className='scColLabel'>
+                <div className='scLabel'>{col.label}
+                    <span className='scRed'>
+                        <sup>{
+                            col.required ? ' *': ''
+                        }</sup>
+                    </span>
+                </div>
+            </div>
+            <JqxDropDownList ref={col.componentRef} disabled={disabledField} width={'100%'} selectedIndex={col.selectedIndex} source={col.options} onChange={onChange}/>
+        </div>
     }
+
+    if(col.type === 'option' && col.selectedIndex == null){
+        //col.componentRef.current.clearSelection();
+    }
+
+    return html;    
 }
 
 function Icon({ isAdd }) {
@@ -31,12 +61,12 @@ function Icon({ isAdd }) {
 
 function RowItem({rows, viewModel, theme, buttonStyle, onclick, onChange}){
     let html;
-
+    
     html = rows.map((ele, index)=>{
         return <div key={index} className='scCenterXY scRecordRow'>{
             ele.map((item, itemIndex)=>{
                     return <div key={itemIndex} className='scRecordCols scCenterXY'>
-                      <Item col={item} viewModel={viewModel} theme={theme} onChange={(event)=> {onChange(event, index, itemIndex, item)}}/>
+                      <Item col={item} row={ele} viewModel={viewModel} theme={theme} onChange={(event)=> {onChange(event, index, itemIndex, item)}}/>
                     </div>
                 })                                
             }
@@ -54,13 +84,14 @@ function RowItem({rows, viewModel, theme, buttonStyle, onclick, onChange}){
 
 export class Record extends Component {
     rows;
+    bindConfig = {};
     buttonStyle = { float: 'left', marginLeft: '4px', cursor: 'pointer' };
     viewModel = false;
 
     constructor(props){
         super(props);        
 
-        this.rows = [];   
+        this.rows = []; 
         let model = JSON.parse(JSON.stringify(this.props.model));
         this.rows.push(model); 
         this.themeChange = this.themeChange.bind(this);
@@ -69,7 +100,15 @@ export class Record extends Component {
         this.val = this.val.bind(this);
         this.setVal = this.setVal.bind(this);
         this.onViewModel = this.onViewModel.bind(this);
+        this.setComboSource = this.setComboSource.bind(this);
+        this.reset = this.reset.bind(this);
         Common.subscribe(Common.WATCH.THEME, this.themeChange);
+
+        if(this.props.model != null){
+            this.props.model.forEach((row)=>{
+                this.bindConfig[row.bind] = row.change;
+            })
+        }
     }
 
     themeChange(newValue){
@@ -78,7 +117,29 @@ export class Record extends Component {
 
     inputOnChange(event, index, itemIndex, item){
         if(item != null){
-            item.value = event.currentTarget.value;
+            if(item.type == 'option'){
+                item.value = event.args.item.originalItem;
+                item.selectedIndex = event.args.item.index;
+            }
+            else {
+                item.value = event.currentTarget.value;
+            }
+            
+            if(item.dependentField != null){
+                item.dependentField.forEach((field)=>{
+                    item.row.forEach((col)=>{
+                        if(col.bind == field){
+                            col.required = (item.value != null && item.value.length > 0);
+                        }
+                    })
+                });   
+                
+                this.forceUpdate();
+            }
+
+            if(this.bindConfig != null && this.bindConfig[item.bind] != null){
+                this.bindConfig[item.bind](item.value, item.row);
+            }
         }
     }
 
@@ -168,6 +229,39 @@ export class Record extends Component {
     onViewModel(viewModel){
         this.viewModel = viewModel;
         this.forceUpdate();
+    }
+
+    setComboSource(field, source){
+        var mapOption = function(cols, col, opts){
+            if(cols != null){
+                cols.forEach((element, index) =>{
+                    if(element.bind == col){
+                        element.options = opts;
+                    }
+                });
+            }
+        }
+
+        mapOption(this.props.model, field, source);
+
+        this.rows.forEach((element, index) => {
+            mapOption(element, field, source);
+        });
+
+        this.forceUpdate();
+    };
+
+    reset(){
+        let model = JSON.parse(JSON.stringify(this.props.model));
+        this.rows.length = 0;
+
+        model.forEach((element, index) => {
+            if(element.type == 'option'){
+                element.selectedIndex = undefined;
+            }
+        });
+
+        this.rows.push(model);
     }
 
     render() {

@@ -142,6 +142,17 @@ function CommonService() {
                     input.jqxButton({theme: theme});
                 }
 
+				if(row.numberOnly){
+					var reg = /^\d+$/;
+
+					input.keypress((event)=>{
+						if(!reg.test(event.key)){
+							event.stopPropagation()
+							event.preventDefault()
+						}
+					});
+                }
+
 				if(row.type === 'option'){
 					input.jqxDropDownList({width: row.width});
 				} 
@@ -338,6 +349,8 @@ function CommonService() {
 					change: elm.change,
 					minDate: elm.minDate,
 					maxDate: elm.maxDate,
+					numberOnly: elm.numberOnly,
+					required: elm.required,
 					init: elm.init,
 					labelWidth: config.labelWidth + 'px',
 					width: config.controlWidth + 'px',

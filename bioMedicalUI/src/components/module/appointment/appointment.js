@@ -4,6 +4,7 @@ import JqxWindow from 'jqwidgets-scripts/jqwidgets-react-tsx/jqxwindow';
 import JqxTabs  from 'jqwidgets-scripts/jqwidgets-react-tsx/jqxtabs';
 import JqxForm from 'jqwidgets-scripts/jqwidgets-react-tsx/jqxform';
 import JqxComboBox from 'jqwidgets-scripts/jqwidgets-react-tsx/jqxcombobox';
+import Record  from '../../record/record.js';
 
 import { FaDesktop } from "react-icons/fa";
 
@@ -25,6 +26,9 @@ export class Appointment extends Component {
         this.window = React.createRef();
         this.tabRef = React.createRef();
         this.appointmentRef = React.createRef();
+        this.consRecordRef = React.createRef();
+        this.diaRecordRef = React.createRef();
+        this.servRecordRef = React.createRef();
         this.paymentRef = React.createRef();
 
         let departmentOpts = [
@@ -40,37 +44,48 @@ export class Appointment extends Component {
             labelWidth:this.labelWidth,
             controlWidth:this.controlWidth,
             rows:[
-              {bind: 'department', label: 'Department', type: 'option',component: 'jqxDropDownList', options: departmentOpts},
-              {bind: 'patientType', label: 'Patient Type', type:"option", component: 'jqxDropDownList', options: [ { value: '' }, { value: 'Consultation' }, { value: 'Diagnostics' } ]},
-              {bind: 'referral', label: 'Referral', type:"option", component: 'jqxDropDownList', options: [ { value: '' }, { value: 'Yes' }, { value: 'No' } ]},
-              {bind: 'visitType', label: 'Visit Type', type:"option", component: 'jqxDropDownList', options: [ { value: '' },{ value: 'First Visit' }, { value: 'Review' } ]},
-              {bind: 'payeeType', label: 'Payee Type', type:"option", component: 'jqxDropDownList', options: [ { value: '' }, { value: 'Self' }, { value: 'Insurance' } ]}
+                {bind: 'dateOfOpVisit', label: 'Date of OP Visit', type: 'date', format: Common.FORMAT.DATE, dispFormat: Common.FORMAT.DISP_DATE, minDate: new Date()},
+                {bind: 'timeOfOpVisit', label: 'Time of OP visit', type: 'time', format: Common.FORMAT.TIME, dispFormat: Common.FORMAT.DISP_TIME, minDate: new Date()},
+                {bind: 'department', label: 'Department', type: 'option',component: 'jqxDropDownList', options: departmentOpts},
+                {bind: 'patientType', label: 'Patient Type', type:"option", component: 'jqxDropDownList', options: [ { value: '' }, { value: 'Consultation' }, { value: 'Diagnostics' } ]},
+                {bind: 'referral', label: 'Referral', type:"option", component: 'jqxDropDownList', options: [ { value: '' }, { value: 'Yes' }, { value: 'No' } ]},
+                {bind: 'visitType', label: 'Visit Type', type:"option", component: 'jqxDropDownList', options: [ { value: '' },{ value: 'First Visit' }, { value: 'Review' } ]},
+                {bind: 'payeeType', label: 'Payee Type', type:"option", component: 'jqxDropDownList', options: [ { value: '' }, { value: 'Self' }, { value: 'Insurance' } ]}
             ]
         });
+
+        this.consultationRecord = [
+            {bind: 'consultationDoctor', label: 'Consultation-Doctor', type: 'option', change: (value, row)=>{
+                this.updateTotalAmount(row, value, ['consultAmount'], 'totalAmount');
+            }},
+            {bind: 'visitType', label: 'Visit Type', type:"option", options: [ { value: '' },{ value: 'First Visit' }, { value: 'Review' } ]},
+            {bind: 'consultAmount', label: 'Amount', value: '', disabled: true}
+        ]
+
+        this.diagnosticRecord = [
+            {bind: 'diagnostics', label: 'Diagnostics', type: 'option', change: (value, row)=>{
+                this.updateTotalAmount(row, value, ['diagAmount'], 'totalAmount');
+            }},
+            {bind: 'visitType', label: 'Visit Type', type:"option", options: [ { value: '' },{ value: 'First Visit' }, { value: 'Review' } ]},
+            {bind: 'diagAmount', label: 'Amount', value: '', disabled: true}
+        ]
+
+        this.serviceRecord = [
+            {bind: 'services', label: 'Services', type: 'option', change: (value, row)=>{
+                this.updateTotalAmount(row, value, ['serviceAmount'], 'totalAmount');
+            }},
+            {bind: 'visitType', label: 'Visit Type', type:"option", options: [ { value: '' },{ value: 'First Visit' }, { value: 'Review' } ]},
+            {bind: 'serviceAmount', label: 'Amount', value: '', disabled: true}
+        ]
 
         this.paymentTemp = Common.getColTemplate({
             noOfCols: 2,
             labelWidth:this.labelWidth,
             controlWidth:this.controlWidth,
             rows:[
-              {bind: 'consultationDoctor', label: 'Consultation-Doctor', type: 'option',component: 'jqxDropDownList', init: this.makeMultiSelectCombo, change: (value)=>{
-                this.amountUpdate(value, 'consultAmount');
-              }},
-              {bind: 'consultAmount', label: 'Amount', disabled: true, change: (value)=>{
-                this.totalAmountUpdate(['consultAmount', 'diagAmount', 'serviceAmount'], 'totalAmount');
-              }},
-              {bind: 'diagnostics', label: 'Diagnostics', type: 'option',component: 'jqxDropDownList', init: this.makeMultiSelectCombo, change: (value)=>{
-                this.amountUpdate(value, 'diagAmount');
-              }},
-              {bind: 'diagAmount', label: 'Amount', disabled: true, change: (value)=>{
-                this.totalAmountUpdate(['consultAmount', 'diagAmount', 'serviceAmount'], 'totalAmount');
-              }},
-              {bind: 'services', label: 'Services', type: 'option',component: 'jqxDropDownList', init: this.makeMultiSelectCombo, change: (value)=>{
-                this.amountUpdate(value, 'serviceAmount');
-              }},
-              {bind: 'serviceAmount', label: 'Amount', disabled: true, change: (value)=>{
-                this.totalAmountUpdate(['consultAmount', 'diagAmount', 'serviceAmount'], 'totalAmount');
-              }},
+              {bind: 'consultAmount', label: 'Consultation-Doctor Amount', disabled: true},
+              {bind: 'diagAmount', label: 'Diagnostics Amount', disabled: true},
+              {bind: 'serviceAmount', label: 'Services Amount', disabled: true},              
               {bind: 'totalAmount', label: 'Total Amount', disabled: true},
               {bind: 'amountPaid', label: 'Amount Paid'},
               {bind: 'upiCard', label: 'If UPI/Card details'},
@@ -84,8 +99,7 @@ export class Appointment extends Component {
         this.onWindowInit = this.onWindowInit.bind(this);
         this.refreshForm = this.refreshForm.bind(this);
         this.onLoad = this.onLoad.bind(this);
-        this.amountUpdate = this.amountUpdate.bind(this);
-        this.totalAmountUpdate = this.totalAmountUpdate.bind(this);
+        this.updateTotalAmount = this.updateTotalAmount.bind(this);
         this.makeMultiSelectCombo = this.makeMultiSelectCombo.bind(this);
         Common.subscribe(Common.WATCH.THEME, this.themeChange);
     }
@@ -98,35 +112,51 @@ export class Appointment extends Component {
         if(event.type === 'selected'){
             this.selectedTab = this.tabRef.current.val();
 
+            if(this.selectedTab == 4){
+                let config = {totalAmount: 0};
+                let fields = ['consultAmount', 'diagAmount', 'serviceAmount', 'totalAmount'];
+                let consultation = this.consRecordRef.current.val();
+                let diagnostics = this.diaRecordRef.current.val();
+                let service = this.servRecordRef.current.val();
+
+                this.calcAmount(config, consultation, 'consultAmount');
+                this.calcAmount(config, diagnostics, 'diagAmount');
+                this.calcAmount(config, service, 'serviceAmount');
+                
+                fields.forEach((field)=>{
+                    Common.fieldUpdate(this.paymentTemp, this.paymentRef.current, config, field);
+                });
+            }
+
             this.forceUpdate();
             this.refreshForm();
         }
     }
 
-    amountUpdate(value, fieldId){       
-        if(value != null){
-            var config = {};
-            config[fieldId] = 0;
+    calcAmount(config, values, key){
+        if(values != null){
+            config[key] = 0;
 
-            value.forEach((element)=>{
-                config[fieldId] += (element.fee * 1);
-            })
+            values.forEach((element) => {
+                let value = element[key];
 
-            Common.fieldUpdate(this.paymentTemp, this.paymentRef.current, config, fieldId);
+                config[key] += (value != null ? value : 0);
+            });
+
+            config.totalAmount += config[key];
         }
     }
 
-    totalAmountUpdate(fields, fieldId){       
+    updateTotalAmount(rows, value, fields){       
         if(fields != null){
-            var config = {};
-            config[fieldId] = 0;
-
             fields.forEach((element)=>{
-                let row = Common.getFormRow(this.paymentTemp, element);
-                config[fieldId] += (row.inputValue != null ? (row.inputValue) * 1: 0);
-            });
+                let row = Common.getFormRow(rows, element);
+                row.value = value.fee;
 
-            Common.fieldUpdate(this.paymentTemp, this.paymentRef.current, config, fieldId);
+                if(row.componentRef != null && row.componentRef.current != null){
+                    row.componentRef.current.setOptions({value: row.value});
+                }
+            });
         }
     }
 
@@ -143,7 +173,7 @@ export class Appointment extends Component {
     submit(){
         var index = this.tabRef.current.val();
     
-        if(index === 1){
+        if(index === 4){
           var appointmentDetail = {};
 
           Common.loopInput(this.appointmentTemp, this.appointmentRef.current, Common.getValue, appointmentDetail);
@@ -166,6 +196,9 @@ export class Appointment extends Component {
         if(visible){
             this.window.current.open();
             this.tabRef.current.select(0);
+            this.consRecordRef.current.reset();
+            this.diaRecordRef.current.reset();
+            this.servRecordRef.current.reset();
         }else {
           this.window.current.close();
         }
@@ -213,50 +246,39 @@ export class Appointment extends Component {
 
     onLoad(){
         HttpAJAX.GET('/api/v1/doctors', (data) => {
-            let row = Common.getFormRow(this.paymentTemp, 'consultationDoctor');
-
-            if(row != null && data != null){
+            if(data != null){
                 let source = [];
 
                 data.forEach((element) => {
                     source.push({value: element.name, id: element.id, fee: element.fee});
                 });
 
-                row.options = source;
+                this.consRecordRef.current.setComboSource('consultationDoctor', source);
             }
         })
 
         HttpAJAX.GET('/api/v1/diagnostic', (data) => {
-            let row = Common.getFormRow(this.paymentTemp, 'diagnostics');
-
-            if(row != null && data != null){
+            if(data != null){
                 let source = [];
 
                 data.forEach((element) => {
                     source.push({value: element.diagnosticName, id: element.id, fee: element.fee});
                 });
 
-                row.options = source;
+                this.diaRecordRef.current.setComboSource('diagnostics', source);
             }
         })
 
         HttpAJAX.GET('/api/v1/service', (data) => {
-            let row = Common.getFormRow(this.paymentTemp, 'services');
             let source = [];
 
-            if(data != null){
+            if(data != null && typeof data.forEach == 'function'){
                 data.forEach((element) => {
                     source.push({value: element.serviceName, id: element.id, fee: element.fee});
                 });
             }
 
-            if(row != null){
-                row.options = source;
-            }
-
-            if(row != null){
-                row.options = source;
-            }
+            this.servRecordRef.current.setComboSource('services', source);
         })
     }
 
@@ -290,10 +312,22 @@ export class Appointment extends Component {
                         <JqxTabs ref={this.tabRef} width={'100%'} height={'100%'} theme={this.theme} onSelected={(event)=> this.tabsOnSelected(event)}>
                             <ul>
                                 <li>Appointment</li>
+                                <li>Consultation Doctor</li>
+                                <li>Diagnostics</li>
+                                <li>Services</li>
                                 <li>Payment</li>
                             </ul>
                             <div>
                                 <JqxForm ref={this.appointmentRef} width={'100%'} height={"100%"} theme={this.theme} template={this.appointmentTemp}/>        
+                            </div>
+                            <div>
+                                <Record ref={this.consRecordRef} model={this.consultationRecord}/>
+                            </div>
+                            <div>
+                                <Record ref={this.diaRecordRef} model={this.diagnosticRecord}/>
+                            </div>
+                            <div>
+                                <Record ref={this.servRecordRef} model={this.serviceRecord}/>
                             </div>
                             <div>
                                 <JqxForm ref={this.paymentRef} width={'100%'} height={"100%"} theme={this.theme} template={this.paymentTemp}/>
@@ -303,7 +337,7 @@ export class Appointment extends Component {
                             <div className='scFooterContent'>
                                 <JqxButton theme={this.theme} template={'primary'} width={80} style={{ float: 'left', marginLeft: '4px', cursor: 'pointer' }} onclick={this.submit}>
                                     {
-                                        this.selectedTab === 1 ? 'Submit' : 'Next'
+                                        this.selectedTab === 4 ? 'Submit' : 'Next'
                                     }
                                 </JqxButton>
                                 <JqxButton theme={this.theme} template={'primary'} width={80} style={{ float: 'left', marginLeft: '4px', cursor: 'pointer' }} onclick={()=> this.open(false)}>Cancel</JqxButton>

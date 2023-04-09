@@ -2,13 +2,13 @@ import React, { Component } from 'react';
 import JqxTabs  from 'jqwidgets-scripts/jqwidgets-react-tsx/jqxtabs';
 import JqxButton from 'jqwidgets-scripts/jqwidgets-react-tsx/jqxbuttons';
 import JqxForm from 'jqwidgets-scripts/jqwidgets-react-tsx/jqxform';
-import JqxFileUpload from 'jqwidgets-scripts/jqwidgets-react-tsx/jqxfileupload';
 
 import Appointment from '../appointment/appointment.js';
 import Common from '../../service/common.js';
 import IconSVG from '../../service/iconSVG.js';
 import HttpAJAX from '../../service/httpAJAX.js';
 import Page  from '../../page/page.js';
+import Avatar  from '../../avatar/avatar.js';
 import Record  from '../../record/record.js';
 import './patient.css';
 
@@ -25,6 +25,7 @@ export class Patient extends Component {
 
   constructor(props){
     super(props);
+    this.avatarRef = React.createRef();
     this.patientRef = React.createRef();
     this.addressRef = React.createRef();
     this.tabRef = React.createRef();
@@ -52,22 +53,22 @@ export class Patient extends Component {
         { text: 'Last Name', datafield: 'lastName'},
         { text: 'Age', datafield: 'age', width: 100, cellsalign: 'right' },
         { text: 'Mobile Number', datafield: 'mobileNumber', width: 150, cellsalign: 'right' },
-        { iconColumn: true, icon: IconSVG.ICON.EYE},
+        //{ iconColumn: true, icon: IconSVG.ICON.EYE},
         { iconColumn: true, icon: IconSVG.ICON.PEN},
         { iconColumn: true, icon: IconSVG.ICON.BUFFER},
-        { iconColumn: true, icon: IconSVG.ICON.REMOVE},
+        //{ iconColumn: true, icon: IconSVG.ICON.REMOVE},
       ],
     };
 
     this.window = {
       title: 'Add new patient',
       width: this.formWidth,
-      height: 680,
+      height: 580,
       content: null
     }
 
     this.nextOfKin = [
-      {bind: 'name', label: 'Name', value: ''},
+      {bind: 'name', label: 'Name', value: '', dependentField: ['relation', 'mobile']},
       {bind: 'relation', label: 'Relation', value: ''},
       {bind: 'mobile', label: 'Mobile', value: ''}
     ]
@@ -81,10 +82,10 @@ export class Patient extends Component {
         {bind: 'building', label: 'Building'},
         {bind: 'street', label: 'Street'},
         {bind: 'colony', label: 'Colony'},
-        {bind: 'city', label: 'City'},
+        {bind: 'city', label: 'City', required: true},
         {bind: 'district', label: 'District'},
         {bind: 'state', label: 'State'},
-        {bind: 'pinCode', label: 'Pin Code'},
+        {bind: 'pinCode', label: 'Pin Code', numberOnly: true},
       ]
     });
 
@@ -95,8 +96,8 @@ export class Patient extends Component {
       rows:[
         {bind: 'mrNo', label: 'MR No', disabled: true},
         {bind: 'motherName', label: 'Mother Name'},
-        {bind: 'dateOfOpVisit', label: 'Date of OP Visit', type: 'date', format: Common.FORMAT.DATE, dispFormat: Common.FORMAT.DISP_DATE, minDate: new Date()},
-        {bind: 'timeOfOpVisit', label: 'Time of OP visit', type: 'time', format: Common.FORMAT.TIME, dispFormat: Common.FORMAT.DISP_TIME, minDate: new Date()},
+        //{bind: 'dateOfOpVisit', label: 'Date of OP Visit', type: 'date', format: Common.FORMAT.DATE, dispFormat: Common.FORMAT.DISP_DATE, minDate: new Date()},
+        //{bind: 'timeOfOpVisit', label: 'Time of OP visit', type: 'time', format: Common.FORMAT.TIME, dispFormat: Common.FORMAT.DISP_TIME, minDate: new Date()},
         {bind: 'firstName', label: 'First Name'},
         {bind: 'lastName', label: 'Last Name'},
         {bind: 'dob', label: 'DOB', type: 'date', format: Common.FORMAT.DATE, dispFormat: Common.FORMAT.DISP_DATE, maxDate: new Date(), change: (value)=> {
@@ -133,6 +134,7 @@ export class Patient extends Component {
     this.editRow = null;
     this.pageRef.current.open(true);
     this.tabRef.current.select(0);
+    this.avatarRef.current.setPhoto('');
 
     Common.loopInput(this.patientTemp, this.patientRef.current, Common.viewMode, {viewMode: false});
     Common.loopInput(this.addressTemp, this.addressRef.current, Common.viewMode, {viewMode: false});
@@ -183,6 +185,10 @@ export class Patient extends Component {
             Common.loopInput(this.addressTemp, this.addressRef.current, Common.updateValue, data.address);
           }
           
+          if(data != null && data.photo != null){
+            this.avatarRef.current.setPhoto(data.photo);
+          }
+          
           this.pageRef.current.open(true);
           this.tabRef.current.select(0);
       }
@@ -194,9 +200,10 @@ export class Patient extends Component {
 
     if(index === 2){
       var fileInput = document.querySelectorAll('input[type=file]');
+      let validKin = true;
 
-      if(fileInput != null && fileInput.length > 0){
-        let patientDetail =this.editRow;
+      if((fileInput != null && fileInput.length > 0) || this.editRow != null){
+        let patientDetail = this.editRow;
 
         if(patientDetail == null){
           patientDetail ={address: {}, nextOfKin: []};
@@ -204,11 +211,33 @@ export class Patient extends Component {
   
         Common.loopInput(this.patientTemp, this.patientRef.current, Common.getValue, patientDetail);
         Common.loopInput(this.addressTemp, this.addressRef.current, Common.getValue, patientDetail.address);
-        patientDetail.nextOfKin = this.recordRef.current.val();
-  
-        HttpAJAX.POST('/api/patient/create', patientDetail, (data)=>{
-          this.uploadFile(data, fileInput);
-        }, {message: 'The patient detail has been updated successfully.'});
+
+        if(patientDetail.address.city != '' && patientDetail.address.city != null){
+          patientDetail.nextOfKin = this.recordRef.current.val();
+          
+          if(patientDetail.nextOfKin != null){
+            patientDetail.nextOfKin.forEach((kin)=>{
+              if(kin.name != null && kin.name != '' && (kin.relation == '' || kin.relation == null || kin.mobile == null || kin.mobile == '')){
+                validKin = false;
+              }
+            });
+          }
+
+          if(validKin){
+            HttpAJAX.POST('/api/patient/create', patientDetail, (data)=>{
+              this.uploadFile(data, fileInput);
+            }, {message: 'The patient detail has been updated successfully.'});
+          } else {
+            let toast = {message: 'Please fill the next of kin required fields.', type: "error"};
+
+            Common.setValue(Common.WATCH.NOTIFICATION, toast);
+          }
+        }
+        else {
+          let toast = {message: 'The city is required to submit the patient details.', type: "error"};
+
+          Common.setValue(Common.WATCH.NOTIFICATION, toast);
+        }
       }
       else {
 
@@ -225,6 +254,9 @@ export class Patient extends Component {
         this.onLoad();
         this.close();  
       }});				
+    } else {
+        this.onLoad();
+        this.close();  
     }
 	}
 
@@ -270,9 +302,9 @@ export class Patient extends Component {
           <li>Address details</li>
           <li>Next of Kin</li>
         </ul>
-        <div>          
-          <JqxForm ref={this.patientRef} width={'100%'} height={"100%"} theme={this.theme} template={this.patientTemp}/>        
-          <JqxFileUpload style={{ float: 'left', margin: '5px' }} width={'100%'} fileInputName={'fileToUpload'} />
+        <div>
+          <Avatar ref={this.avatarRef} />
+          <JqxForm ref={this.patientRef} width={'100%'} height={"100%"} theme={this.theme} template={this.patientTemp}/>
         </div>
         <div>
           <JqxForm ref={this.addressRef} width={'100%'} height={"100%"} theme={this.theme} template={this.addressTemp}/>

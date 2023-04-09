@@ -98,7 +98,8 @@ public class PatientController {
                 output.mobileNumber = patient.getMobileNumber();
                 output.motherName = patient.getMotherName();
                 output.mrNo = patient.getId();
-                output.timeOfOpVisit = patient.getTimeOfOpVisit();
+                output.timeOfOpVisit = patient.getTimeOfOpVisit();                
+                
                 patientOutputList.add(output);
             }
         }
@@ -137,6 +138,8 @@ public class PatientController {
             output.motherName = patient.getMotherName();
             output.mrNo = patient.getId();
             output.timeOfOpVisit = patient.getTimeOfOpVisit();
+            output.photo = FileUploadHelper.getRecentDocument("" + patient.getId(), "patient", docService);
+            
             List<PatientAddressEntity> patientAddressEntityList = addressService.getAllAddress();
             List<NextOfKinEntity> allNextOfKin = nextOfKinService.getAllNextOfKin();
 

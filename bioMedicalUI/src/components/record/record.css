@@ -1,11 +1,12 @@
 .scRecordContainer{
     padding: 10px 0px;
     min-height: 200px;
-    height: 200px;
+    height: 354px;
+    overflow: auto;
 }
 
 .scRecordRow{
-    height: 65px;
+    height: 80px;
 }
 
 .scRecordCols{
@@ -38,14 +39,19 @@
     font-style: normal;
     font-size: 13px;
     padding-bottom: 5px;
+    height: 20px;
 }
 
 .scRecordItem{
     flex-direction: column;
     align-items: flex-start;
-    width: 98%;
+    width: calc(100% - 10px);
 }
 
 .scHide{
     display: none;
+}
+
+.scRed{
+    color: red;
 }

@@ -44,10 +44,6 @@ function Item({ col, row, viewModel, theme, onChange }) {
         </div>
     }
 
-    if(col.type === 'option' && col.selectedIndex == null){
-        //col.componentRef.current.clearSelection();
-    }
-
     return html;    
 }
 
@@ -84,7 +80,7 @@ function RowItem({rows, viewModel, theme, buttonStyle, onclick, onChange}){
 
 export class Record extends Component {
     rows;
-    bindConfig = {};
+    changeEvent = {};
     buttonStyle = { float: 'left', marginLeft: '4px', cursor: 'pointer' };
     viewModel = false;
 
@@ -106,7 +102,7 @@ export class Record extends Component {
 
         if(this.props.model != null){
             this.props.model.forEach((row)=>{
-                this.bindConfig[row.bind] = row.change;
+                this.changeEvent[row.bind] = row.change;
             })
         }
     }
@@ -137,8 +133,8 @@ export class Record extends Component {
                 this.forceUpdate();
             }
 
-            if(this.bindConfig != null && this.bindConfig[item.bind] != null){
-                this.bindConfig[item.bind](item.value, item.row);
+            if(this.changeEvent != null && this.changeEvent[item.bind] != null){
+                this.changeEvent[item.bind](item.value, item.row);
             }
         }
     }
@@ -262,6 +258,18 @@ export class Record extends Component {
         });
 
         this.rows.push(model);
+    }
+
+    componentDidUpdate(){
+        if(this.rows != null){
+            this.rows.forEach((row)=>{
+                row.forEach((col)=>{
+                    if(col.type == 'option' && col.selectedIndex == undefined){
+                        col.componentRef.current.clearSelection();
+                    }
+                })
+            })
+        }
     }
 
     render() {

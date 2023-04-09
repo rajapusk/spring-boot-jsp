@@ -1,5 +1,8 @@
 package com.spring.bioMedical.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.persistence.*;
 
 @Entity
@@ -139,5 +142,29 @@ public class AppointmentEntity {
 
     public void setUpdatedOn(java.sql.Date value) {
         this.updatedOn = value;
+    }@JsonProperty("dateOfOpVisit")
+    @JsonFormat(pattern="yyyy-MM-dd")
+    @Column(name = "dateOfOpVisit")
+    private java.sql.Date dateOfOpVisit;
+
+    public java.sql.Date getDateOfOpVisit() {
+        return this.dateOfOpVisit;
+    }
+
+    public void setDateOfOpVisit(java.sql.Date value) {
+        this.dateOfOpVisit = value;
+    }
+
+    @JsonProperty("timeOfOpVisit")
+    @JsonFormat(pattern="HH:mm:ss.SSS")
+    @Column(name = "timeOfOpVisit")
+    private java.sql.Time timeOfOpVisit;
+
+    public java.sql.Time getTimeOfOpVisit() {
+        return this.timeOfOpVisit;
+    }
+
+    public void setTimeOfOpVisit(java.sql.Time value) {
+        this.timeOfOpVisit = value;
     }
 }

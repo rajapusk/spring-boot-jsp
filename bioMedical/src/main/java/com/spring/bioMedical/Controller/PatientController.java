@@ -38,14 +38,12 @@ public class PatientController {
 
         PatientEntity patient = new PatientEntity();
         patient.setEmailId(input.emailId);
-        patient.setDateOfOpVisit(input.dateOfOpVisit);
         patient.setDob(input.dob);
         patient.setFirstName(input.firstName);
         patient.setLastName(input.lastName);
         patient.setMobileNumber(input.mobileNumber);
         patient.setId(input.mrNo);
         patient.setMotherName(input.motherName);
-        patient.setTimeOfOpVisit(input.timeOfOpVisit);
         patient.setIsDeleted(false);
 
         PatientEntity entity = patientService.createOrUpdatePatient(patient);
@@ -94,11 +92,9 @@ public class PatientController {
                 output.firstName = patient.getFirstName();
                 output.lastName = patient.getLastName();
                 output.emailId = patient.getEmailId();
-                output.dateOfOpVisit = patient.getDateOfOpVisit();
                 output.mobileNumber = patient.getMobileNumber();
                 output.motherName = patient.getMotherName();
                 output.mrNo = patient.getId();
-                output.timeOfOpVisit = patient.getTimeOfOpVisit();                
                 
                 patientOutputList.add(output);
             }
@@ -133,11 +129,9 @@ public class PatientController {
             output.firstName = patient.getFirstName();
             output.lastName = patient.getLastName();
             output.emailId = patient.getEmailId();
-            output.dateOfOpVisit = patient.getDateOfOpVisit();
             output.mobileNumber = patient.getMobileNumber();
             output.motherName = patient.getMotherName();
             output.mrNo = patient.getId();
-            output.timeOfOpVisit = patient.getTimeOfOpVisit();
             output.photo = FileUploadHelper.getRecentDocument("" + patient.getId(), "patient", docService);
             
             List<PatientAddressEntity> patientAddressEntityList = addressService.getAllAddress();
@@ -188,34 +182,42 @@ public class PatientController {
         appointment.setTotalAmount(input.totalAmount);
         appointment.setUpiCard(input.upiCard);
         appointment.setVisitType(input.visitType);
+        appointment.setDateOfOpVisit(input.dateOfOpVisit);
+        appointment.setTimeOfOpVisit(input.timeOfOpVisit);
         appointment.setIsDeleted(false);
 
         AppointmentEntity entity = appointmentService.createOrUpdateAppointment(appointment);
 
         for (ConsultationDoctorOutput doctor : input.consultationDoctor) {
-            AppointmentDoctorEntity addressEntity = new AppointmentDoctorEntity();
-            addressEntity.setPatientId(entity.getPatientId());
-            addressEntity.setAppointmentId(entity.getId());
-            addressEntity.setFee(doctor.fee);
-            addressEntity.setDoctorId(doctor.id);
-            appointmentService.createOrUpdateAppointmentDoctor(addressEntity);
+            AppointmentDoctorEntity doctorEntity = new AppointmentDoctorEntity();
+            doctorEntity.setPatientId(entity.getPatientId());
+            doctorEntity.setAppointmentId(entity.getId());
+            doctorEntity.setFee(doctor.fee);
+            doctorEntity.setDoctorId(doctor.id);
+            doctorEntity.setVisitType(doctor.visitType);
+            doctorEntity.setPaymentTypeId(doctor.paymentTypeId);
+            appointmentService.createOrUpdateAppointmentDoctor(doctorEntity);
         }
 
-        for (ServiceOutput doctor : input.services) {
+        for (ServiceOutput serviceOutput : input.services) {
             AppointmentServiceEntity serviceEntity = new AppointmentServiceEntity();
             serviceEntity.setPatientId(entity.getPatientId());
             serviceEntity.setAppointmentId(entity.getId());
-            serviceEntity.setFee(doctor.fee);
-            serviceEntity.setServiceId(doctor.id);
+            serviceEntity.setFee(serviceOutput.fee);
+            serviceEntity.setServiceId(serviceOutput.id);
+            serviceEntity.setVisitType(serviceOutput.visitType);
+            serviceEntity.setPaymentTypeId(serviceOutput.paymentTypeId);
             appointmentService.createOrUpdateAppointmentServcie(serviceEntity);
         }
 
-        for (DiagnosticOutput service : input.diagnostics) {
+        for (DiagnosticOutput diagnosticOutput : input.diagnostics) {
             AppointmentDiagnosticEntity diagnostic = new AppointmentDiagnosticEntity();
             diagnostic.setPatientId(entity.getPatientId());
             diagnostic.setAppointmentId(entity.getId());
-            diagnostic.setFee(service.fee);
-            diagnostic.setDiagnosticId(service.id);
+            diagnostic.setFee(diagnosticOutput.fee);
+            diagnostic.setDiagnosticId(diagnosticOutput.id);
+            diagnostic.setVisitType(diagnosticOutput.visitType);
+            diagnostic.setPaymentTypeId(diagnosticOutput.paymentTypeId);
             appointmentService.createOrUpdateAppointmentDiagnostic(diagnostic);
         }
 

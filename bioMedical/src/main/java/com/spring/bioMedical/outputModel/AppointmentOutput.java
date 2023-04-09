@@ -16,4 +16,6 @@ public class AppointmentOutput {
     public double totalAmount;
     public double amountPaid;
     public String upiCard;
+    public java.sql.Date dateOfOpVisit;
+    public java.sql.Time timeOfOpVisit;
 }

@@ -63,5 +63,21 @@ public class AppointmentServiceEntity {
         this.fee = value;
     }
 
+    @Column(name = "paymentTypeId")
+    private int paymentTypeId;
+    public void setPaymentTypeId(int paymentTypeId) {
+        this.paymentTypeId = paymentTypeId;
+    }
+    public int getPaymentTypeId() {
+        return paymentTypeId;
+    }
 
+    @Column(name = "visitType")
+    private byte visitType;
+    public void setVisitType(byte visitType) {
+        this.visitType = visitType;
+    }
+    public byte getVisitType() {
+        return visitType;
+    }
 }

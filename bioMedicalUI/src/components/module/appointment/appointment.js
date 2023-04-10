@@ -15,6 +15,7 @@ import './appointment.css';
 
 export class Appointment extends Component {
     visibile = false;
+    parentModel;
     selectedTab = 0;
     formWidth = 800;
     labelWidth = 180;
@@ -38,6 +39,8 @@ export class Appointment extends Component {
             { value: 'Obstetrics' },
             { value: 'Pediatric Surgery' },
         ];
+
+        let visitTypeOpts = [ { value: '', id: -1 },{ value: 'Regular', id: 0 }, { value: 'Followup', id: 1 } ];
      
         this.appointmentTemp = Common.getColTemplate({
             noOfCols: 2,
@@ -49,32 +52,32 @@ export class Appointment extends Component {
                 {bind: 'department', label: 'Department', type: 'option',component: 'jqxDropDownList', options: departmentOpts},
                 {bind: 'patientType', label: 'Patient Type', type:"option", component: 'jqxDropDownList', options: [ { value: '' }, { value: 'Consultation' }, { value: 'Diagnostics' } ]},
                 {bind: 'referral', label: 'Referral', type:"option", component: 'jqxDropDownList', options: [ { value: '' }, { value: 'Yes' }, { value: 'No' } ]},
-                {bind: 'visitType', label: 'Visit Type', type:"option", component: 'jqxDropDownList', options: [ { value: '' },{ value: 'First Visit' }, { value: 'Review' } ]},
+                //{bind: 'visitType', label: 'Visit Type', type:"option", component: 'jqxDropDownList', options: [ { value: '' },{ value: 'First Visit' }, { value: 'Review' } ]},
                 {bind: 'payeeType', label: 'Payee Type', type:"option", component: 'jqxDropDownList', options: [ { value: '' }, { value: 'Self' }, { value: 'Insurance' } ]}
             ]
         });
 
         this.consultationRecord = [
             {bind: 'consultationDoctor', label: 'Consultation-Doctor', type: 'option', change: (value, row)=>{
-                this.updateTotalAmount(row, value, ['consultAmount'], 'totalAmount');
+                this.updateTotalAmount(row, value, ['consultAmount']);
             }},
-            {bind: 'visitType', label: 'Visit Type', type:"option", options: [ { value: '' },{ value: 'First Visit' }, { value: 'Review' } ]},
+            {bind: 'visitType', label: 'Visit Type', type:"option", options: visitTypeOpts},
             {bind: 'consultAmount', label: 'Amount', value: '', disabled: true}
         ]
 
         this.diagnosticRecord = [
             {bind: 'diagnostics', label: 'Diagnostics', type: 'option', change: (value, row)=>{
-                this.updateTotalAmount(row, value, ['diagAmount'], 'totalAmount');
+                this.updateTotalAmount(row, value, ['diagAmount']);
             }},
-            {bind: 'visitType', label: 'Visit Type', type:"option", options: [ { value: '' },{ value: 'First Visit' }, { value: 'Review' } ]},
+            {bind: 'visitType', label: 'Visit Type', type:"option", options: visitTypeOpts},
             {bind: 'diagAmount', label: 'Amount', value: '', disabled: true}
         ]
 
         this.serviceRecord = [
             {bind: 'services', label: 'Services', type: 'option', change: (value, row)=>{
-                this.updateTotalAmount(row, value, ['serviceAmount'], 'totalAmount');
+                this.updateTotalAmount(row, value, ['serviceAmount']);
             }},
-            {bind: 'visitType', label: 'Visit Type', type:"option", options: [ { value: '' },{ value: 'First Visit' }, { value: 'Review' } ]},
+            {bind: 'visitType', label: 'Visit Type', type:"option", options: visitTypeOpts},
             {bind: 'serviceAmount', label: 'Amount', value: '', disabled: true}
         ]
 
@@ -100,6 +103,7 @@ export class Appointment extends Component {
         this.refreshForm = this.refreshForm.bind(this);
         this.onLoad = this.onLoad.bind(this);
         this.updateTotalAmount = this.updateTotalAmount.bind(this);
+        this.parentData = this.parentData.bind(this);
         this.makeMultiSelectCombo = this.makeMultiSelectCombo.bind(this);
         Common.subscribe(Common.WATCH.THEME, this.themeChange);
     }
@@ -170,24 +174,53 @@ export class Appointment extends Component {
         }
     }
 
+    formRecords(data, field, values, picklist){
+        if(values != null){
+            values.forEach((element) => {
+                let row = {};
+                
+                row.patientId = data.patientId;
+
+                if(element[picklist] != null){
+                    row.fee = element[picklist].fee; 
+                    row.id = element[picklist].id; 
+                }
+                
+                if(element.visitType != null){
+                    row.visitType = element.visitType.id; 
+                }
+
+                data[field].push(row);
+            });
+        }
+    }
+
     submit(){
         var index = this.tabRef.current.val();
     
         if(index === 4){
-          var appointmentDetail = {};
+            var appointmentDetail = {consultationDoctor: [], diagnostics: [], services: [], patientId: (this.parentModel != null ? this.parentModel.mrNo : null)};
+            Common.loopInput(this.appointmentTemp, this.appointmentRef.current, Common.getValue, appointmentDetail);
+            let consultationDoctor = this.consRecordRef.current.val();
+            let diagnostics = this.diaRecordRef.current.val();
+            let service = this.servRecordRef.current.val();
 
-          Common.loopInput(this.appointmentTemp, this.appointmentRef.current, Common.getValue, appointmentDetail);
-          Common.loopInput(this.paymentTemp, this.paymentRef.current, Common.getValue, appointmentDetail);
-         
-          HttpAJAX.POST('/api/patient/appointment/book', appointmentDetail, (data)=>{
-            console.log(data, appointmentDetail);
-            this.close();  
-          }, {message: 'The patient detail has been updated successfully.'});
-          //this.open(false);      
+            this.formRecords(appointmentDetail, 'consultationDoctor', consultationDoctor, 'consultationDoctor');
+            this.formRecords(appointmentDetail, 'diagnostics', diagnostics, 'diagnostics');
+            this.formRecords(appointmentDetail, 'services', service, 'services');
+            Common.loopInput(this.paymentTemp, this.paymentRef.current, Common.getValue, appointmentDetail);
+     
+            HttpAJAX.POST('/api/patient/appointment/book', appointmentDetail, (data)=>{
+                this.open(false);  
+            }, {message: 'The patient detail has been updated successfully.'});
         }
         else {
           this.tabRef.current.select(++index);
         }
+    }
+
+    parentData(data){
+        this.parentModel = data;
     }
 
     open(visible){

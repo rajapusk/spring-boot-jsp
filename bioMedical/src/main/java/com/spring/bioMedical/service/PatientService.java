@@ -35,13 +35,13 @@ public class PatientService {
                 PatientEntity newEntity = patient.get();
                 newEntity.setUpdatedOn(new java.sql.Date(millis));
                 newEntity.setEmailId(entity.getEmailId());
-                newEntity.setDateOfOpVisit(entity.getDateOfOpVisit());
+                //newEntity.setDateOfOpVisit(entity.getDateOfOpVisit());
                 newEntity.setDob(entity.getDob());
                 newEntity.setFirstName(entity.getFirstName());
                 newEntity.setLastName(entity.getLastName());
                 newEntity.setMobileNumber(entity.getMobileNumber());
                 newEntity.setMotherName(entity.getMotherName());
-                newEntity.setTimeOfOpVisit(entity.getTimeOfOpVisit());
+                //newEntity.setTimeOfOpVisit(entity.getTimeOfOpVisit());
                 newEntity.setIsDeleted(false);
                 newEntity.setUpdatedOn(new java.sql.Date(millis));
                 newEntity = repository.save(newEntity);

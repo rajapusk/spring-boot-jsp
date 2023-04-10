@@ -151,10 +151,13 @@ export class Patient extends Component {
   onCellclick(event){
     let cellField = event.args.datafield;
 
+    console.log(event.args.row);
+
     if(cellField === IconSVG.ICON.PEN || cellField === IconSVG.ICON.EYE){      
       this.editRow = Common.clone(event.args.row.bounddata);
       this.getPatientDetail(this.editRow.mrNo, cellField);
     } else if(cellField === IconSVG.ICON.BUFFER){
+      this.appointmentRef.current.parentData(event.args.row.bounddata);
       this.appointmentRef.current.open(true);
     } else if(cellField === IconSVG.ICON.REMOVE){
       if(event.args.row.bounddata != null){

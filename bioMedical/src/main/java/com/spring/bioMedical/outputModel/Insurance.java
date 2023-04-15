@@ -3,7 +3,7 @@ package com.spring.bioMedical.outputModel;
 
 public class Insurance {
 	public String opType;
-	public String OpTypeName;
+	public String opTypeName;
 	public String insurance;
 
 	public String getOpType() {
@@ -15,11 +15,11 @@ public class Insurance {
 	}
 
 	public String getOpTypeName() {
-		return OpTypeName;
+		return opTypeName;
 	}
 
 	public void setOpTypeName(String opTypeName) {
-		OpTypeName = opTypeName;
+		opTypeName = opTypeName;
 	}
 
 	public String getInsurance() {

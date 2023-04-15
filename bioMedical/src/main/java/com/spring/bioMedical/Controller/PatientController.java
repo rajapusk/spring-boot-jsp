@@ -252,5 +252,24 @@ public class PatientController {
         return null;
     }
 
+    @RequestMapping(path = "/insurances", method = RequestMethod.GET)
+
+    public List<Insurance> fetchInsuranceAmount() {
+        List<Insurance> ins = new ArrayList<>();
+        Insurance ins1 = new Insurance();
+        ins1.insurance = "self";
+        ins1.opType = "self";
+        ins1.opTypeName = "self";
+
+        ins1.insurance = "abc";
+        ins1.opType = "abc";
+        ins1.opTypeName = "abc";
+
+        ins.add(ins1);
+
+
+        return ins;
+    }
+
 
 }

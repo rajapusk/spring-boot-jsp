@@ -29,7 +29,7 @@ public class PatientController {
 
     @Autowired
     AppointmentService appointmentService;
-    
+
     @Autowired
     DocumentService docService;
 
@@ -88,14 +88,14 @@ public class PatientController {
             if (patient.getIsDeleted() == false) {
                 PatientOutput output = new PatientOutput();
                 output.dob = patient.getDob();
-                output.age =calculateAge(output.dob);
+                output.age = calculateAge(output.dob);
                 output.firstName = patient.getFirstName();
                 output.lastName = patient.getLastName();
                 output.emailId = patient.getEmailId();
                 output.mobileNumber = patient.getMobileNumber();
                 output.motherName = patient.getMotherName();
                 output.mrNo = patient.getId();
-                
+
                 patientOutputList.add(output);
             }
         }
@@ -103,18 +103,14 @@ public class PatientController {
         return patientOutputList;
     }
 
-    private static int calculateAge(java.sql.Date dob)
-    {
+    private static int calculateAge(java.sql.Date dob) {
 //creating an instance of the LocalDate class and invoking the now() method
 //now() method obtains the current date from the system clock in the default time zone
         LocalDate curDate = LocalDate.now();
 //calculates the amount of time between two dates and returns the years
-        if ((dob != null) && (curDate != null))
-        {
+        if ((dob != null) && (curDate != null)) {
             return Period.between(dob.toLocalDate(), curDate).getYears();
-        }
-        else
-        {
+        } else {
             return 0;
         }
     }
@@ -133,7 +129,7 @@ public class PatientController {
             output.motherName = patient.getMotherName();
             output.mrNo = patient.getId();
             output.photo = FileUploadHelper.getRecentDocument("" + patient.getId(), "patient", docService);
-            
+
             List<PatientAddressEntity> patientAddressEntityList = addressService.getAllAddress();
             List<NextOfKinEntity> allNextOfKin = nextOfKinService.getAllNextOfKin();
 
@@ -224,19 +220,35 @@ public class PatientController {
 
         return entity;
     }
-    
-    @RequestMapping(path = "/uploadFile", method = RequestMethod.POST)
-	public DocumentEntity uploadFile(@RequestParam("document") MultipartFile file, String pageId) {
-		try {
-			if (pageId != null) {
-				if (!file.isEmpty()) {
-					return FileUploadHelper.uploadFile(file, pageId, "patient", docService);
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 
-		return null;
-	}
+
+    @RequestMapping(path = "/insurance/fetch", method = RequestMethod.POST)
+    public Long fetchInsurance(@RequestParam String doctor, @RequestParam String patient, @RequestParam String insurance) {
+        Integer value = appointmentService.fetchValue(doctor, patient, insurance);
+        return Long.valueOf(value);
+    }
+
+    @RequestMapping(path = "/fetchInsurance", method = RequestMethod.POST)
+
+    public Long fetchInsuranceAmount(@RequestBody Insurance insurance) {
+        Integer value = appointmentService.fetchValue(insurance.getOpType(), insurance.getOpTypeName(), insurance.getInsurance());
+        return Long.valueOf(value);
+    }
+
+    @RequestMapping(path = "/uploadFile", method = RequestMethod.POST)
+    public DocumentEntity uploadFile(@RequestParam("document") MultipartFile file, String pageId) {
+        try {
+            if (pageId != null) {
+                if (!file.isEmpty()) {
+                    return FileUploadHelper.uploadFile(file, pageId, "patient", docService);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+
 }

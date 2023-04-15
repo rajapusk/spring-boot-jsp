@@ -163,4 +163,10 @@ public class AppointmentService {
             }
         }
     }
+    
+    
+    public Integer fetchValue(String OpType, String opTypeName,String insurance) {
+    	int result = serviceRepository.calc_insamt(OpType, opTypeName, insurance);
+    	return Integer.valueOf(result);
+    }
 }

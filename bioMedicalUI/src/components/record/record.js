@@ -10,6 +10,7 @@ import './record.css';
 function Item({ col, row, viewModel, theme, onChange }) {
     let disabledField = (viewModel ? viewModel : col.disabled ? true : false);
     let html = <div></div>;
+    let width = '100%';
 
     col.row = row;
     col.componentRef = React.createRef();
@@ -25,10 +26,10 @@ function Item({ col, row, viewModel, theme, onChange }) {
                             </span>
                         </div>
                     </div>
-                    <JqxInput ref={col.componentRef} name={col.bind} disabled={disabledField} width={'100%'} value={col.value} onChange={onChange}/>
+                    <JqxInput width={width} ref={col.componentRef} name={col.bind} disabled={disabledField} value={col.value} onChange={onChange}/>
                 </div>
     } else if(col.type === 'number'){
-        html = <JqxNumberInput ref={col.componentRef} width={'100%'} disabled={disabledField} value={col.value} placeHolder={col.label}  onChange={onChange} inputMode={'simple'}/>
+        html = <JqxNumberInput width={width} ref={col.componentRef} disabled={disabledField} value={col.value} placeHolder={col.label}  onChange={onChange} inputMode={'simple'}/>
     } else if(col.type === 'option'){
         html = <div className='scCenterXY scRecordItem'>
             <div className='scColLabel'>
@@ -40,7 +41,7 @@ function Item({ col, row, viewModel, theme, onChange }) {
                     </span>
                 </div>
             </div>
-            <JqxDropDownList ref={col.componentRef} disabled={disabledField} width={'100%'} selectedIndex={col.selectedIndex} source={col.options} onChange={onChange}/>
+            <JqxDropDownList width={width} ref={col.componentRef} disabled={disabledField} selectedIndex={col.selectedIndex} source={col.options} onChange={onChange}/>
         </div>
     }
 
@@ -61,7 +62,14 @@ function RowItem({rows, viewModel, theme, buttonStyle, onclick, onChange}){
     html = rows.map((ele, index)=>{
         return <div key={index} className='scCenterXY scRecordRow'>{
             ele.map((item, itemIndex)=>{
-                    return <div key={itemIndex} className='scRecordCols scCenterXY'>
+                    let widthVal = (item.width != null ? item.width : '100%');        
+                    let width = {width: widthVal};
+
+                    if(widthVal.includes('px')){
+                        width = {width: widthVal, minWidth: widthVal, maxWidth: widthVal};
+                    }                    
+
+                    return <div key={itemIndex} className='scRecordCols scCenterXY' style={width}>
                       <Item col={item} row={ele} viewModel={viewModel} theme={theme} onChange={(event)=> {onChange(event, index, itemIndex, item)}}/>
                     </div>
                 })                                

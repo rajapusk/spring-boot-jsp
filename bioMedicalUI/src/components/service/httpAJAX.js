@@ -33,7 +33,8 @@ function HttpAJAXService(){
 				}
 			};
 
-			makeAJAX(config, url, successHandler, {message: (toast != null && toast.message ? toast.message : 'The record updated successfully.'), type: "success"});
+			let toastConfig = (toast != null && toast.message ? {message: toast.message, type: "success"} :  null);
+			makeAJAX(config, url, successHandler, toastConfig);
 		}
 		catch(e){
 			console.error(e)

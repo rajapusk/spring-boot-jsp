@@ -17,7 +17,7 @@ export class Appointment extends Component {
     visibile = false;
     parentModel;
     selectedTab = 0;
-    formWidth = 800;
+    formWidth = 1000;
     labelWidth = 180;
     controlWidth = (this.formWidth / 2) - 54;
     
@@ -58,27 +58,57 @@ export class Appointment extends Component {
         });
 
         this.consultationRecord = [
-            {bind: 'consultationDoctor', label: 'Consultation-Doctor', type: 'option', change: (value, row)=>{
-                this.updateTotalAmount(row, value, ['consultAmount']);
+            {bind: 'consultationDoctor', label: 'Consultation-Doctor', width: '34%', type: 'option', change: (value, row)=>{
+                this.updateAmount(row, value, ['consultAmount']);
             }},
-            {bind: 'visitType', label: 'Visit Type', type:"option", options: visitTypeOpts},
-            {bind: 'consultAmount', label: 'Amount', value: '', disabled: true}
+            {bind: 'visitType', label: 'Visit Type', width: '18%', type:"option", options: visitTypeOpts},
+            {bind: 'paymentType', label: 'Payment Type', width: '28%', type:"option", change: (data, row) =>{
+                let payload = {insurance: data.value, opType: 'doctor', opTypeName: data.typeName};
+
+                this.getPayment(payload, row, 'consultAmount', null);
+            }},
+            {bind: 'consultAmount', label: 'Amount', width: '20%', value: ''}
         ]
 
         this.diagnosticRecord = [
-            {bind: 'diagnostics', label: 'Diagnostics', type: 'option', change: (value, row)=>{
-                this.updateTotalAmount(row, value, ['diagAmount']);
+            {bind: 'diagnostics', label: 'Diagnostics', width: '248px', type: 'option', change: (value, row)=>{
+                this.updateAmount(row, value, ['diagAmount']);
             }},
-            {bind: 'visitType', label: 'Visit Type', type:"option", options: visitTypeOpts},
-            {bind: 'diagAmount', label: 'Amount', value: '', disabled: true}
+            {bind: 'visitType', label: 'Visit Type', width: '14%', type:"option", options: visitTypeOpts},
+            {bind: 'paymentType', label: 'Payment Type', width: '23%', type:"option", change: (data, row) =>{
+                let payload = {insurance: data.value, opType: 'diagnostics', opTypeName: data.typeName};
+                let config = { totField: 'diagTotAmount'};
+
+                this.getPayment(payload, row, 'diagAmount', config);
+            }},
+            {bind: 'diagAmount', label: 'Amount', width: '14%', value: '', change: (value, row)=>{
+                this.updateTotalAmount(row, 'diagTotAmount', 'diagAmount', 'count');
+            }},
+            {bind: 'count', label: 'X-Times', width: '10%', value: 1, change: (value, row)=>{
+                this.updateTotalAmount(row, 'diagTotAmount', 'diagAmount', 'count');
+            }},
+            {bind: 'diagTotAmount', label: 'Total Amount', width: '14%', value: ''}
         ]
 
         this.serviceRecord = [
-            {bind: 'services', label: 'Services', type: 'option', change: (value, row)=>{
-                this.updateTotalAmount(row, value, ['serviceAmount']);
+            {bind: 'services', label: 'Services', width: '248px', type: 'option', change: (value, row)=>{
+                this.updateAmount(row, value, ['serviceAmount']);
+                this.updateTotalAmount(row, 'serviceTotAmount', 'serviceAmount', 'count');
             }},
-            {bind: 'visitType', label: 'Visit Type', type:"option", options: visitTypeOpts},
-            {bind: 'serviceAmount', label: 'Amount', value: '', disabled: true}
+            {bind: 'visitType', label: 'Visit Type', width: '14%', type:"option", options: visitTypeOpts},
+            {bind: 'paymentType', label: 'Payment Type', width: '23%', type:"option", change: (data, row) =>{
+                let payload = {insurance: data.value, opType: 'services', opTypeName: data.typeName};
+                let config = {totField: 'serviceTotAmount'};
+
+                this.getPayment(payload, row, 'serviceAmount', config);
+            }},
+            {bind: 'serviceAmount', label: 'Amount', width: '14%', value: 'services', change: (value, row)=>{
+                this.updateTotalAmount(row, 'serviceTotAmount', 'serviceAmount', 'count');
+            }},
+            {bind: 'count', label: 'X-Times', width: '10%', value: 1, change: (value, row)=>{
+                this.updateTotalAmount(row, 'serviceTotAmount', 'serviceAmount', 'count');
+            }},
+            {bind: 'serviceTotAmount', label: 'Total Amount', width: '14%', value: ''}
         ]
 
         this.paymentTemp = Common.getColTemplate({
@@ -102,9 +132,11 @@ export class Appointment extends Component {
         this.onWindowInit = this.onWindowInit.bind(this);
         this.refreshForm = this.refreshForm.bind(this);
         this.onLoad = this.onLoad.bind(this);
+        this.updateAmount = this.updateAmount.bind(this);
         this.updateTotalAmount = this.updateTotalAmount.bind(this);
         this.parentData = this.parentData.bind(this);
         this.makeMultiSelectCombo = this.makeMultiSelectCombo.bind(this);
+        this.getPayment = this.getPayment.bind(this);
         Common.subscribe(Common.WATCH.THEME, this.themeChange);
     }
 
@@ -123,9 +155,9 @@ export class Appointment extends Component {
                 let diagnostics = this.diaRecordRef.current.val();
                 let service = this.servRecordRef.current.val();
 
-                this.calcAmount(config, consultation, 'consultAmount');
-                this.calcAmount(config, diagnostics, 'diagAmount');
-                this.calcAmount(config, service, 'serviceAmount');
+                this.calcAmount(config, consultation, 'consultAmount', 'consultAmount');
+                this.calcAmount(config, diagnostics, 'diagAmount', 'diagTotAmount');
+                this.calcAmount(config, service, 'serviceAmount', 'serviceTotAmount');
                 
                 fields.forEach((field)=>{
                     Common.fieldUpdate(this.paymentTemp, this.paymentRef.current, config, field);
@@ -137,12 +169,34 @@ export class Appointment extends Component {
         }
     }
 
-    calcAmount(config, values, key){
+    getPayment(payload, rows, field, config){
+        if(payload != null && payload.insurance != 'self'){
+            HttpAJAX.POST('/api/patient/fetchInsurance', payload, (data) => {
+                let row = Common.getFormRow(rows, field);
+
+                if(row.componentRef != null && row.componentRef.current != null){
+                    row.value = data;
+
+                    row.componentRef.current.setOptions({value: data});
+                }
+
+                if(config != null){
+                    this.updateTotalAmount(rows, config.totField, field, 'count');
+                }
+            })
+        } else {
+            if(config != null){
+                this.updateTotalAmount(rows, config.totField, field, 'count');
+            }
+        }       
+    }
+
+    calcAmount(config, values, key, fromKey){
         if(values != null){
             config[key] = 0;
 
             values.forEach((element) => {
-                let value = element[key];
+                let value = element[fromKey];
 
                 config[key] += (value != null ? value : 0);
             });
@@ -151,7 +205,7 @@ export class Appointment extends Component {
         }
     }
 
-    updateTotalAmount(rows, value, fields){       
+    updateAmount(rows, value, fields){       
         if(fields != null){
             fields.forEach((element)=>{
                 let row = Common.getFormRow(rows, element);
@@ -161,6 +215,19 @@ export class Appointment extends Component {
                     row.componentRef.current.setOptions({value: row.value});
                 }
             });
+        }
+    }
+
+    updateTotalAmount(rows, toField, fromField, valueField){       
+        if(toField != null){
+            let fromRow = Common.getFormRow(rows, fromField);
+            let row = Common.getFormRow(rows, toField);
+            let valueRow = Common.getFormRow(rows, valueField);
+            row.value = (fromRow.value * valueRow.value);
+
+            if(row.componentRef != null && row.componentRef.current != null){
+                row.componentRef.current.setOptions({value: row.value});
+            }
         }
     }
 
@@ -174,20 +241,26 @@ export class Appointment extends Component {
         }
     }
 
-    formRecords(data, field, values, picklist){
+    formRecords(data, field, values, picklist, feeField){
         if(values != null){
             values.forEach((element) => {
                 let row = {};
                 
                 row.patientId = data.patientId;
+                row.count = element.count; 
 
-                if(element[picklist] != null){
-                    row.fee = element[picklist].fee; 
+                if(element[picklist] != null){                    
                     row.id = element[picklist].id; 
                 }
+
+                row.fee = element[feeField]; 
                 
                 if(element.visitType != null){
                     row.visitType = element.visitType.id; 
+                }
+
+                if(element.paymentType != null){
+                    row.paymentTypeId = element.paymentType.id; 
                 }
 
                 data[field].push(row);
@@ -205,11 +278,11 @@ export class Appointment extends Component {
             let diagnostics = this.diaRecordRef.current.val();
             let service = this.servRecordRef.current.val();
 
-            this.formRecords(appointmentDetail, 'consultationDoctor', consultationDoctor, 'consultationDoctor');
-            this.formRecords(appointmentDetail, 'diagnostics', diagnostics, 'diagnostics');
-            this.formRecords(appointmentDetail, 'services', service, 'services');
+            this.formRecords(appointmentDetail, 'consultationDoctor', consultationDoctor, 'consultationDoctor', 'consultAmount');
+            this.formRecords(appointmentDetail, 'diagnostics', diagnostics, 'diagnostics', 'diagTotAmount');
+            this.formRecords(appointmentDetail, 'services', service, 'services', 'serviceTotAmount');
             Common.loopInput(this.paymentTemp, this.paymentRef.current, Common.getValue, appointmentDetail);
-     
+
             HttpAJAX.POST('/api/patient/appointment/book', appointmentDetail, (data)=>{
                 this.open(false);  
             }, {message: 'The patient detail has been updated successfully.'});
@@ -312,6 +385,20 @@ export class Appointment extends Component {
             }
 
             this.servRecordRef.current.setComboSource('services', source);
+        })
+
+        HttpAJAX.GET('/api/patient/insurances', (data) => {
+            let source = [];
+
+            if(data != null && typeof data.forEach == 'function'){
+                data.forEach((element) => {
+                    source.push({value: element.insurance, id: element.id, typeName: element.opTypeName});
+                });
+            }
+
+            this.consRecordRef.current.setComboSource('paymentType', source);
+            this.diaRecordRef.current.setComboSource('paymentType', source);
+            this.servRecordRef.current.setComboSource('paymentType', source);
         })
     }
 

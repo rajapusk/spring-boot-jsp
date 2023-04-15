@@ -2,10 +2,19 @@ package com.spring.bioMedical.outputModel;
 
 
 public class Insurance {
+	public Long id;
 	public String opType;
 	public String opTypeName;
 	public String insurance;
 
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+	
 	public String getOpType() {
 		return opType;
 	}

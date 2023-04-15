@@ -253,19 +253,23 @@ public class PatientController {
     }
 
     @RequestMapping(path = "/insurances", method = RequestMethod.GET)
-
-    public List<Insurance> fetchInsuranceAmount() {
+    public List<Insurance> fetchInsurance() {
         List<Insurance> ins = new ArrayList<>();
         Insurance ins1 = new Insurance();
+        ins1.id = (long) 1;
         ins1.insurance = "self";
         ins1.opType = "self";
         ins1.opTypeName = "self";
 
-        ins1.insurance = "abc";
-        ins1.opType = "abc";
-        ins1.opTypeName = "abc";
-
         ins.add(ins1);
+        
+        Insurance ins2 = new Insurance();
+        ins2.id = (long) 2;
+        ins2.insurance = "abc";
+        ins2.opType = "abc";
+        ins2.opTypeName = "abc";
+
+        ins.add(ins2);
 
 
         return ins;

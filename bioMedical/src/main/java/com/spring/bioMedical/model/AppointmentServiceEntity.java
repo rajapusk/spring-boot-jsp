@@ -72,6 +72,15 @@ public class AppointmentServiceEntity {
         return paymentTypeId;
     }
 
+    @Column(name = "count")
+    private int count;
+    public void setCount(int count) {
+        this.count = count;
+    }
+    public int getCount() {
+        return count;
+    }
+
     @Column(name = "visitType")
     private byte visitType;
     public void setVisitType(byte visitType) {

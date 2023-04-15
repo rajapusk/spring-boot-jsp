@@ -203,6 +203,7 @@ public class PatientController {
             serviceEntity.setServiceId(serviceOutput.id);
             serviceEntity.setVisitType(serviceOutput.visitType);
             serviceEntity.setPaymentTypeId(serviceOutput.paymentTypeId);
+            serviceEntity.setCount(serviceOutput.count);
             appointmentService.createOrUpdateAppointmentServcie(serviceEntity);
         }
 
@@ -214,6 +215,7 @@ public class PatientController {
             diagnostic.setDiagnosticId(diagnosticOutput.id);
             diagnostic.setVisitType(diagnosticOutput.visitType);
             diagnostic.setPaymentTypeId(diagnosticOutput.paymentTypeId);
+            diagnostic.setCount(diagnosticOutput.count);
             appointmentService.createOrUpdateAppointmentDiagnostic(diagnostic);
         }
 

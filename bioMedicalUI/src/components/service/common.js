@@ -142,16 +142,7 @@ function CommonService() {
                     input.jqxButton({theme: theme});
                 }
 
-				if(row.numberOnly){
-					var reg = /^\d+$/;
-
-					input.keypress((event)=>{
-						if(!reg.test(event.key)){
-							event.stopPropagation()
-							event.preventDefault()
-						}
-					});
-                }
+				Common.inputValidation(input, row);
 
 				if(row.type === 'option'){
 					input.jqxDropDownList({width: row.width});
@@ -219,6 +210,28 @@ function CommonService() {
 		}
 	};
 
+	this.inputValidation = function(input, row){
+		if(input != null && row != null){
+			if(row.numberOnly){
+				var reg = /^\d+$/;
+				var handler = (event) =>{
+					let value = ("" + (input.val != null ? input.val() : input.value) + event.key);
+		
+					if(!reg.test(event.key) || (row.maxLength != null && value != null && value.length > row.maxLength)){
+						event.stopPropagation()
+						event.preventDefault()
+					}
+				}
+
+				if(input.keypress != null){
+					input.keypress(handler);
+				} else {
+					input.onkeypress = handler
+				}
+			}
+		}
+	}
+
     this.updateValue = function(form, row, config, changeModel){
 		if(row.name != null && row.bind != null){
 			var input =form.getComponentByName(row.name);
@@ -233,6 +246,7 @@ function CommonService() {
 				}
 				else if(row.type == 'date' || row.type == 'datetime' || row.type == 'time'){
 					config[row.bind] = new Date();
+					row.value = config[row.bind];
 				}
 			}
 					
@@ -347,6 +361,8 @@ function CommonService() {
 					dispFormat: elm.dispFormat,
 					format: elm.format,
 					change: elm.change,
+					maxLength: elm.maxLength,
+					minLength: elm.minLength,
 					minDate: elm.minDate,
 					maxDate: elm.maxDate,
 					numberOnly: elm.numberOnly,

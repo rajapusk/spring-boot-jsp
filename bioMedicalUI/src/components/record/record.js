@@ -106,6 +106,7 @@ export class Record extends Component {
         this.onViewModel = this.onViewModel.bind(this);
         this.setComboSource = this.setComboSource.bind(this);
         this.reset = this.reset.bind(this);
+        this.bindValidation = this.bindValidation.bind(this);
         Common.subscribe(Common.WATCH.THEME, this.themeChange);
 
         if(this.props.model != null){
@@ -179,16 +180,29 @@ export class Record extends Component {
         if(this.rows != null && this.rows.length > 0){
             this.rows.forEach((elements) => {
                 var data = null;
+                let allowToRun = false;
 
-                elements.forEach((item) => {
-                    if(item.value != null && item.value != ''){
-                        if(data == null){
-                            data = {};
+                if(this.props.requiredField != null){
+                    elements.forEach((item) => {
+                        if(allowToRun == false){
+                            allowToRun = (item.bind == this.props.requiredField && item.value != null && item.value != '');
                         }
+                    });
+                } else {
+                    allowToRun = true;
+                }
 
-                        data[item.bind] = item.value;
-                    }
-                })
+                if(allowToRun) {
+                    elements.forEach((item) => {
+                        if(item.value != null && item.value != ''){
+                            if(data == null){
+                                data = {};
+                            }
+
+                            data[item.bind] = item.value;
+                        }
+                    });
+                }
 
                 if(data != null){
                     data.id = elements.id;
@@ -275,8 +289,26 @@ export class Record extends Component {
                     if(col.type == 'option' && col.selectedIndex == undefined){
                         col.componentRef.current.clearSelection();
                     }
+
+                    if(col.numberOnly){
+                        this.bindValidation(col);
+                    }
                 })
             })
+        }
+    }
+
+    bindValidation(col){
+        if(col != null && col.numberOnly && col.componentRef != null){
+            setTimeout(()=>{
+                if(col.componentRef.current != null){
+                    let input = document.getElementById(col.componentRef.current._id);
+    
+                    if(input != null){
+                        Common.inputValidation(input, col);
+                    }
+                }
+            }, 500);
         }
     }
 

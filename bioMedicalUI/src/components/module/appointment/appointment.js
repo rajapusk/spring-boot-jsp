@@ -52,7 +52,6 @@ export class Appointment extends Component {
                 {bind: 'department', label: 'Department', type: 'option',component: 'jqxDropDownList', options: departmentOpts},
                 {bind: 'patientType', label: 'Patient Type', type:"option", component: 'jqxDropDownList', options: [ { value: '' }, { value: 'Consultation' }, { value: 'Diagnostics' } ]},
                 {bind: 'referral', label: 'Referral', type:"option", component: 'jqxDropDownList', options: [ { value: '' }, { value: 'Yes' }, { value: 'No' } ]},
-                //{bind: 'visitType', label: 'Visit Type', type:"option", component: 'jqxDropDownList', options: [ { value: '' },{ value: 'First Visit' }, { value: 'Review' } ]},
                 {bind: 'payeeType', label: 'Payee Type', type:"option", component: 'jqxDropDownList', options: [ { value: '' }, { value: 'Self' }, { value: 'Insurance' } ]}
             ]
         });
@@ -67,27 +66,27 @@ export class Appointment extends Component {
 
                 this.getPayment(payload, row, 'consultAmount', null);
             }},
-            {bind: 'consultAmount', label: 'Amount', width: '20%', value: ''}
+            {bind: 'consultAmount', label: 'Amount', width: '20%', value: 0, numberOnly: true}
         ]
 
         this.diagnosticRecord = [
             {bind: 'diagnostics', label: 'Diagnostics', width: '248px', type: 'option', change: (value, row)=>{
                 this.updateAmount(row, value, ['diagAmount']);
+                this.updateTotalAmount(row, 'diagTotAmount', 'diagAmount', 'count');
             }},
-            {bind: 'visitType', label: 'Visit Type', width: '14%', type:"option", options: visitTypeOpts},
-            {bind: 'paymentType', label: 'Payment Type', width: '23%', type:"option", change: (data, row) =>{
+            {bind: 'paymentType', label: 'Payment Type', width: '220px', type:"option", change: (data, row) =>{
                 let payload = {insurance: data.value, opType: 'diagnostics', opTypeName: data.typeName};
                 let config = { totField: 'diagTotAmount'};
 
                 this.getPayment(payload, row, 'diagAmount', config);
             }},
-            {bind: 'diagAmount', label: 'Amount', width: '14%', value: '', change: (value, row)=>{
+            {bind: 'diagAmount', label: 'Amount', width: '16%', value: 0, numberOnly: true, change: (value, row)=>{
                 this.updateTotalAmount(row, 'diagTotAmount', 'diagAmount', 'count');
             }},
-            {bind: 'count', label: 'X-Times', width: '10%', value: 1, change: (value, row)=>{
+            {bind: 'count', label: 'X-Times', width: '14%', value: 1, numberOnly: true, change: (value, row)=>{
                 this.updateTotalAmount(row, 'diagTotAmount', 'diagAmount', 'count');
             }},
-            {bind: 'diagTotAmount', label: 'Total Amount', width: '14%', value: ''}
+            {bind: 'diagTotAmount', label: 'Total Amount', width: '18%', numberOnly: true, value: 0}
         ]
 
         this.serviceRecord = [
@@ -95,20 +94,19 @@ export class Appointment extends Component {
                 this.updateAmount(row, value, ['serviceAmount']);
                 this.updateTotalAmount(row, 'serviceTotAmount', 'serviceAmount', 'count');
             }},
-            {bind: 'visitType', label: 'Visit Type', width: '14%', type:"option", options: visitTypeOpts},
-            {bind: 'paymentType', label: 'Payment Type', width: '23%', type:"option", change: (data, row) =>{
+            {bind: 'paymentType', label: 'Payment Type', width: '220px', type:"option", change: (data, row) =>{
                 let payload = {insurance: data.value, opType: 'services', opTypeName: data.typeName};
                 let config = {totField: 'serviceTotAmount'};
 
                 this.getPayment(payload, row, 'serviceAmount', config);
             }},
-            {bind: 'serviceAmount', label: 'Amount', width: '14%', value: 'services', change: (value, row)=>{
+            {bind: 'serviceAmount', label: 'Amount', width: '16%', value: 0, numberOnly: true, change: (value, row)=>{
                 this.updateTotalAmount(row, 'serviceTotAmount', 'serviceAmount', 'count');
             }},
-            {bind: 'count', label: 'X-Times', width: '10%', value: 1, change: (value, row)=>{
+            {bind: 'count', label: 'X-Times', width: '14%', value: 1, numberOnly: true, change: (value, row)=>{
                 this.updateTotalAmount(row, 'serviceTotAmount', 'serviceAmount', 'count');
             }},
-            {bind: 'serviceTotAmount', label: 'Total Amount', width: '14%', value: ''}
+            {bind: 'serviceTotAmount', label: 'Total Amount', value: 0, numberOnly: true, width: '18%'}
         ]
 
         this.paymentTemp = Common.getColTemplate({
@@ -120,7 +118,7 @@ export class Appointment extends Component {
               {bind: 'diagAmount', label: 'Diagnostics Amount', disabled: true},
               {bind: 'serviceAmount', label: 'Services Amount', disabled: true},              
               {bind: 'totalAmount', label: 'Total Amount', disabled: true},
-              {bind: 'amountPaid', label: 'Amount Paid'},
+              {bind: 'amountPaid', label: 'Amount Paid', numberOnly: true},
               {bind: 'upiCard', label: 'If UPI/Card details'},
             ]
         });
@@ -197,11 +195,10 @@ export class Appointment extends Component {
 
             values.forEach((element) => {
                 let value = element[fromKey];
-
-                config[key] += (value != null ? value : 0);
+                config[key] += ((value != null ? value : 0) * 1);
             });
 
-            config.totalAmount += config[key];
+            config.totalAmount += (config[key] * 1);
         }
     }
 
@@ -234,7 +231,8 @@ export class Appointment extends Component {
     refreshForm(){
         if(this.selectedTab == 0){
             this.appointmentRef.current.refresh();      
-            Common.loopInput(this.appointmentTemp, this.appointmentRef.current, Common.updateDisable, {});      
+            Common.loopInput(this.appointmentTemp, this.appointmentRef.current, Common.updateDisable, {});   
+            Common.loopInput(this.appointmentTemp, this.appointmentRef.current, Common.updateValue, {});
         } else {
             this.paymentRef.current.refresh();
             Common.loopInput(this.paymentTemp, this.paymentRef.current, Common.updateDisable, {});
@@ -441,13 +439,13 @@ export class Appointment extends Component {
                                 <JqxForm ref={this.appointmentRef} width={'100%'} height={"100%"} theme={this.theme} template={this.appointmentTemp}/>        
                             </div>
                             <div>
-                                <Record ref={this.consRecordRef} model={this.consultationRecord}/>
+                                <Record ref={this.consRecordRef} model={this.consultationRecord} requiredField={"consultationDoctor"}/>
                             </div>
                             <div>
-                                <Record ref={this.diaRecordRef} model={this.diagnosticRecord}/>
+                                <Record ref={this.diaRecordRef} model={this.diagnosticRecord} requiredField={"diagnostics"}/>
                             </div>
                             <div>
-                                <Record ref={this.servRecordRef} model={this.serviceRecord}/>
+                                <Record ref={this.servRecordRef} model={this.serviceRecord} requiredField={"services"}/>
                             </div>
                             <div>
                                 <JqxForm ref={this.paymentRef} width={'100%'} height={"100%"} theme={this.theme} template={this.paymentTemp}/>

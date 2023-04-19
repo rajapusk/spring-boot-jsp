@@ -70,7 +70,7 @@ export class Patient extends Component {
     this.nextOfKin = [
       {bind: 'name', label: 'Name', value: '', dependentField: ['relation', 'mobile']},
       {bind: 'relation', label: 'Relation', value: ''},
-      {bind: 'mobile', label: 'Mobile', value: ''}
+      {bind: 'mobile', label: 'Mobile', value: '', numberOnly: true, maxLength: 10}
     ]
 
     this.addressTemp = Common.getColTemplate({
@@ -85,7 +85,7 @@ export class Patient extends Component {
         {bind: 'city', label: 'City', required: true},
         {bind: 'district', label: 'District'},
         {bind: 'state', label: 'State'},
-        {bind: 'pinCode', label: 'Pin Code', numberOnly: true},
+        {bind: 'pinCode', label: 'Pin Code', numberOnly: true, maxLength: 6},
       ]
     });
 
@@ -103,8 +103,8 @@ export class Patient extends Component {
         {bind: 'dob', label: 'DOB', type: 'date', format: Common.FORMAT.DATE, dispFormat: Common.FORMAT.DISP_DATE, maxDate: new Date(), change: (value)=> {
           this.fieldDOBUpdate(value)
         }},
-        {bind: 'age', label: 'Age', disabled: true},
-        {bind: 'mobileNumber', label: 'Mobile Number'},
+        {bind: 'age', label: 'Age', disabled: true, numberOnly: true},
+        {bind: 'mobileNumber', label: 'Mobile Number', numberOnly: true, maxLength: 10},
         {bind: 'emailId', label: 'Email ID'}
       ]
     });

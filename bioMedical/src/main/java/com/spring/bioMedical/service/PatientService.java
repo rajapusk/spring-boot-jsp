@@ -37,6 +37,7 @@ public class PatientService {
                 newEntity.setEmailId(entity.getEmailId());
                 //newEntity.setDateOfOpVisit(entity.getDateOfOpVisit());
                 newEntity.setDob(entity.getDob());
+                newEntity.setAge(entity.getAge());
                 newEntity.setFirstName(entity.getFirstName());
                 newEntity.setLastName(entity.getLastName());
                 newEntity.setMobileNumber(entity.getMobileNumber());

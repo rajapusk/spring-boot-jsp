@@ -51,7 +51,7 @@ export class Patient extends Component {
         { text: 'MR NO', datafield: 'mrNo', width: 200},
         { text: 'First Name', datafield: 'firstName' },
         { text: 'Last Name', datafield: 'lastName'},
-        { text: 'Age', datafield: 'age', width: 100, cellsalign: 'right' },
+        { text: 'Age', datafield: 'age', width: 200, cellsalign: 'left' },
         { text: 'Mobile Number', datafield: 'mobileNumber', width: 150, cellsalign: 'right' },
         //{ iconColumn: true, icon: IconSVG.ICON.EYE},
         { iconColumn: true, icon: IconSVG.ICON.PEN},
@@ -103,7 +103,7 @@ export class Patient extends Component {
         {bind: 'dob', label: 'DOB', type: 'date', format: Common.FORMAT.DATE, dispFormat: Common.FORMAT.DISP_DATE, maxDate: new Date(), change: (value)=> {
           this.fieldDOBUpdate(value)
         }},
-        {bind: 'age', label: 'Age', disabled: true, numberOnly: true},
+        {bind: 'age', label: 'Age', disabled: true},
         {bind: 'mobileNumber', label: 'Mobile Number', numberOnly: true, maxLength: 10},
         {bind: 'emailId', label: 'Email ID'}
       ]
@@ -123,10 +123,10 @@ export class Patient extends Component {
   }
 
   fieldDOBUpdate(value){
-    let diff = Common.dateDiff(value, new Date());
+    let result = Common.ageCalculator(value);
 
-    if(diff != null){
-      Common.fieldUpdate(this.patientTemp, this.patientRef.current, {age: diff.year}, 'age');
+    if(result != null){
+      Common.fieldUpdate(this.patientTemp, this.patientRef.current, {age: result.ageText, ageExtra: result.diff.year}, 'age');
     }
   }
 
@@ -241,9 +241,6 @@ export class Patient extends Component {
 
           Common.setValue(Common.WATCH.NOTIFICATION, toast);
         }
-      }
-      else {
-
       }
     }
     else {

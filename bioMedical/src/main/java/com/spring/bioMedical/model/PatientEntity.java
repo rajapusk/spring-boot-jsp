@@ -64,6 +64,17 @@ public class PatientEntity {
         this.motherName = value;
     }
     
+    @Column(name = "age")
+    private String age;
+
+    public String getAge() {
+        return this.age;
+    }
+
+    public void setAge(String value) {
+        this.age = value;
+    }
+    
     @JsonProperty("dob")
     @JsonFormat(pattern="yyyy-MM-dd")
     @Column(name = "dob")
@@ -87,8 +98,6 @@ public class PatientEntity {
         this.emailId = value;
     }
     
-
-
     @Column(name = "CREATED_ON")
     private java.sql.Date createdOn;
 

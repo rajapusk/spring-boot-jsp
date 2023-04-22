@@ -39,6 +39,7 @@ public class PatientController {
         PatientEntity patient = new PatientEntity();
         patient.setEmailId(input.emailId);
         patient.setDob(input.dob);
+        patient.setAge(input.age);
         patient.setFirstName(input.firstName);
         patient.setLastName(input.lastName);
         patient.setMobileNumber(input.mobileNumber);
@@ -88,7 +89,7 @@ public class PatientController {
             if (patient.getIsDeleted() == false) {
                 PatientOutput output = new PatientOutput();
                 output.dob = patient.getDob();
-                output.age = calculateAge(output.dob);
+                output.age = patient.getAge();
                 output.firstName = patient.getFirstName();
                 output.lastName = patient.getLastName();
                 output.emailId = patient.getEmailId();
@@ -101,18 +102,6 @@ public class PatientController {
         }
 
         return patientOutputList;
-    }
-
-    private static int calculateAge(java.sql.Date dob) {
-//creating an instance of the LocalDate class and invoking the now() method
-//now() method obtains the current date from the system clock in the default time zone
-        LocalDate curDate = LocalDate.now();
-//calculates the amount of time between two dates and returns the years
-        if ((dob != null) && (curDate != null)) {
-            return Period.between(dob.toLocalDate(), curDate).getYears();
-        } else {
-            return 0;
-        }
     }
 
     @GetMapping("/{id}")

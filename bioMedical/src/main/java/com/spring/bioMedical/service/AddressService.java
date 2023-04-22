@@ -29,7 +29,7 @@ public class AddressService {
         else
         {
             Optional<PatientAddressEntity> patient = repository.findById(entity.getId());
-
+            
             if(patient.isPresent())
             {
                 PatientAddressEntity newEntity = patient.get();

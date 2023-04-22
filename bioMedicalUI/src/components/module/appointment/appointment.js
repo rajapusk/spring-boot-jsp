@@ -47,8 +47,8 @@ export class Appointment extends Component {
             labelWidth:this.labelWidth,
             controlWidth:this.controlWidth,
             rows:[
-                {bind: 'dateOfOpVisit', label: 'Date of OP Visit', type: 'date', format: Common.FORMAT.DATE, dispFormat: Common.FORMAT.DISP_DATE, minDate: new Date()},
-                {bind: 'timeOfOpVisit', label: 'Time of OP visit', type: 'time', format: Common.FORMAT.TIME, dispFormat: Common.FORMAT.DISP_TIME, minDate: new Date()},
+                {bind: 'dateOfOpVisit', label: 'Date of OP Visit', type: 'date', format: Common.FORMAT.DATE, dispFormat: Common.FORMAT.DISP_DATE, minDate: Common.YESTERDAY},
+                {bind: 'timeOfOpVisit', label: 'Time of OP visit', type: 'time', format: Common.FORMAT.TIME, dispFormat: Common.FORMAT.DISP_TIME, minDate: Common.YESTERDAY},
                 {bind: 'department', label: 'Department', type: 'option',component: 'jqxDropDownList', options: departmentOpts},
                 {bind: 'patientType', label: 'Patient Type', type:"option", component: 'jqxDropDownList', options: [ { value: '' }, { value: 'Consultation' }, { value: 'Diagnostics' } ]},
                 {bind: 'referral', label: 'Referral', type:"option", component: 'jqxDropDownList', options: [ { value: '' }, { value: 'Yes' }, { value: 'No' } ]},
@@ -230,9 +230,11 @@ export class Appointment extends Component {
 
     refreshForm(){
         if(this.selectedTab == 0){
+            let model = {};
+            Common.loopInput(this.appointmentTemp, this.appointmentRef.current, Common.getValue, model);
             this.appointmentRef.current.refresh();      
-            Common.loopInput(this.appointmentTemp, this.appointmentRef.current, Common.updateDisable, {});   
-            Common.loopInput(this.appointmentTemp, this.appointmentRef.current, Common.updateValue, {});
+            Common.loopInput(this.appointmentTemp, this.appointmentRef.current, Common.updateDisable, {});
+            Common.loopInput(this.appointmentTemp, this.appointmentRef.current, Common.updateValue, {dateOfOpVisit: model.dateModel.dateOfOpVisit.date, timeOfOpVisit: model.dateModel.timeOfOpVisit.date});
         } else {
             this.paymentRef.current.refresh();
             Common.loopInput(this.paymentTemp, this.paymentRef.current, Common.updateDisable, {});
@@ -404,6 +406,7 @@ export class Appointment extends Component {
         this.open(false);
         this.onLoad();
         this.refreshForm();
+        Common.loopInput(this.appointmentTemp, this.appointmentRef.current, Common.updateValue, {});
     }
 
     render() {

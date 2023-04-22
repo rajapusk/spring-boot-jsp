@@ -9,9 +9,9 @@ public class PatientOutput {
     public String mobileNumber;
     public java.sql.Date dob;
     public String motherName;
+    public String age;
     public String emailId;
     public String photo;
     public AddressOutput address;
     public ArrayList<NextOfKin> nextOfKin;
-    public int age;
 }

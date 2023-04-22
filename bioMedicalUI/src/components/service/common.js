@@ -17,7 +17,19 @@ function CommonService() {
         THEME: 'THEME',
         NOTIFICATION: 'NOTIFICATION',
 	};
+
+	this.TODAY = null;
+	this.YESTERDAY = null;
+	this.TOMORROW = null;
 	
+	this.init = function(){
+		this.TODAY = new Date();
+		this.YESTERDAY = new Date();
+		this.TOMORROW = new Date();
+		this.YESTERDAY.setDate(this.TODAY.getDate() - 1);
+		this.TOMORROW.setDate(this.TODAY.getDate() + 1);
+	}
+
     this.getWatchValue = function(keyfield) {
         return (this.collection[keyfield] != null ? this.collection[keyfield].value : null);
     };
@@ -122,15 +134,15 @@ function CommonService() {
 			toDate = tempDate;
 		}
 		
-	    var month_diff = toDate.getTime() - fromDate.getTime();
+	    var month_diff = (toDate.getTime() - fromDate.getTime());
 	    var age_dt = new Date(month_diff); 
 	    var year = age_dt.getUTCFullYear();
 	    var month = age_dt.getUTCMonth();    
 	    var days = age_dt.getUTCDay();
 	    var age = Math.abs(year - 1970);  
-	    var totalDays = (month_diff / (1000 * 3600 * 24));
+	    var totalDays = Math.floor(month_diff / (1000 * 3600 * 24));
 	    
-	    return {year: age, month: month, days: days, totalDays: Math.floor(totalDays)};
+	    return {year: age, month: month, days: (totalDays <= 31 ? totalDays : days), totalDays: totalDays};
 	}
 
     this.updateDisable = function(form, row, config){
@@ -249,6 +261,10 @@ function CommonService() {
 					row.value = config[row.bind];
 				}
 			}
+
+			if(config[row.bind + 'Extra'] != null){
+				row.valueExtra = config[row.bind + 'Extra'];
+			}
 					
 			if(input != null && config[row.bind] != null){
 				if(row.type == 'date' || row.type == 'datetime' || row.type == 'time'){
@@ -257,22 +273,7 @@ function CommonService() {
 
 					if(typeof time == 'string'){
 						if(time.includes(':')){
-							if(time.includes('-')){
-								var dateTime = time.split('-');
-	
-								if(dateTime.length > 2){
-									let splitDate = dateTime[2].split('T');
-									let splitTime = splitDate[1].split(':');
-									timeVal = new Date(dateTime[0], dateTime[1], splitDate[0], splitTime[0], (splitTime.length > 1 ? splitTime[1] : 0), (splitTime.length > 2 ? splitTime[2] : 0));
-								}
-							} else {
-								let splitTime = time.split(':');
-								var today = new Date();
-	
-								if(splitTime.length > 0){
-									timeVal = new Date(today.getFullYear(), today.getMonth(), today.getDay(), splitTime[0], (splitTime.length > 1 ? splitTime[1] : 0), (splitTime.length > 2 ? splitTime[2] : 0));
-								}
-							}
+							timeVal = Common.stringToDate(time);
 						} else{
 							timeVal = new Date(config[row.bind]);
 						}
@@ -304,6 +305,37 @@ function CommonService() {
 			}
 		}
 	};
+
+	this.stringToDate = function(time){
+		let timeVal = null;
+
+		if(time!= null && typeof time == 'string' && (time.includes(':') || time.includes('-'))){
+			if(time.includes('-')){
+				var dateTime = time.split('-');
+
+				if(dateTime.length > 2){
+					let splitDate = dateTime[2].split('T');
+
+					if(splitDate.length > 1){
+						let splitTime = splitDate[1].split(':');
+
+						timeVal = new Date(dateTime[0], dateTime[1], splitDate[0], splitTime[0], (splitTime.length > 1 ? splitTime[1] : 0), (splitTime.length > 2 ? splitTime[2] : 0));
+					} else {
+						timeVal = new Date(dateTime[0], dateTime[1], splitDate[0]);
+					}				
+				}
+			} else {
+				let splitTime = time.split(':');
+				var today = new Date();
+
+				if(splitTime.length > 0){
+					timeVal = new Date(today.getFullYear(), today.getMonth(), today.getDay(), splitTime[0], (splitTime.length > 1 ? splitTime[1] : 0), (splitTime.length > 2 ? splitTime[2] : 0));
+				}
+			}
+		}
+
+		return timeVal;
+	}
 
 	this.getValue = function(form, row, config){
 		if(row.name != null && row.bind != null && config != null){
@@ -340,8 +372,44 @@ function CommonService() {
 			} else if(row.value != null){
 				config[row.bind] = row.value;
 			}
+
+			if(row.valueExtra != null){
+				config[row.bind + 'Extra'] = row.valueExtra;
+			}
 		}
-	};	
+	};
+
+	this.ageCalculator = function(value){
+		let result = {ageText: '', diff: null};
+
+		if(value != null){
+			result.diff = Common.dateDiff(value, new Date());
+
+			if(result.diff != null){
+			  	let ageText = '';
+		
+			  	if(result.diff.year > 0){
+					ageText = result.diff.year + ' year(s) ';
+			  	}
+		
+			  	if(result.diff.month > 0){
+					if(ageText.length == 0){
+				  		ageText = result.diff.month + ' month(s) baby';
+					} else {
+				  		ageText += result.diff.month + ' month(s)';
+					}
+				}
+		
+				if(ageText.length == 0){
+					ageText = result.diff.days + ' day(s) baby';
+				}
+		
+				result.ageText = ageText;
+			}
+		}
+
+		return result;
+	}
 
 	this.getColTemplate = function(config){
 		var template = [];
@@ -526,6 +594,8 @@ function CommonService() {
 			}
 		}
 	};
+
+	this.init();
 
 	var fireChange = function(changeModel){
 		if(changeModel != null && changeModel.length > 0){	

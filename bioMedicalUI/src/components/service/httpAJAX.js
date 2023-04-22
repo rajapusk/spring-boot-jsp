@@ -22,7 +22,7 @@ function HttpAJAXService(){
 	this.POST = function(url, postData, successHandler, toast)
 	{
 		try{
-			bindDateModel(postData);
+			parseDate(postData);
 
 			let config = {
 				"method": "POST",
@@ -80,6 +80,32 @@ function HttpAJAXService(){
 		}
     };
 
+	var parseDate = function(model){
+		if(model){
+			for(var sKey in model){
+				let item = model[sKey];
+				
+				if(item != null){
+					if(sKey == 'dateModel'){
+						model.dateModel.key.forEach((element) => {
+							model[element] = model.dateModel[element]['format'];
+						})
+	
+						delete model.dateModel;
+					} else if(item.dateModel != null){
+						item.dateModel.key.forEach((element) => {
+							item[element] = item.dateModel[element]['format'];
+						})
+	
+						delete item.dateModel;
+					} else if(typeof item == "object"){
+						parseDate(item);
+					}
+				}
+			}
+		}
+	};
+
 	var makeAJAX = function(config, url, successHandler, toast){
 		Common.setValue(Common.WATCH.HTTP_CALL, true);
 		fetch(HOST + url, config)
@@ -101,32 +127,6 @@ function HttpAJAXService(){
                 console.log(error)
 			}
 		)
-	}
-
-    var bindDateModel = function(model){
-		if(model){
-			for(var sKey in model){
-				let item = model[sKey];
-				
-				if(item != null){
-					if(sKey == 'dateModel'){
-						model.dateModel.key.forEach((element) => {
-							model[element] = model.dateModel[element]['format'];
-						})
-	
-						delete model.dateModel;
-					} else if(item.dateModel != null){
-						item.dateModel.key.forEach((element) => {
-							item[element] = item.dateModel[element]['format'];
-						})
-	
-						delete item.dateModel;
-					} else if(typeof item == "object"){
-						bindDateModel(item);
-					}
-				}
-			}
-		}
 	}
 }
 
